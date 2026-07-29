@@ -1,0 +1,23 @@
+---
+description: Task workflow
+alwaysApply: true
+---
+
+For every request:
+
+Read documentation.
+
+Understand dependencies.
+
+List affected files.
+
+Explain implementation plan.
+
+Then generate code.
+
+Never skip planning.
+
+Never modify unrelated services.
+
+If another service is affected,
+tell the user first.

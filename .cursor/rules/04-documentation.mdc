@@ -1,0 +1,22 @@
+---
+description: Documentation Rules
+alwaysApply: true
+---
+
+Whenever new features are added,
+
+update
+
+API_SPEC.md
+
+TASKS.md
+
+DATABASE_SCHEMA.md
+
+SERVICES.md
+
+ARCHITECTURE.md
+
+if necessary.
+
+Documentation must always stay synchronized with the code.

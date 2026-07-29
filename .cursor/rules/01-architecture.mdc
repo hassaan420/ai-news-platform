@@ -1,0 +1,38 @@
+---
+description: Architecture Rules
+alwaysApply: true
+---
+
+This project follows:
+
+Java 21
+
+Spring Boot 3
+
+Microservices
+
+Clean Architecture
+
+SOLID
+
+Repository Pattern
+
+DTO Pattern
+
+Factory Pattern
+
+Strategy Pattern
+
+Dependency Injection
+
+Hexagonal Architecture where applicable.
+
+Controllers are thin.
+
+Business logic belongs in Services.
+
+Repositories only access the database.
+
+DTOs isolate APIs from Entities.
+
+Never violate architecture.

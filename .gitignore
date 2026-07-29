@@ -1,0 +1,29 @@
+# Environment and secrets
+.env
+*.env.local
+
+# Build output
+target/
+build/
+out/
+
+# Logs
+*.log
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.classpath
+.project
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Credentials (outside .env.example)
+*secret*
+*credentials*

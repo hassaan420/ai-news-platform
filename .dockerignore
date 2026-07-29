@@ -1,0 +1,55 @@
+# ─── Version Control ──────────────────────────────────────────
+.git
+.gitignore
+
+# ─── Documentation ────────────────────────────────────────────
+docs/
+*.md
+!README.md
+LICENSE
+
+# ─── IDE / Editor ─────────────────────────────────────────────
+.idea/
+.vscode/
+.cursor/
+*.iml
+*.ipr
+*.iws
+.classpath
+.project
+.settings/
+
+# ─── Build Output (rebuilt inside container) ──────────────────
+**/target/
+**/build/
+**/out/
+
+# ─── Logs ─────────────────────────────────────────────────────
+*.log
+logs/
+
+# ─── Environment / Secrets ────────────────────────────────────
+.env
+*.env.local
+.env.example
+
+# ─── Docker (prevent recursive context inclusion) ─────────────
+docker-compose*.yml
+docker/
+Dockerfile
+
+# ─── OS Files ─────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ─── CI/CD ────────────────────────────────────────────────────
+.github/
+
+# ─── Scripts ──────────────────────────────────────────────────
+scripts/
+
+# ─── Misc ─────────────────────────────────────────────────────
+*.bak
+*.swp
+*.swo
+*~

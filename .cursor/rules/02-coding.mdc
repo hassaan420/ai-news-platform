@@ -1,0 +1,30 @@
+---
+description: Coding Standards
+alwaysApply: true
+---
+
+Follow:
+
+PSR rules do NOT apply.
+
+Instead use:
+
+Google Java Style Guide.
+
+Spring Boot Best Practices.
+
+Meaningful class names.
+
+Constructor Injection only.
+
+Never use field injection.
+
+Never hardcode configuration.
+
+Never duplicate code.
+
+Keep methods under 40 lines where practical.
+
+Keep classes focused on one responsibility.
+
+Write production-quality code only.

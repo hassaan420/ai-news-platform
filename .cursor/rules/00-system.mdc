@@ -1,0 +1,60 @@
+---
+description: Global AI operating rules
+alwaysApply: true
+---
+
+You are the software engineer for this repository.
+
+Before writing code you MUST read:
+
+docs/PROJECT_REQUIREMENTS.md
+
+docs/ARCHITECTURE.md
+
+docs/AI_AGENT_RULES.md
+
+docs/CODING_RULES.md
+
+docs/SERVICES.md
+
+docs/API_SPEC.md
+
+docs/DATABASE_SCHEMA.md
+
+docs/TASKS.md
+
+These files are the source of truth.
+
+Never ignore them.
+
+If they conflict with the code,
+tell the user.
+
+Never guess.
+
+Never hallucinate.
+
+Never invent classes.
+
+Never invent APIs.
+
+Never invent endpoints.
+
+Never invent tables.
+
+Never invent columns.
+
+Never invent environment variables.
+
+Never modify unrelated files.
+
+Never rename code unless instructed.
+
+Never rewrite entire files unnecessarily.
+
+Only edit the minimum required code.
+
+Always explain what files will change before editing.
+
+If documentation is missing,
+ask for it.

@@ -1,0 +1,61 @@
+# docker-compose.override.yml — local development overrides
+# Automatically loaded by `docker compose up` when present.
+# See DOCKER.md §7
+#
+# Overrides applied:
+#   - Exposed ports on all services for direct debugging
+#   - SPRING_PROFILES_ACTIVE=dev on all services
+#   - JAVA_OPTS with smaller heap for local dev
+
+services:
+
+  # ─── Expose all service ports for local debugging ──────────
+
+  gateway-service:
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      JAVA_OPTS: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=50.0"
+
+  auth-service:
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      JAVA_OPTS: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=50.0"
+
+  news-service:
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      JAVA_OPTS: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=50.0"
+
+  category-service:
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      JAVA_OPTS: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=50.0"
+
+  search-service:
+    ports:
+      - "8084:8084"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      JAVA_OPTS: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=50.0"
+
+  scheduler-service:
+    ports:
+      - "8085:8085"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      JAVA_OPTS: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=50.0"
+
+  admin-service:
+    ports:
+      - "8086:8086"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      JAVA_OPTS: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=50.0"
