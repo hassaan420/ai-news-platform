@@ -2,6 +2,11 @@
 .env
 *.env.local
 
+# Security
+jwt.txt
+*.jwt
+*.token
+
 # Build output
 target/
 build/

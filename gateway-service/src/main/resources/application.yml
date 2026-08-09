@@ -1,71 +1,85 @@
 spring:
   application:
     name: gateway-service
+  config:
+    import: classpath:application-common.yml
+
   cloud:
     gateway:
-      # Base routing — no auth/JWT verification in Phase 1 setup
-      # JWT verification filter will be added in Phase 2
+      # Route table mapping public endpoints to downstream services
+      # Routes are evaluated in order of definition (search must precede news to catch /api/news/search)
       routes:
-        # Auth Service
-        - id: auth-service
-          uri: http://auth-service:8081
-          predicates:
-            - Path=/api/auth/**
-          filters:
-            - StripPrefix=0
-
-        # News Service — public endpoints
-        - id: news-service
-          uri: http://news-service:8082
-          predicates:
-            - Path=/api/news/**, /api/articles/**
-          filters:
-            - StripPrefix=0
-
-        # Category Service
-        - id: category-service
-          uri: http://category-service:8083
-          predicates:
-            - Path=/api/categories/**
-          filters:
-            - StripPrefix=0
-
-        # Search Service
+        # 1. Search Service (higher precedence than general news route)
         - id: search-service
-          uri: http://search-service:8084
+          uri: ${SEARCH_SERVICE_URL:http://search-service:8084}
           predicates:
             - Path=/api/news/search/**
           filters:
             - StripPrefix=0
 
-        # Admin Service
+        # 2. News Service (handles /api/news/** and /api/articles/**)
+        - id: news-service
+          uri: ${NEWS_SERVICE_URL:http://news-service:8082}
+          predicates:
+            - Path=/api/news/**
+          filters:
+            - StripPrefix=0
+
+        # 3. Auth Service
+        - id: auth-service
+          uri: ${AUTH_SERVICE_URL:http://auth-service:8081}
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - StripPrefix=0
+
+        # 4. Category Service
+        - id: category-service
+          uri: ${CATEGORY_SERVICE_URL:http://category-service:8083}
+          predicates:
+            - Path=/api/categories/**
+          filters:
+            - StripPrefix=0
+
+        # 5. Admin Service
         - id: admin-service
-          uri: http://admin-service:8086
+          uri: ${ADMIN_SERVICE_URL:http://admin-service:8086}
           predicates:
             - Path=/api/admin/**
           filters:
             - StripPrefix=0
 
-        # Scheduler Service (admin-triggered only)
+        # 6. Scheduler Service (admin trigger route)
         - id: scheduler-service
-          uri: http://scheduler-service:8085
+          uri: ${SCHEDULER_SERVICE_URL:http://scheduler-service:8085}
           predicates:
             - Path=/api/scheduler/**
           filters:
             - StripPrefix=0
 
-      # Default filters applied to all routes
-      default-filters:
-        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_UNIQUE
-
-      # Internal endpoints are NOT routed through the gateway (SECURITY.md §3)
-      # No route with /internal/** prefix exists
+      # Global CORS configuration (Hardened for Production)
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        cors-configurations:
+          '[/**]':
+            allowedOriginPatterns:
+              - "https://*.newsplatform.com"
+              - "http://localhost:3000"
+              - "http://localhost"
+              - "http://localhost:5173"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
+            exposedHeaders:
+              - Authorization
+              - X-Correlation-Id
+            maxAge: 3600
 
 server:
   port: 8080
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,metrics

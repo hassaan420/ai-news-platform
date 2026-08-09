@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Clarion AI - Admin Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&amp;family=Hanken+Grotesk:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "secondary-container": "#e2dfde",
+                      "surface-container-lowest": "#ffffff",
+                      "inverse-primary": "#c3c0ff",
+                      "surface-container-highest": "#e3e2e1",
+                      "surface-dim": "#dadad9",
+                      "primary": "#1f108e",
+                      "tertiary": "#511c00",
+                      "tertiary-container": "#752c00",
+                      "surface-container": "#eeeeed",
+                      "primary-fixed-dim": "#c3c0ff",
+                      "on-primary-fixed": "#0f0069",
+                      "tertiary-fixed": "#ffdbcc",
+                      "surface": "#faf9f8",
+                      "surface-container-high": "#e9e8e7",
+                      "on-secondary": "#ffffff",
+                      "inverse-on-surface": "#f1f0f0",
+                      "secondary": "#5f5e5e",
+                      "on-background": "#1a1c1c",
+                      "outline-variant": "#c8c4d5",
+                      "surface-variant": "#e3e2e1",
+                      "primary-fixed": "#e2dfff",
+                      "inverse-surface": "#2f3130",
+                      "secondary-fixed-dim": "#c8c6c5",
+                      "surface-bright": "#faf9f8",
+                      "surface-container-low": "#f4f3f2",
+                      "on-surface": "#1a1c1c",
+                      "surface-tint": "#544fc0",
+                      "on-tertiary-fixed": "#351000",
+                      "on-secondary-fixed-variant": "#474746",
+                      "tertiary-fixed-dim": "#ffb694",
+                      "on-primary-container": "#a9a7ff",
+                      "on-secondary-container": "#636262",
+                      "primary-container": "#3730a3",
+                      "on-primary": "#ffffff",
+                      "error": "#ba1a1a",
+                      "on-surface-variant": "#464553",
+                      "secondary-fixed": "#e5e2e1",
+                      "error-container": "#ffdad6",
+                      "on-error": "#ffffff",
+                      "on-tertiary": "#ffffff",
+                      "on-tertiary-container": "#fe9562",
+                      "on-error-container": "#93000a",
+                      "outline": "#777584",
+                      "on-secondary-fixed": "#1c1b1b",
+                      "on-tertiary-fixed-variant": "#7a3003",
+                      "background": "#faf9f8",
+                      "on-primary-fixed-variant": "#3b35a7"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "stack_md": "16px",
+                      "stack_sm": "8px",
+                      "margin_mobile": "16px",
+                      "margin_desktop": "40px",
+                      "stack_lg": "32px",
+                      "gutter": "24px",
+                      "max_content_width": "1200px",
+                      "sidebar_width": "280px"
+              },
+              "fontFamily": {
+                      "display-lg-mobile": [
+                              "\"Source Serif 4\""
+                      ],
+                      "headline-md": [
+                              "\"Source Serif 4\""
+                      ],
+                      "label-sm": [
+                              "Hanken Grotesk"
+                      ],
+                      "body-lg": [
+                              "Hanken Grotesk"
+                      ],
+                      "display-lg": [
+                              "\"Source Serif 4\""
+                      ],
+                      "metadata": [
+                              "Hanken Grotesk"
+                      ],
+                      "body-md": [
+                              "Hanken Grotesk"
+                      ]
+              },
+              "fontSize": {
+                      "display-lg-mobile": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-sm": [
+                              "13px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "metadata": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+</head>
+<body class="bg-surface text-on-surface font-body-md text-body-md min-h-screen flex antialiased">
+<!-- Admin Sidebar -->
+<nav class="hidden md:flex fixed left-0 top-0 h-screen w-sidebar_width bg-surface dark:bg-inverse-surface border-r border-outline-variant dark:border-outline flex-col py-stack_lg px-stack_md z-40">
+<div class="mb-stack_lg">
+<h1 class="font-display-lg text-[32px] font-bold text-primary dark:text-inverse-primary tracking-tight">Clarion</h1>
+</div>
+<div class="mb-4">
+<h3 class="font-label-sm text-label-sm text-on-surface-variant mb-2">Discover</h3>
+<ul class="flex flex-col gap-1">
+<li>
+<a class="flex items-center gap-3 text-secondary dark:text-secondary-fixed-dim pl-3 py-2 hover:bg-surface-container dark:hover:bg-on-secondary-fixed-variant transition-colors rounded-md" href="#">
+<span class="material-symbols-outlined text-[20px]">home</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 text-secondary dark:text-secondary-fixed-dim pl-3 py-2 hover:bg-surface-container dark:hover:bg-on-secondary-fixed-variant transition-colors rounded-md" href="#">
+<span class="material-symbols-outlined text-[20px]">trending_up</span>
+<span class="font-label-sm text-label-sm">Trending</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 text-secondary dark:text-secondary-fixed-dim pl-3 py-2 hover:bg-surface-container dark:hover:bg-on-secondary-fixed-variant transition-colors rounded-md" href="#">
+<span class="material-symbols-outlined text-[20px]">bookmark</span>
+<span class="font-label-sm text-label-sm">Saved Articles</span>
+</a>
+</li>
+</ul>
+</div>
+<div>
+<h3 class="font-label-sm text-label-sm text-on-surface-variant mb-2">Categories</h3>
+<ul class="flex flex-col gap-1">
+<li>
+<a class="flex items-center gap-3 text-secondary dark:text-secondary-fixed-dim pl-3 py-2 hover:bg-surface-container dark:hover:bg-on-secondary-fixed-variant transition-colors rounded-md" href="#">
+<span class="w-2 h-2 rounded-full bg-blue-500"></span>
+<span class="font-label-sm text-label-sm">Technology</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 text-secondary dark:text-secondary-fixed-dim pl-3 py-2 hover:bg-surface-container dark:hover:bg-on-secondary-fixed-variant transition-colors rounded-md" href="#">
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+<span class="font-label-sm text-label-sm">Business</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 text-secondary dark:text-secondary-fixed-dim pl-3 py-2 hover:bg-surface-container dark:hover:bg-on-secondary-fixed-variant transition-colors rounded-md" href="#">
+<span class="w-2 h-2 rounded-full bg-purple-500"></span>
+<span class="font-label-sm text-label-sm">Science</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 text-secondary dark:text-secondary-fixed-dim pl-3 py-2 hover:bg-surface-container dark:hover:bg-on-secondary-fixed-variant transition-colors rounded-md" href="#">
+<span class="w-2 h-2 rounded-full bg-red-500"></span>
+<span class="font-label-sm text-label-sm">Health</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 text-secondary dark:text-secondary-fixed-dim pl-3 py-2 hover:bg-surface-container dark:hover:bg-on-secondary-fixed-variant transition-colors rounded-md" href="#">
+<span class="w-2 h-2 rounded-full bg-orange-500"></span>
+<span class="font-label-sm text-label-sm">Sports</span>
+</a>
+</li>
+</ul>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 md:ml-sidebar_width flex flex-col min-h-screen">
+<!-- Top Nav Bar (Admin Variant) -->
+<header class="flex justify-between items-center h-16 px-margin_desktop bg-surface dark:bg-inverse-surface border-b border-outline-variant dark:border-outline sticky top-0 z-50">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-4 text-sm font-semibold text-secondary">
+<a class="hover:text-primary" href="#">Politics</a>
+<a class="hover:text-primary" href="#">Sports</a>
+<a class="hover:text-primary" href="#">Technology</a>
+<a class="hover:text-primary" href="#">Business</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex items-center bg-surface-container-low rounded-md px-3 py-1.5 border border-outline-variant">
+<span class="material-symbols-outlined text-secondary mr-2 text-sm">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-48 text-on-surface placeholder:text-secondary outline-none" placeholder="Search news..." type="text"/>
+</div>
+<button class="text-secondary hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">tune</span>
+</button>
+<button class="text-secondary hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">person</span>
+</button>
+<div class="border border-outline-variant rounded px-3 py-1 text-sm font-semibold text-secondary hover:text-primary hover:border-primary transition-colors cursor-pointer">
+    Admin
+</div>
+<button class="text-secondary hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">logout</span>
+</button>
+</div>
+</header>
+<main class="p-margin_mobile md:p-margin_desktop max-w-max_content_width mx-auto w-full flex-grow flex flex-col gap-gutter">
+<div class="mb-2">
+<h1 class="font-display-lg text-[32px] font-bold text-on-surface tracking-tight mb-2">Admin Dashboard</h1>
+<p class="font-body-md text-secondary">Platform overview and management metrics.</p>
+</div>
+<!-- KPI Cards Row -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 flex flex-col justify-between hover:border-outline transition-colors">
+<div class="flex justify-between items-start mb-4">
+<span class="font-metadata text-metadata text-secondary">Total Users</span>
+<span class="material-symbols-outlined text-secondary text-[20px]">group</span>
+</div>
+<div>
+<div class="font-display-lg text-[32px] font-bold mb-1">2</div>
+<div class="text-sm text-green-700 flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">arrow_upward</span> +12% <span class="text-secondary ml-1">from last month</span>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 flex flex-col justify-between hover:border-outline transition-colors">
+<div class="flex justify-between items-start mb-4">
+<span class="font-metadata text-metadata text-secondary">Total Articles</span>
+<span class="material-symbols-outlined text-secondary text-[20px]">article</span>
+</div>
+<div>
+<div class="font-display-lg text-[32px] font-bold mb-1">776</div>
+<div class="text-sm text-green-700 flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">arrow_upward</span> +18% <span class="text-secondary ml-1">since last week</span>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 flex flex-col justify-between hover:border-outline transition-colors">
+<div class="flex justify-between items-start mb-4">
+<span class="font-metadata text-metadata text-secondary">Active Sessions</span>
+<span class="material-symbols-outlined text-secondary text-[20px]">monitoring</span>
+</div>
+<div>
+<div class="font-display-lg text-[32px] font-bold mb-1">0</div>
+<div class="text-sm text-secondary flex items-center gap-1">
+                             Currently online
+                        </div>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 flex flex-col justify-between">
+<div class="flex justify-between items-start mb-4">
+<span class="font-metadata text-metadata text-secondary">System Status</span>
+<span class="material-symbols-outlined text-secondary text-[20px]">settings</span>
+</div>
+<div>
+<div class="font-display-lg text-[24px] font-bold mb-2 text-red-600">HEALTHY</div>
+<div class="text-sm text-secondary">
+    All microservices running
+                        </div>
+</div>
+</div>
+</section>
+<!-- Admin Tools Grid -->
+<section class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-gutter">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex flex-col hover:border-outline transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-secondary mb-3">group</span>
+<span class="font-label-sm font-bold text-on-surface mb-1">User Management</span>
+<span class="text-xs text-secondary">Manage roles and status</span>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex flex-col hover:border-outline transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-secondary mb-3">article</span>
+<span class="font-label-sm font-bold text-on-surface mb-1">Article Control</span>
+<span class="text-xs text-secondary">Feature and hide articles</span>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex flex-col hover:border-outline transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-secondary mb-3">monitoring</span>
+<span class="font-label-sm font-bold text-on-surface mb-1">System Health</span>
+<span class="text-xs text-secondary">Service status checks</span>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex flex-col hover:border-outline transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-secondary mb-3">list_alt</span>
+<span class="font-label-sm font-bold text-on-surface mb-1">Audit Logs</span>
+<span class="text-xs text-secondary">View admin actions</span>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex flex-col hover:border-outline transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-secondary mb-3">error</span>
+<span class="font-label-sm font-bold text-on-surface mb-1">Error Monitor</span>
+<span class="text-xs text-secondary">System error reports</span>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex flex-col hover:border-outline transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-secondary mb-3">settings</span>
+<span class="font-label-sm font-bold text-on-surface mb-1">Settings</span>
+<span class="text-xs text-secondary">Global configurations</span>
+</div>
+</section>
+<!-- Main Charts Area -->
+<section class="grid grid-cols-1 lg:grid-cols-2 gap-gutter">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6">
+<h3 class="font-display-lg text-[24px] font-bold text-on-surface mb-2">Platform Growth</h3>
+<p class="font-body-md text-secondary text-sm mb-6">User and article ingestion trends over the last 7 days.</p>
+<div class="h-64 relative flex items-end justify-between px-2 pb-6 border-l border-b border-outline-variant/30">
+<!-- Simulated Area Chart -->
+<div class="absolute inset-0 pt-6 pr-2">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 100 100">
+<path d="M0,80 Q10,70 20,85 T40,20 T60,60 T80,50 T100,70 L100,100 L0,100 Z" fill="url(#grad1)" opacity="0.6"></path>
+<path d="M0,60 Q10,50 20,70 T40,80 T60,65 T80,85 T100,60 L100,100 L0,100 Z" fill="url(#grad2)" opacity="0.5"></path>
+<defs>
+<lineargradient id="grad1" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" style="stop-color:#86efac;stop-opacity:1"></stop>
+<stop offset="100%" style="stop-color:#86efac;stop-opacity:0"></stop>
+</lineargradient>
+<lineargradient id="grad2" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" style="stop-color:#a5b4fc;stop-opacity:1"></stop>
+<stop offset="100%" style="stop-color:#a5b4fc;stop-opacity:0"></stop>
+</lineargradient>
+</defs>
+</svg>
+</div>
+<div class="absolute left-0 top-0 bottom-6 flex flex-col justify-between text-[10px] text-secondary -ml-8">
+<span>1000</span>
+<span>750</span>
+<span>500</span>
+<span>250</span>
+<span>0</span>
+</div>
+<div class="absolute left-0 right-0 bottom-0 flex justify-between text-[10px] text-secondary px-2">
+<span>Mon</span>
+<span>Tue</span>
+<span>Wed</span>
+<span>Thu</span>
+<span>Fri</span>
+<span>Sat</span>
+<span>Sun</span>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6">
+<h3 class="font-display-lg text-[24px] font-bold text-on-surface mb-2">Recent System Activity</h3>
+<p class="font-body-md text-secondary text-sm mb-6">Automated tasks and administrative actions.</p>
+<div class="flex gap-4">
+<div class="flex-shrink-0 mt-1">
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-[16px]">bolt</span>
+</div>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-start">
+<span class="font-metadata font-semibold text-on-surface">Database Verified</span>
+<span class="text-xs text-secondary">Just now</span>
+</div>
+<p class="text-sm text-secondary mt-1">System started and schemas verified.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Bottom Panel -->
+<section class="bg-surface-container-low border border-outline-variant rounded-xl p-6">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-secondary">psychology</span>
+<h3 class="font-display-lg text-[24px] font-bold text-on-surface">AI Pipeline Metrics</h3>
+</div>
+<p class="font-body-md text-secondary text-sm mb-6">Gemini processing queue and insights overview.</p>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4">
+<div class="text-xs text-secondary mb-1">Total Processed</div>
+<div class="font-display-lg text-[24px] font-bold">776</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4">
+<div class="text-xs text-secondary mb-1">Processing</div>
+<div class="font-display-lg text-[24px] font-bold text-orange-500">0</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4">
+<div class="text-xs text-secondary mb-1">Avg Confidence</div>
+<div class="font-display-lg text-[24px] font-bold">93%</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-4">
+<div class="text-xs text-secondary mb-1">Avg Processing Time</div>
+<div class="font-display-lg text-[24px] font-bold">1531.6s</div>
+</div>
+</div>
+</section>
+</main>
+</div>
+</body></html>

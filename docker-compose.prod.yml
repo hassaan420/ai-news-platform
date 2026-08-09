@@ -1,14 +1,21 @@
-# docker-compose.prod.yml — production overrides
+# docker-compose.prod.yml — Production Hardened Overrides
 # Usage: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
-# Does NOT auto-load; must be explicitly specified to avoid dev overrides.
-# See DOCKER.md §7, DEPLOYMENT.md §4
+# Applies: CIS Docker Benchmark, no-new-privileges, cap_drop, read_only, SSL JDBC
 
 services:
 
-  # ─── Infrastructure: remove host-exposed ports ─────────────
+  # ─── Infrastructure ──────────────────────────────────────────
 
   mysql:
-    ports: !override []
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - SETGID
+      - SETUID
     deploy:
       resources:
         limits:
@@ -18,7 +25,14 @@ services:
           memory: 256M
 
   redis:
-    ports: !override []
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - SETGID
+      - SETUID
     deploy:
       resources:
         limits:
@@ -27,12 +41,18 @@ services:
         reservations:
           memory: 128M
 
-  # ─── Application Services: prod profile + resource limits ──
+  # ─── Application Services ───────────────────────────────────
 
   gateway-service:
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      JAVA_OPTS: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XX:InitialRAMPercentage=50.0"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp/app:size=64M,mode=1777
     deploy:
       resources:
         limits:
@@ -44,7 +64,15 @@ services:
   auth-service:
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      JAVA_OPTS: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XX:InitialRAMPercentage=50.0"
+      # SECURITY FIX: Enable SSL on JDBC connections
+      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/auth_db?useSSL=true&requireSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&sslMode=PREFERRED"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp/app:size=64M,mode=1777
     deploy:
       resources:
         limits:
@@ -56,7 +84,14 @@ services:
   news-service:
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      JAVA_OPTS: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XX:InitialRAMPercentage=50.0"
+      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/news_db?useSSL=true&requireSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&sslMode=PREFERRED"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp/app:size=128M,mode=1777
     deploy:
       resources:
         limits:
@@ -68,7 +103,14 @@ services:
   category-service:
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      JAVA_OPTS: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XX:InitialRAMPercentage=50.0"
+      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/category_db?useSSL=true&requireSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&sslMode=PREFERRED"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp/app:size=64M,mode=1777
     deploy:
       resources:
         limits:
@@ -80,7 +122,13 @@ services:
   search-service:
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      JAVA_OPTS: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XX:InitialRAMPercentage=50.0"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp/app:size=64M,mode=1777
     deploy:
       resources:
         limits:
@@ -92,7 +140,14 @@ services:
   scheduler-service:
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      JAVA_OPTS: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XX:InitialRAMPercentage=50.0"
+      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/news_db?useSSL=true&requireSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&sslMode=PREFERRED"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp/app:size=64M,mode=1777
     deploy:
       resources:
         limits:
@@ -104,7 +159,14 @@ services:
   admin-service:
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      JAVA_OPTS: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XX:InitialRAMPercentage=50.0"
+      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/admin_db?useSSL=true&requireSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&sslMode=PREFERRED"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp/app:size=64M,mode=1777
     deploy:
       resources:
         limits:
@@ -113,9 +175,46 @@ services:
         reservations:
           memory: 256M
 
-  # ─── Nginx: only service with host-exposed port in prod ────
+  frontend:
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx:size=64M
+      - /var/run:size=8M
+      - /tmp:size=32M
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: "0.5"
+        reservations:
+          memory: 64M
+
+  # ─── Nginx ───────────────────────────────────────────────────
 
   nginx:
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./docker/nginx/certs:/etc/nginx/certs:ro
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx:size=64M
+      - /var/run:size=8M
+      - /tmp:size=32M
     deploy:
       resources:
         limits:

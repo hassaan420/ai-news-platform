@@ -22,10 +22,10 @@ services:
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: auth_db
       MYSQL_USER: ${MYSQL_USER:-newsplatform}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    ports:
-      - "3306:3306"
+    # Ports exposed only in docker-compose.override.yml (dev)
     volumes:
       - mysql-data:/var/lib/mysql
       - ./docker/mysql/init:/docker-entrypoint-initdb.d:ro
@@ -33,7 +33,7 @@ services:
     networks:
       - news-platform-net
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}" ]
       interval: 15s
       timeout: 5s
       retries: 5
@@ -48,20 +48,33 @@ services:
     image: redis:7-alpine
     container_name: news-platform-redis
     restart: unless-stopped
-    command: ["redis-server", "/usr/local/etc/redis/redis.conf", "--requirepass", "${REDIS_PASSWORD}"]
-    ports:
-      - "6379:6379"
+    command: [ "redis-server", "/usr/local/etc/redis/redis.conf", "--requirepass", "${REDIS_PASSWORD}" ]
+    # Ports exposed only in docker-compose.override.yml (dev)
     volumes:
       - redis-data:/data
       - ./docker/redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
     networks:
       - news-platform-net
     healthcheck:
-      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      test: [ "CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping" ]
       interval: 15s
       timeout: 5s
       retries: 5
       start_period: 10s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  zipkin:
+    image: openzipkin/zipkin:latest
+    container_name: news-platform-zipkin
+    restart: unless-stopped
+    ports:
+      - "9411:9411"
+    networks:
+      - news-platform-net
     logging:
       driver: json-file
       options:
@@ -95,11 +108,11 @@ services:
       admin-service:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health"]
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://gateway-service:8080/actuator/health" ]
       interval: 15s
       timeout: 5s
       retries: 5
-      start_period: 40s
+      start_period: 120s
     logging:
       driver: json-file
       options:
@@ -126,11 +139,11 @@ services:
       mysql:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8081/actuator/health"]
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://auth-service:8081/actuator/health" ]
       interval: 15s
       timeout: 5s
       retries: 5
-      start_period: 40s
+      start_period: 120s
     logging:
       driver: json-file
       options:
@@ -153,6 +166,7 @@ services:
       SPRING_DATA_REDIS_PASSWORD: ${REDIS_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
       INTERNAL_API_KEY: ${INTERNAL_API_KEY}
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
       JAVA_OPTS: ${JAVA_OPTS:-}
     networks:
       - news-platform-net
@@ -162,11 +176,11 @@ services:
       redis:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8082/actuator/health"]
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://news-service:8082/actuator/health" ]
       interval: 15s
       timeout: 5s
       retries: 5
-      start_period: 40s
+      start_period: 120s
     logging:
       driver: json-file
       options:
@@ -198,11 +212,11 @@ services:
       redis:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8083/actuator/health"]
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://category-service:8083/actuator/health" ]
       interval: 15s
       timeout: 5s
       retries: 5
-      start_period: 40s
+      start_period: 120s
     logging:
       driver: json-file
       options:
@@ -232,11 +246,11 @@ services:
       redis:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8084/actuator/health"]
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://search-service:8084/actuator/health" ]
       interval: 15s
       timeout: 5s
       retries: 5
-      start_period: 40s
+      start_period: 120s
     logging:
       driver: json-file
       options:
@@ -260,6 +274,7 @@ services:
       GNEWS_KEY: ${GNEWS_KEY}
       MEDIASTACK_KEY: ${MEDIASTACK_KEY}
       GUARDIAN_KEY: ${GUARDIAN_KEY}
+      JWT_SECRET: ${JWT_SECRET}
       JAVA_OPTS: ${JAVA_OPTS:-}
     networks:
       - news-platform-net
@@ -267,11 +282,11 @@ services:
       news-service:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8085/actuator/health"]
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://scheduler-service:8085/actuator/health" ]
       interval: 15s
       timeout: 5s
       retries: 5
-      start_period: 40s
+      start_period: 120s
     logging:
       driver: json-file
       options:
@@ -313,16 +328,33 @@ services:
       redis:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8086/actuator/health"]
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://admin-service:8086/actuator/health" ]
       interval: 15s
-      timeout: 5s
-      retries: 5
-      start_period: 40s
+      timeout: 10s
+      retries: 20
+      start_period: 300s
     logging:
       driver: json-file
       options:
         max-size: "10m"
         max-file: "5"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: news-platform-frontend
+    restart: unless-stopped
+    networks:
+      - news-platform-net
+    depends_on:
+      gateway-service:
+        condition: service_healthy
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   # ─── Reverse Proxy ─────────────────────────────────────────
 
@@ -339,8 +371,10 @@ services:
     depends_on:
       gateway-service:
         condition: service_healthy
+      frontend:
+        condition: service_started
     healthcheck:
-      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:80/health || exit 1"]
+      test: [ "CMD-SHELL", "wget --no-verbose --tries=1 --spider http://127.0.0.1:80/health || exit 1" ]
       interval: 15s
       timeout: 5s
       retries: 3

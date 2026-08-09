@@ -1,0 +1,90 @@
+# ===================================================================
+# application-common.yml
+# Centralized Production-Ready Configuration for AI News Platform
+# Imported via `spring.config.import=classpath:application-common.yml`
+# ===================================================================
+
+server:
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
+    min-response-size: 1024
+
+spring:
+  # Permanent admin credentials for internal endpoints
+  security:
+    user:
+      name: admin
+      password: ${SPRING_SECURITY_USER_PASSWORD:admin123}
+      roles: ADMIN
+
+  # Database Pool Optimization
+  datasource:
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      idle-timeout: 300000
+      connection-timeout: 20000
+      max-lifetime: 1200000
+      auto-commit: true
+  
+  # Hibernate Optimization
+  jpa:
+    properties:
+      hibernate:
+        default_batch_fetch_size: 100
+        jdbc:
+          batch_size: 50
+        order_inserts: true
+        order_updates: true
+        generate_statistics: false
+  
+  # Redis Cache Default
+  cache:
+    redis:
+      time-to-live: 3600000 # 1 hour default TTL
+      cache-null-values: false
+
+# Observability & Metrics
+management:
+  endpoint:
+    health:
+      show-details: always
+      validate-group-membership: false
+      probes:
+        enabled: true
+      group:
+        liveness:
+          include: livenessState
+        readiness:
+          include: readinessState,db,redis
+    prometheus:
+      enabled: true
+    info:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    distribution:
+      percentiles-histogram:
+        http:
+          server:
+            requests: true
+  zipkin:
+    tracing:
+      endpoint: "http://zipkin:9411/api/v2/spans"
+  tracing:
+    sampling:
+      probability: 1.0 # 100% sampling for development/testing
+
+# Logging defaults (Overridden in logback-spring.xml)
+logging:
+  level:
+    root: INFO
+    com.newsplatform: INFO
+    org.springframework.web: INFO
+    org.hibernate.SQL: ERROR

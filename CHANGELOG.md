@@ -5,6 +5,38 @@ Format follows [Keep a Changelog](https://keepachangelog.com/) and [Conventional
 
 ## [Unreleased]
 
+### Added — Phase 5: Database Layer
+- JPA entities for `Category`, `Source`, `Article`, `FetchLog`, and `Setting` across microservices.
+- Spring Data JPA repositories for all domains.
+- MapStruct `CategoryMapper`, `NewsMapper`, and `SettingMapper` interfaces for Entity-to-DTO conversion.
+- Flyway migrations: `V1__init_category_schema.sql`, `V1__init_news_schema.sql`, and `V1__init_admin_schema.sql` to initialize `category_db`, `news_db`, and `admin_db` with correct constraints and index optimizations per `DATABASE_SCHEMA.md`.
+- `application.yml` updates in `category-service`, `news-service`, `scheduler-service`, and `admin-service` configuring JDBC connections and Flyway migrations.
+- DTO records for domain models corresponding to internal and external REST API requirements.
+
+### Added — Phase 4: Authentication Service
+
+- `User.java` and `RefreshToken.java` JPA entities for `auth_db.users` and `auth_db.refresh_tokens` tables
+- `UserRepository` and `RefreshTokenRepository` Spring Data JPA interfaces
+- `Role.java` enum (`ROLE_USER`, `ROLE_ADMIN`) per `PROJECT_REQUIREMENTS.md` FR-22
+- `JwtTokenProvider.java` implementing 15-minute HS256 JWT access token issuance, claims validation (`sub`, `email`, `role`), and signature verification
+- `SecurityConfig.java` configuring BCrypt strength 12 password hashing, stateless session policy, and public endpoint permissions
+- `AuthService.java` and `AuthServiceImpl.java` implementing user registration, login, single-use refresh token rotation (7-day expiry), and logout
+- `AuthController.java` exposing `/api/auth/register`, `/api/auth/login`, `/api/auth/refresh`, `/api/auth/logout` endpoints with OpenAPI/Swagger annotations
+- `GlobalExceptionHandler.java` translating domain exceptions (`AppException`, `ConflictException`, `UnauthorizedException`) and Jakarta Bean Validation errors into standard `ErrorResponseDto` envelopes
+- `V1__init_auth_schema.sql` Flyway migration script for schema initialization
+- `JwtTokenProviderTest.java` and `AuthServiceTest.java` unit test suites
+- `ErrorResponseDto.java`, `FieldErrorDto.java`, and common exception hierarchy in `common-library`
+
+### Added — Phase 3: API Gateway
+
+- `RequestLoggingFilter.java`: reactive Spring Cloud Gateway `GlobalFilter` providing correlation ID (`X-Correlation-Id`) generation, downstream request header injection, response header attachment, and non-blocking execution duration logging
+- `RequestLoggingFilterTest.java`: unit tests verifying `X-Correlation-Id` generation and preservation behavior
+- `application-dev.yml` and `application-prod.yml` profile configurations for `gateway-service`
+
+### Changed — Phase 3: API Gateway
+
+- `gateway-service/src/main/resources/application.yml`: configured Spring Cloud Gateway routes for search-service, news-service, auth-service, category-service, admin-service, and scheduler-service; configured global CORS; enabled Spring Boot Actuator health probes and metrics
+
 ### Added — Phase 1.5: Infrastructure Hardening
 
 - `.dockerignore` excluding VCS, docs, IDE, build output, and secrets from Docker build context

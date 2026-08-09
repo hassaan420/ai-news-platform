@@ -1,0 +1,71 @@
+# Restrict traffic so only Gateway can hit the internal microservices
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: ai-news
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+---
+---
+# Allow Gateway and internal microservices to talk to each other
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-internal-services
+  namespace: ai-news
+spec:
+  podSelector:
+    matchExpressions:
+      - {key: app, operator: In, values: [auth-service, news-service, category-service, search-service, scheduler-service, admin-service]}
+  ingress:
+  - from:
+    - podSelector:
+        matchExpressions:
+          - {key: app, operator: In, values: [gateway-service, auth-service, news-service, category-service, search-service, scheduler-service, admin-service]}
+---
+# Allow Gateway to be accessed by Ingress Controller
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ingress-to-gateway
+  namespace: ai-news
+spec:
+  podSelector:
+    matchLabels:
+      app: gateway-service
+  ingress:
+  - from:
+    - namespaceSelector: {} # Ideally restrict to Ingress Controller's namespace
+---
+# Allow Frontend to be accessed by Ingress Controller
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ingress-to-frontend
+  namespace: ai-news
+spec:
+  podSelector:
+    matchLabels:
+      app: frontend
+  ingress:
+  - from:
+    - namespaceSelector: {}
+---
+# Allow Microservices to access MySQL and Redis
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-services-to-dbs
+  namespace: ai-news
+spec:
+  podSelector:
+    matchExpressions:
+      - {key: app, operator: In, values: [mysql, redis]}
+  ingress:
+  - from:
+    - podSelector:
+        matchExpressions:
+          - {key: app, operator: In, values: [auth-service, news-service, category-service, search-service, scheduler-service, admin-service, gateway-service]}

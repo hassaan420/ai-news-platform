@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Article Detail - Clarion AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&amp;family=Source+Serif+4:opsz,wght@8..60,400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#777584",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-surface": "#2f3130",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "surface": "#faf9f8",
+                        "surface-container": "#eeeeed",
+                        "tertiary-fixed": "#ffdbcc",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "on-primary": "#ffffff",
+                        "background": "#faf9f8",
+                        "surface-container-high": "#e9e8e7",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "on-error-container": "#93000a",
+                        "secondary": "#5f5e5e",
+                        "surface-variant": "#e3e2e1",
+                        "outline-variant": "#c8c4d5",
+                        "secondary-container": "#e2dfde",
+                        "on-secondary-fixed-variant": "#474746",
+                        "on-tertiary-fixed-variant": "#7a3003",
+                        "on-background": "#1a1c1c",
+                        "surface-container-highest": "#e3e2e1",
+                        "tertiary": "#511c00",
+                        "surface-dim": "#dadad9",
+                        "error-container": "#ffdad6",
+                        "on-surface-variant": "#464553",
+                        "tertiary-fixed-dim": "#ffb694",
+                        "on-primary-fixed": "#0f0069",
+                        "tertiary-container": "#752c00",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed": "#e2dfff",
+                        "surface-bright": "#faf9f8",
+                        "on-secondary-container": "#636262",
+                        "secondary-fixed": "#e5e2e1",
+                        "on-surface": "#1a1c1c",
+                        "primary": "#1f108e",
+                        "primary-container": "#3730a3",
+                        "on-primary-container": "#a9a7ff",
+                        "on-tertiary": "#ffffff",
+                        "inverse-primary": "#c3c0ff",
+                        "surface-container-low": "#f4f3f2",
+                        "error": "#ba1a1a",
+                        "on-error": "#ffffff",
+                        "on-tertiary-container": "#fe9562",
+                        "surface-tint": "#544fc0",
+                        "on-primary-fixed-variant": "#3b35a7",
+                        "inverse-on-surface": "#f1f0f0",
+                        "on-tertiary-fixed": "#351000"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin_desktop": "40px",
+                        "stack_sm": "8px",
+                        "max_content_width": "1200px",
+                        "stack_md": "16px",
+                        "margin_mobile": "16px",
+                        "stack_lg": "32px",
+                        "gutter": "24px",
+                        "sidebar_width": "280px"
+                    },
+                    "fontFamily": {
+                        "metadata": ["Hanken Grotesk"],
+                        "display-lg-mobile": ["\"Source Serif 4\""],
+                        "label-sm": ["Hanken Grotesk"],
+                        "display-lg": ["\"Source Serif 4\""],
+                        "body-lg": ["Hanken Grotesk"],
+                        "headline-md": ["\"Source Serif 4\""],
+                        "body-md": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "metadata": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                        "display-lg-mobile": ["32px", { "lineHeight": "40px", "fontWeight": "700" }],
+                        "label-sm": ["13px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md text-body-md antialiased flex">
+<!-- SideNavBar -->
+<nav class="hidden md:flex fixed left-0 top-0 h-screen w-sidebar_width bg-surface dark:bg-inverse-surface border-r border-outline-variant dark:border-outline flex-col py-stack_lg px-stack_md z-40">
+<div class="mb-8 px-5">
+<h1 class="font-display-lg text-display-lg text-primary dark:text-inverse-primary tracking-tight">Clarion</h1>
+<p class="font-metadata text-metadata text-secondary mt-1">AI-Curated News</p>
+</div>
+<ul class="flex flex-col gap-2 flex-grow">
+<li><a class="flex items-center gap-3 text-secondary dark:text-secondary-fixed-dim pl-5 py-3 hover:bg-surface-container dark:hover:bg-on-secondary-fixed-variant transition-colors rounded-lg" href="#"><span class="material-symbols-outlined text-[20px]">home</span><span class="font-label-sm text-label-sm">Home</span></a></li>
+<li><a class="flex items-center gap-3 text-secondary dark:text-secondary-fixed-dim pl-5 py-3 hover:bg-surface-container dark:hover:bg-on-secondary-fixed-variant transition-colors rounded-lg" href="#"><span class="material-symbols-outlined text-[20px]">trending_up</span><span class="font-label-sm text-label-sm">Trending</span></a></li>
+<li><a class="flex items-center gap-3 text-secondary dark:text-secondary-fixed-dim pl-5 py-3 hover:bg-surface-container dark:hover:bg-on-secondary-fixed-variant transition-colors rounded-lg" href="#"><span class="material-symbols-outlined text-[20px]">bookmark</span><span class="font-label-sm text-label-sm">Saved</span></a></li>
+<li><a class="flex items-center gap-3 text-secondary dark:text-secondary-fixed-dim pl-5 py-3 hover:bg-surface-container dark:hover:bg-on-secondary-fixed-variant transition-colors rounded-lg" href="#"><span class="material-symbols-outlined text-[20px] text-xs">fiber_manual_record</span><span class="font-label-sm text-label-sm">Politics</span></a></li>
+<li><a class="flex items-center gap-3 text-primary dark:text-inverse-primary font-bold border-l-4 border-primary dark:border-inverse-primary pl-4 py-3 hover:bg-surface-container dark:hover:bg-on-secondary-fixed-variant transition-colors rounded-r-lg bg-surface-container-low" href="#"><span class="material-symbols-outlined text-[20px] text-xs">fiber_manual_record</span><span class="font-label-sm text-label-sm">Technology</span></a></li>
+<li><a class="flex items-center gap-3 text-secondary dark:text-secondary-fixed-dim pl-5 py-3 hover:bg-surface-container dark:hover:bg-on-secondary-fixed-variant transition-colors rounded-lg" href="#"><span class="material-symbols-outlined text-[20px] text-xs">fiber_manual_record</span><span class="font-label-sm text-label-sm">Business</span></a></li>
+<li><a class="flex items-center gap-3 text-secondary dark:text-secondary-fixed-dim pl-5 py-3 hover:bg-surface-container dark:hover:bg-on-secondary-fixed-variant transition-colors rounded-lg" href="#"><span class="material-symbols-outlined text-[20px] text-xs">fiber_manual_record</span><span class="font-label-sm text-label-sm">Science</span></a></li>
+<li><a class="flex items-center gap-3 text-secondary dark:text-secondary-fixed-dim pl-5 py-3 hover:bg-surface-container dark:hover:bg-on-secondary-fixed-variant transition-colors rounded-lg" href="#"><span class="material-symbols-outlined text-[20px] text-xs">fiber_manual_record</span><span class="font-label-sm text-label-sm">Health</span></a></li>
+<li><a class="flex items-center gap-3 text-secondary dark:text-secondary-fixed-dim pl-5 py-3 hover:bg-surface-container dark:hover:bg-on-secondary-fixed-variant transition-colors rounded-lg" href="#"><span class="material-symbols-outlined text-[20px] text-xs">fiber_manual_record</span><span class="font-label-sm text-label-sm">Sports</span></a></li>
+</ul>
+<div class="mt-auto px-5">
+<button class="w-full bg-primary-container text-on-primary font-label-sm text-label-sm py-3 rounded-lg hover:bg-primary transition-colors">Upgrade to Pro</button>
+</div>
+</nav>
+<!-- Main Content Wrapper -->
+<div class="flex-1 flex flex-col min-h-screen md:ml-sidebar_width w-full">
+<!-- TopNavBar -->
+<header class="docked full-width top-0 sticky z-30 bg-surface dark:bg-inverse-surface border-b border-outline-variant dark:border-outline flex justify-between items-center h-16 px-margin_mobile md:px-margin_desktop">
+<div class="flex items-center gap-4">
+<button class="md:hidden text-secondary"><span class="material-symbols-outlined">menu</span></button>
+<div class="relative hidden md:flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-secondary text-[20px]">search</span>
+<input class="pl-10 pr-4 py-2 rounded-full bg-surface-container-low border border-outline-variant text-body-md focus:ring-2 focus:ring-primary focus:outline-none w-64 transition-all" placeholder="Search articles..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-secondary hover:text-primary transition-colors"><span class="material-symbols-outlined">dark_mode</span></button>
+<button class="font-label-sm text-label-sm text-secondary hover:text-primary transition-colors">Log In</button>
+<button class="font-label-sm text-label-sm bg-primary-container text-on-primary px-4 py-2 rounded-lg hover:bg-primary transition-colors">Sign Up</button>
+</div>
+</header>
+<!-- Article Container -->
+<main class="flex-1 w-full max-w-max_content_width mx-auto px-margin_mobile md:px-margin_desktop py-stack_lg">
+<!-- Breadcrumb & Actions -->
+<div class="flex justify-between items-center mb-stack_md">
+<div class="flex items-center gap-2 text-secondary font-metadata text-metadata">
+<a class="hover:text-primary transition-colors" href="#">Home</a>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">Technology</a>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+<span class="text-on-background">AI Advancements</span>
+</div>
+<div class="flex gap-2">
+<button class="w-10 h-10 flex items-center justify-center rounded-full border border-outline-variant text-secondary hover:bg-surface-container-low hover:text-primary transition-all">
+<span class="material-symbols-outlined">share</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full border border-outline-variant text-secondary hover:bg-surface-container-low hover:text-primary transition-all">
+<span class="material-symbols-outlined">bookmark_add</span>
+</button>
+</div>
+</div>
+<!-- Article Header -->
+<article class="mb-stack_lg">
+<h1 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-on-background mb-4 leading-tight">The Next Paradigm: Quantum Computing and Artificial Intelligence Convergence</h1>
+<div class="flex flex-wrap items-center gap-4 mb-stack_lg text-secondary font-metadata text-metadata border-b border-outline-variant pb-4">
+<div class="flex items-center gap-2">
+<img class="w-8 h-8 rounded-full object-cover" data-alt="A small, professional headshot of an author in a modern editorial style. Clean background, sharp focus, professional lighting. The subject is wearing business casual attire. A realistic, high-quality photograph suitable for a reputable news publication." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAo30B6B-_udkciUmsrb6uSP4BJbzLv6pQVRhSozjcVxWCN3sXJMcr9akdCJdUsdYaAN48Gqye6GP4_8HmTMXfbAoIxemvGro_8_IjdL3pfNJUGmZh9ragkGzoAhXeCtwkyCD0S6hMK4u09Cj_g606Y9H3avLStfXgzK17wDczGZYbRb65wJsKE1tsj3u9Rl1dS7cOOllK3vA9qCWJ9cPzVqf-3lpfAbBTn900Fg8LcYNmTvXmQjjQ"/>
+<span class="text-on-background font-semibold">Dr. Elena Rostova</span>
+</div>
+<span class="hidden md:inline text-outline">•</span>
+<span>Reuters Tech</span>
+<span class="hidden md:inline text-outline">•</span>
+<span>Oct 24, 2024</span>
+<span class="hidden md:inline text-outline">•</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">schedule</span> 8 min read</span>
+</div>
+<!-- Hero Image -->
+<figure class="mb-stack_lg w-full">
+<img class="w-full h-[300px] md:h-[500px] object-cover rounded-xl border border-outline-variant" data-alt="A striking digital illustration representing the convergence of quantum computing and artificial intelligence. The image features glowing, complex geometric networks and interconnected nodes suspended in a dark, infinite void. Brilliant streaks of cyan and deep indigo illuminate the scene, conveying a sense of vast technological power and futuristic innovation. High contrast, highly detailed, editorial tech style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvZb7280FR7ioMnmKaAiLbBVeoqpvgQHQn33s1jnjG7sVkW7II_GPXyMaWO9kGMi8ftAulm2wH6_W2MplRXEwSL3EWCVWutts0_vhI7YVx-ffVF8x-8STXAf9hr6HDtT3aEVhHe_kGcYkRghmYNDSXGjN3nlzdqs4QIOWTvyKjmsDrQ9i2C4M_2npMoaBg2qix6pqZft6rSCfvGM4SjXMGTJV4AQnG5_3ShNk0LhgXcPsQSti0tbk"/>
+<figcaption class="text-secondary font-metadata text-metadata mt-2 text-center md:text-left">A visualization of quantum neural networks operating at sub-zero temperatures. Image: Quantum Systems Inc.</figcaption>
+</figure>
+<!-- AI Summary Box -->
+<div class="bg-primary-fixed/30 border border-primary-fixed rounded-xl p-6 mb-stack_lg flex gap-4">
+<div class="flex-shrink-0 mt-1">
+<span class="material-symbols-outlined text-primary-container" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</div>
+<div>
+<h3 class="font-label-sm text-label-sm text-primary-container uppercase tracking-wider mb-2">AI Summary</h3>
+<p class="font-body-md text-body-md text-on-background">Recent breakthroughs at MIT have demonstrated a functional interface between quantum bits and traditional machine learning models. This hybrid approach reduces processing times for complex logistical simulations from days to mere seconds, though commercial viability remains years away. Industry experts view this as a critical stepping stone toward true artificial general intelligence.</p>
+</div>
+</div>
+<!-- Metadata/Tags Row -->
+<div class="flex flex-wrap items-center gap-3 mb-stack_lg">
+<div class="flex items-center gap-2 bg-surface-container-low border border-outline-variant rounded-full px-3 py-1">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+<span class="font-label-sm text-label-sm text-on-background">Bullish</span>
+<span class="font-metadata text-metadata text-secondary ml-1">85/100</span>
+</div>
+<span class="px-3 py-1 bg-surface-container rounded-full font-label-sm text-label-sm text-secondary">Quantum</span>
+<span class="px-3 py-1 bg-surface-container rounded-full font-label-sm text-label-sm text-secondary">Machine Learning</span>
+<span class="px-3 py-1 bg-surface-container rounded-full font-label-sm text-label-sm text-secondary">Tech Hardware</span>
+</div>
+<!-- Article Body -->
+<div class="prose prose-lg max-w-none font-headline-md text-headline-md text-on-background space-y-6 leading-relaxed">
+<p class="font-body-lg text-body-lg">The race for quantum supremacy has taken an unexpected detour into the realm of artificial intelligence. For years, these two fields operated in parallel lanes: AI scaling through immense classical computing power, and quantum computing struggling with coherence times in heavily refrigerated labs. Today, a new paper published in <em>Nature</em> outlines a methodology for bridging the gap.</p>
+<p class="font-body-lg text-body-lg">"We are no longer looking at quantum computers as standalone oracle machines," explained Dr. Aris Thorne, lead researcher on the project. "Instead, we are treating them as highly specialized co-processors for deep learning networks."</p>
+<h2 class="font-headline-md text-headline-md font-bold mt-8 mb-4">The Coherence Bottleneck</h2>
+<p class="font-body-lg text-body-lg">The primary challenge in quantum computing has always been maintaining the fragile state of qubits—the fundamental units of quantum information. Heat, electromagnetic radiation, or even a stray cosmic ray can cause 'decoherence,' resulting in calculation errors. Traditional error correction requires an impractically large number of physical qubits to maintain one logical qubit.</p>
+<blockquote class="border-l-4 border-primary pl-4 my-6 text-secondary italic font-body-lg text-body-lg">
+                        "By utilizing an AI-driven predictive model, we can anticipate decoherence events milliseconds before they occur and dynamically adjust the magnetic confinement fields."
+                    </blockquote>
+<p class="font-body-lg text-body-lg">This is where AI steps in. The research team trained a lightweight neural network to act as a real-time error mitigation system. By monitoring the environmental noise around the quantum processor, the AI can preemptively correct the quantum state, effectively extending coherence times by an order of magnitude without requiring massive physical qubit overhead.</p>
+</div>
+</article>
+<!-- Related Articles -->
+<section class="mt-stack_lg border-t border-outline-variant pt-stack_lg">
+<h3 class="font-headline-md text-headline-md mb-6">Related Articles</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Card 1 -->
+<a class="group block bg-surface border border-outline-variant rounded-xl overflow-hidden hover:shadow-[0_4px_20px_rgba(0,0,0,0.05)] transition-shadow" href="#">
+<img class="w-full h-48 object-cover border-b border-outline-variant" data-alt="A close up image of a complex computer chip with glowing gold and blue circuitry. The macro photography style highlights the intricate details of the silicon architecture. Soft, diffused lighting creates a premium, high-tech aesthetic suitable for an editorial technology article." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCAu3N_h5OwMpTY-uElcUKKIMtwOhXNozGu-V2NhfIzx8l1GFCDDSfVX0m70kJmO43_h4DujslrK0W-u-YOu1hFgBu_9xowK3z2uXZWRqRVrMN0zc0Q0X20EDu5mYKIOxxtnqi1F33ofDA4LfLIH1HJxEv9kkmDURsFIV1oAq-jzmKGvuxeofFap9-fOgwV6b3rJdvobxzHgLm6BG2TvedGXCrRIBpO50OAWe9C5lNdvgGAPGd3e1Y"/>
+<div class="p-4">
+<div class="flex items-center gap-2 mb-2">
+<span class="font-label-sm text-label-sm text-primary uppercase">Hardware</span>
+<span class="text-outline text-xs">•</span>
+<span class="font-metadata text-metadata text-secondary">2 days ago</span>
+</div>
+<h4 class="font-headline-md text-[20px] leading-tight mb-2 group-hover:text-primary transition-colors">Nvidia Announces Next-Gen Architecture</h4>
+<p class="font-body-md text-body-md text-secondary line-clamp-2">The new Blackwell architecture promises a 30x performance increase for LLM inference workloads.</p>
+</div>
+</a>
+<!-- Card 2 -->
+<a class="group block bg-surface border border-outline-variant rounded-xl overflow-hidden hover:shadow-[0_4px_20px_rgba(0,0,0,0.05)] transition-shadow" href="#">
+<img class="w-full h-48 object-cover border-b border-outline-variant" data-alt="An abstract visualization of data streams flowing through a server room. Long exposure effect creates streaks of vibrant blue and purple light across rows of dark server racks. A cinematic, cyber-security themed image conveying speed and massive data processing in a modern data center." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5ViN9oEwhv9lC0MutfJ5tbTofmb57nFX3OMANA2LpXXjVuZbqshtxH0WjCAF24Zom0_-Cq_DVzrDVl7wd3pEgCNBlWXMIO_pF95mxfBXSdFcJgVRmPOdOA2nKBaJNBWhZluXAacxiBPHZm78N9sL2oGMqoIyBIpx3Ntlp2FSaNa4BQvG9fKAIk3ZBytJp06qyi8RIZN4He01gQ9nB16GboPlRARdPK90NaGHWCwh4bbfEXg3weLc"/>
+<div class="p-4">
+<div class="flex items-center gap-2 mb-2">
+<span class="font-label-sm text-label-sm text-primary uppercase">Policy</span>
+<span class="text-outline text-xs">•</span>
+<span class="font-metadata text-metadata text-secondary">1 week ago</span>
+</div>
+<h4 class="font-headline-md text-[20px] leading-tight mb-2 group-hover:text-primary transition-colors">EU Finalizes Comprehensive AI Act</h4>
+<p class="font-body-md text-body-md text-secondary line-clamp-2">New regulations establish strict guidelines for foundational models and high-risk applications within the European Union.</p>
+</div>
+</a>
+<!-- Card 3 -->
+<a class="group block bg-surface border border-outline-variant rounded-xl overflow-hidden hover:shadow-[0_4px_20px_rgba(0,0,0,0.05)] transition-shadow" href="#">
+<img class="w-full h-48 object-cover border-b border-outline-variant" data-alt="A stylized image of an AI-generated humanoid face dissolving into binary code and pixelated noise. The color palette is monochromatic with stark contrasts, conveying a mood of ethical ambiguity and the blurring line between human and machine. Conceptual editorial art for artificial intelligence topics." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAByiNYHmeOOazkZCrVTMwaq582mjFnfcvDTokTAkYXzL3Xc5dfgqSM8TlOaTl4fs_0iGSFZYXRhj3ABgfy8mvEaajaF2T8qpOFpgDTznEU7FWAnXflXHgUG4bsORaSn7vtNeq4JH9eJrQ096Iw1R_VBtdSjiPHCghUM4-6x2zgi4GLPnFs86krs4ltITMwkzIfH2nwT6oeOeSa1DW9-fa3bosVJ6jioZmFlIXzbladDo8oaLyxvzY"/>
+<div class="p-4">
+<div class="flex items-center gap-2 mb-2">
+<span class="font-label-sm text-label-sm text-primary uppercase">Ethics</span>
+<span class="text-outline text-xs">•</span>
+<span class="font-metadata text-metadata text-secondary">Oct 20, 2024</span>
+</div>
+<h4 class="font-headline-md text-[20px] leading-tight mb-2 group-hover:text-primary transition-colors">The Copyright Conundrum in Generative AI</h4>
+<p class="font-body-md text-body-md text-secondary line-clamp-2">Ongoing lawsuits challenge the legality of training massive models on publicly available, copyrighted works.</p>
+</div>
+</a>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-stack_lg bg-surface-container-low dark:bg-inverse-surface border-t border-outline-variant dark:border-outline flex flex-col md:flex-row justify-between items-center px-margin_mobile md:px-margin_desktop mt-auto">
+<div class="mb-4 md:mb-0">
+<span class="font-display-lg text-[24px] text-primary dark:text-inverse-primary tracking-tight">Clarion</span>
+<p class="font-metadata text-metadata text-secondary dark:text-secondary-fixed-dim mt-1">© 2024 Clarion AI. All rights reserved. Powered by Clarion AI.</p>
+</div>
+<div class="flex gap-6">
+<a class="font-metadata text-metadata text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-inverse-primary transition-colors" href="#">Privacy Policy</a>
+<a class="font-metadata text-metadata text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-inverse-primary transition-colors" href="#">Terms of Service</a>
+<a class="font-metadata text-metadata text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-inverse-primary transition-colors" href="#">Contact</a>
+<a class="font-metadata text-metadata text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-inverse-primary transition-colors" href="#">About</a>
+</div>
+</footer>
+</div>
+</body></html>

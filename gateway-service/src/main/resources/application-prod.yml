@@ -1,0 +1,10 @@
+logging:
+  level:
+    root: INFO
+    com.newsplatform.gateway: INFO
+    org.springframework.cloud.gateway: WARN
+
+management:
+  endpoint:
+    health:
+      show-details: when_authorized

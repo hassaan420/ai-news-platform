@@ -1,0 +1,32 @@
+{
+  "title": "Infrastructure Metrics (DBs, Docker, K8s)",
+  "timezone": "browser",
+  "schemaVersion": 30,
+  "refresh": "10s",
+  "panels": [
+    {
+      "title": "MySQL Uptime / Status",
+      "type": "stat",
+      "targets": [{"expr": "mysql_up", "refId": "A"}],
+      "gridPos": {"h": 6, "w": 8, "x": 0, "y": 0}
+    },
+    {
+      "title": "Redis Uptime / Status",
+      "type": "stat",
+      "targets": [{"expr": "redis_up", "refId": "A"}],
+      "gridPos": {"h": 6, "w": 8, "x": 8, "y": 0}
+    },
+    {
+      "title": "Docker Containers Running",
+      "type": "stat",
+      "targets": [{"expr": "engine_daemon_container_states_containers{state=\"running\"}", "refId": "A"}],
+      "gridPos": {"h": 6, "w": 8, "x": 16, "y": 0}
+    },
+    {
+      "title": "Kubernetes Pods Status",
+      "type": "timeseries",
+      "targets": [{"expr": "kube_pod_status_phase", "refId": "A"}],
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 6}
+    }
+  ]
+}

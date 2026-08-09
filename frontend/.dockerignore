@@ -1,0 +1,11 @@
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!target/*.jar
+*~
+*.swp
+.git
+.idea
+.vscode
+.env
+node_modules/
+dist/

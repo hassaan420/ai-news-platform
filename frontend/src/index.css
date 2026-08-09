@@ -1,0 +1,251 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* === Core Shadcn Tokens === */
+    --background: 40 20% 98%;
+    --foreground: 228 15% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 228 15% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 228 15% 12%;
+
+    --primary: 243 47% 35%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 14% 94%;
+    --secondary-foreground: 228 15% 20%;
+
+    --muted: 220 14% 94%;
+    --muted-foreground: 220 9% 46%;
+
+    --accent: 220 14% 94%;
+    --accent-foreground: 228 15% 12%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 243 47% 35%;
+
+    --radius: 0.5rem;
+
+    /* === Material / Surface Tokens === */
+    --outline: 248 6% 48.8%;
+    --surface-container-lowest: 0 0% 100%;
+    --inverse-surface: 150 2.1% 18.8%;
+    --on-secondary-fixed: 0 1.8% 10.8%;
+    --surface: 40 20% 98%;
+    --surface-container: 40 10% 94%;
+    --tertiary-fixed: 18 100% 90%;
+    --primary-fixed-dim: 243 100% 87.6%;
+    --on-primary: 0 0% 100%;
+    --surface-container-high: 40 6% 91%;
+    --secondary-fixed-dim: 20 2.7% 77.8%;
+    --on-error-container: 356 100% 28.8%;
+    --surface-variant: 40 5% 89%;
+    --outline-variant: 220 13% 86%;
+    --secondary-container: 15 6.5% 87.8%;
+    --on-secondary-fixed-variant: 60 0.7% 27.6%;
+    --on-tertiary-fixed-variant: 23 95.2% 24.5%;
+    --on-background: 228 15% 12%;
+    --surface-container-highest: 40 4% 87%;
+    --tertiary: 21 100% 15.9%;
+    --surface-dim: 40 8% 88%;
+    --error-container: 6 100% 92%;
+    --on-surface-variant: 220 9% 36%;
+    --tertiary-fixed-dim: 19 100% 79%;
+    --on-primary-fixed: 249 100% 20.6%;
+    --tertiary-container: 23 100% 22.9%;
+    --on-secondary: 0 0% 100%;
+    --primary-fixed: 246 100% 93.7%;
+    --surface-bright: 40 20% 98%;
+    --on-secondary-container: 0 0.5% 38.6%;
+    --secondary-fixed: 15 7.1% 89%;
+    --on-surface: 228 15% 12%;
+    --primary-container: 243 47% 35%;
+    --on-primary-container: 243 100% 92%;
+    --on-tertiary: 0 0% 100%;
+    --inverse-primary: 243 100% 87.6%;
+    --surface-container-low: 40 12% 96%;
+    --error: 0 75.5% 41.6%;
+    --on-error: 0 0% 100%;
+    --on-tertiary-container: 20 98.7% 69%;
+    --surface-tint: 243 47.3% 53.1%;
+    --on-primary-fixed-variant: 243 51.8% 43.1%;
+    --inverse-on-surface: 0 3.4% 94.3%;
+    --on-tertiary-fixed: 18 100% 10.4%;
+
+    /* === Motion tokens === */
+    --transition-fast: 150ms cubic-bezier(0.23, 1, 0.32, 1);
+    --transition-base: 250ms cubic-bezier(0.23, 1, 0.32, 1);
+    --transition-slow: 450ms cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  .dark {
+    /* === Core Shadcn Tokens (Dark) === */
+    --background: 228 15% 7%;
+    --foreground: 220 14% 92%;
+
+    --card: 228 14% 10%;
+    --card-foreground: 220 14% 92%;
+
+    --popover: 228 14% 10%;
+    --popover-foreground: 220 14% 92%;
+
+    --primary: 243 80% 72%;
+    --primary-foreground: 243 47% 15%;
+
+    --secondary: 225 12% 15%;
+    --secondary-foreground: 220 14% 85%;
+
+    --muted: 225 12% 15%;
+    --muted-foreground: 220 9% 55%;
+
+    --accent: 225 12% 15%;
+    --accent-foreground: 220 14% 92%;
+
+    --destructive: 0 62% 40%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 225 10% 16%;
+    --input: 225 10% 16%;
+    --ring: 243 80% 72%;
+
+    /* === Material / Surface Tokens (Dark) === */
+    --outline: 220 8% 30%;
+    --surface-container-lowest: 228 15% 4%;
+    --inverse-surface: 0 0% 95%;
+    --on-secondary-fixed: 220 14% 92%;
+    --surface: 228 14% 10%;
+    --surface-container: 228 13% 13%;
+    --tertiary-fixed: 18 80% 45%;
+    --primary-fixed-dim: 243 80% 68%;
+    --on-primary: 0 0% 100%;
+    --surface-container-high: 228 12% 16%;
+    --secondary-fixed-dim: 220 8% 38%;
+    --on-error-container: 0 90% 85%;
+    --surface-variant: 228 11% 18%;
+    --outline-variant: 225 8% 20%;
+    --secondary-container: 228 12% 14%;
+    --on-secondary-fixed-variant: 220 10% 85%;
+    --on-tertiary-fixed-variant: 23 90% 75%;
+    --on-background: 220 14% 92%;
+    --surface-container-highest: 228 10% 20%;
+    --tertiary: 21 90% 52%;
+    --surface-dim: 228 15% 7%;
+    --error-container: 0 55% 25%;
+    --on-surface-variant: 220 9% 62%;
+    --tertiary-fixed-dim: 19 80% 58%;
+    --on-primary-fixed: 243 80% 88%;
+    --tertiary-container: 23 80% 28%;
+    --on-secondary: 0 0% 100%;
+    --primary-fixed: 243 70% 78%;
+    --surface-bright: 228 10% 22%;
+    --on-secondary-container: 220 10% 75%;
+    --secondary-fixed: 220 8% 28%;
+    --on-surface: 220 14% 92%;
+    --primary-container: 243 55% 28%;
+    --on-primary-container: 243 90% 85%;
+    --on-tertiary: 0 0% 100%;
+    --inverse-primary: 243 80% 68%;
+    --surface-container-low: 228 15% 7%;
+    --error: 0 70% 50%;
+    --on-error: 0 0% 100%;
+    --on-tertiary-container: 20 90% 82%;
+    --surface-tint: 243 60% 58%;
+    --on-primary-fixed-variant: 243 60% 76%;
+    --inverse-on-surface: 228 14% 10%;
+    --on-tertiary-fixed: 18 80% 85%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* === Utility Classes === */
+@layer utilities {
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Scroll-reveal animation */
+  .scroll-reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity var(--transition-slow), transform var(--transition-slow);
+  }
+  .scroll-reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* === Reduced Motion === */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .scroll-reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* === Premium shadow for dark mode (CSS-only, not via Tailwind) === */
+.dark .shadow-premium {
+  box-shadow: 0 2px 12px rgba(0,0,0,0.25), 0 4px 20px rgba(0,0,0,0.15);
+}
+.dark .shadow-premium-hover,
+.dark .hover\:shadow-premium-hover:hover {
+  box-shadow: 0 6px 24px rgba(0,0,0,0.35), 0 12px 40px rgba(0,0,0,0.2);
+}
+
+/* === Recharts dark mode tooltip fix === */
+.dark .recharts-default-tooltip {
+  background-color: hsl(228 14% 13%) !important;
+  border-color: hsl(225 10% 20%) !important;
+  color: hsl(220 14% 92%) !important;
+}
+.dark .recharts-tooltip-item {
+  color: hsl(220 14% 80%) !important;
+}
+.dark .recharts-cartesian-grid line {
+  stroke: hsl(225 8% 18%);
+}

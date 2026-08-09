@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Clarion - AI-Curated News</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&amp;family=Source+Serif+4:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "outline": "#777584",
+                    "surface-container-lowest": "#ffffff",
+                    "inverse-surface": "#2f3130",
+                    "on-secondary-fixed": "#1c1b1b",
+                    "surface": "#faf9f8",
+                    "surface-container": "#eeeeed",
+                    "tertiary-fixed": "#ffdbcc",
+                    "primary-fixed-dim": "#c3c0ff",
+                    "on-primary": "#ffffff",
+                    "background": "#faf9f8",
+                    "surface-container-high": "#e9e8e7",
+                    "secondary-fixed-dim": "#c8c6c5",
+                    "on-error-container": "#93000a",
+                    "secondary": "#5f5e5e",
+                    "surface-variant": "#e3e2e1",
+                    "outline-variant": "#c8c4d5",
+                    "secondary-container": "#e2dfde",
+                    "on-secondary-fixed-variant": "#474746",
+                    "on-tertiary-fixed-variant": "#7a3003",
+                    "on-background": "#1a1c1c",
+                    "surface-container-highest": "#e3e2e1",
+                    "tertiary": "#511c00",
+                    "surface-dim": "#dadad9",
+                    "error-container": "#ffdad6",
+                    "on-surface-variant": "#464553",
+                    "tertiary-fixed-dim": "#ffb694",
+                    "on-primary-fixed": "#0f0069",
+                    "tertiary-container": "#752c00",
+                    "on-secondary": "#ffffff",
+                    "primary-fixed": "#e2dfff",
+                    "surface-bright": "#faf9f8",
+                    "on-secondary-container": "#636262",
+                    "secondary-fixed": "#e5e2e1",
+                    "on-surface": "#1a1c1c",
+                    "primary": "#1f108e",
+                    "primary-container": "#3730a3",
+                    "on-primary-container": "#a9a7ff",
+                    "on-tertiary": "#ffffff",
+                    "inverse-primary": "#c3c0ff",
+                    "surface-container-low": "#f4f3f2",
+                    "error": "#ba1a1a",
+                    "on-error": "#ffffff",
+                    "on-tertiary-container": "#fe9562",
+                    "surface-tint": "#544fc0",
+                    "on-primary-fixed-variant": "#3b35a7",
+                    "inverse-on-surface": "#f1f0f0",
+                    "on-tertiary-fixed": "#351000"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin_desktop": "40px",
+                    "stack_sm": "8px",
+                    "max_content_width": "1200px",
+                    "stack_md": "16px",
+                    "margin_mobile": "16px",
+                    "stack_lg": "32px",
+                    "gutter": "24px",
+                    "sidebar_width": "280px"
+            },
+            "fontFamily": {
+                    "metadata": [
+                            "Hanken Grotesk"
+                    ],
+                    "display-lg-mobile": [
+                            "\"Source Serif 4\""
+                    ],
+                    "label-sm": [
+                            "Hanken Grotesk"
+                    ],
+                    "display-lg": [
+                            "\"Source Serif 4\""
+                    ],
+                    "body-lg": [
+                            "Hanken Grotesk"
+                    ],
+                    "headline-md": [
+                            "\"Source Serif 4\""
+                    ],
+                    "body-md": [
+                            "Hanken Grotesk"
+                    ]
+            },
+            "fontSize": {
+                    "metadata": [
+                            "14px",
+                            {
+                                    "lineHeight": "20px",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "display-lg-mobile": [
+                            "32px",
+                            {
+                                    "lineHeight": "40px",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "label-sm": [
+                            "13px",
+                            {
+                                    "lineHeight": "16px",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "display-lg": [
+                            "48px",
+                            {
+                                    "lineHeight": "56px",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-md": [
+                            "24px",
+                            {
+                                    "lineHeight": "32px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "400"
+                            }
+                    ]
+            }
+        },
+        },
+      }
+    </script>
+<style>
+        body { background-color: #faf9f8; }
+        .clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md text-body-md antialiased min-h-screen flex">
+<!-- SideNavBar (Desktop) -->
+<nav class="hidden md:flex bg-surface text-primary border-r border-outline-variant fixed left-0 top-0 h-screen w-sidebar_width flex-col py-stack_lg px-stack_md z-40">
+<div class="mb-8 px-5">
+<span class="font-display-lg text-display-lg text-primary tracking-tight">Clarion</span>
+<p class="font-metadata text-metadata text-secondary mt-1">AI-Curated News</p>
+</div>
+<div class="flex-1 overflow-y-auto">
+<ul class="space-y-2">
+<li>
+<a class="flex items-center text-primary font-bold border-l-4 border-primary pl-4 py-3 hover:bg-surface-container transition-colors rounded-r-lg opacity-90 transition-opacity" href="#">
+<span class="material-symbols-outlined mr-3">home</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</a>
+</li>
+<li>
+<a class="flex items-center text-secondary pl-5 py-3 hover:bg-surface-container transition-colors rounded-r-lg" href="#">
+<span class="material-symbols-outlined mr-3">trending_up</span>
+<span class="font-label-sm text-label-sm">Trending</span>
+</a>
+</li>
+<li>
+<a class="flex items-center text-secondary pl-5 py-3 hover:bg-surface-container transition-colors rounded-r-lg" href="#">
+<span class="material-symbols-outlined mr-3">bookmark</span>
+<span class="font-label-sm text-label-sm">Saved</span>
+</a>
+</li>
+<li class="mt-4 mb-2 px-5">
+<span class="font-metadata text-metadata text-secondary uppercase tracking-wider text-xs">Categories</span>
+</li>
+<li>
+<a class="flex items-center text-secondary pl-5 py-3 hover:bg-surface-container transition-colors rounded-r-lg" href="#">
+<span class="material-symbols-outlined mr-3 text-xs">fiber_manual_record</span>
+<span class="font-label-sm text-label-sm">Politics</span>
+</a>
+</li>
+<li>
+<a class="flex items-center text-secondary pl-5 py-3 hover:bg-surface-container transition-colors rounded-r-lg" href="#">
+<span class="material-symbols-outlined mr-3 text-xs">fiber_manual_record</span>
+<span class="font-label-sm text-label-sm">Technology</span>
+</a>
+</li>
+<li>
+<a class="flex items-center text-secondary pl-5 py-3 hover:bg-surface-container transition-colors rounded-r-lg" href="#">
+<span class="material-symbols-outlined mr-3 text-xs">fiber_manual_record</span>
+<span class="font-label-sm text-label-sm">Business</span>
+</a>
+</li>
+<li>
+<a class="flex items-center text-secondary pl-5 py-3 hover:bg-surface-container transition-colors rounded-r-lg" href="#">
+<span class="material-symbols-outlined mr-3 text-xs">fiber_manual_record</span>
+<span class="font-label-sm text-label-sm">Science</span>
+</a>
+</li>
+<li>
+<a class="flex items-center text-secondary pl-5 py-3 hover:bg-surface-container transition-colors rounded-r-lg" href="#">
+<span class="material-symbols-outlined mr-3 text-xs">fiber_manual_record</span>
+<span class="font-label-sm text-label-sm">Health</span>
+</a>
+</li>
+<li>
+<a class="flex items-center text-secondary pl-5 py-3 hover:bg-surface-container transition-colors rounded-r-lg" href="#">
+<span class="material-symbols-outlined mr-3 text-xs">fiber_manual_record</span>
+<span class="font-label-sm text-label-sm">Sports</span>
+</a>
+</li>
+</ul>
+</div>
+<div class="mt-auto px-5 pt-4">
+<button class="w-full bg-primary-container text-on-primary-container hover:bg-primary text-white font-label-sm text-label-sm py-3 rounded-lg transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined mr-2 text-sm">star</span>
+                Upgrade to Pro
+            </button>
+</div>
+</nav>
+<!-- Main Content Wrapper -->
+<div class="flex-1 flex flex-col md:ml-[280px] min-w-0">
+<!-- TopNavBar -->
+<header class="bg-surface text-primary border-b border-outline-variant docked full-width top-0 sticky z-30 flex justify-between items-center h-16 px-margin_desktop w-full">
+<div class="flex items-center flex-1">
+<!-- Mobile Menu Button -->
+<button class="md:hidden mr-4 text-secondary hover:text-primary transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="relative w-full max-w-md hidden md:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary text-sm">search</span>
+<input class="w-full bg-surface-container-low border border-outline-variant rounded-full py-2 pl-10 pr-4 font-body-md text-body-md focus:ring-2 focus:ring-primary focus:outline-none transition-shadow text-on-surface placeholder:text-secondary-fixed-dim" placeholder="Search curated news..." type="text"/>
+</div>
+</div>
+<div class="flex items-center space-x-4">
+<button class="text-secondary hover:text-primary transition-colors flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-container-low focus:ring-2 focus:ring-primary outline-none">
+<span class="material-symbols-outlined">dark_mode</span>
+</button>
+<button class="font-label-sm text-label-sm text-secondary hover:text-primary transition-colors focus:ring-2 focus:ring-primary outline-none px-3 py-2 rounded-md border border-transparent hover:border-outline-variant">
+                    Log In
+                </button>
+<button class="font-label-sm text-label-sm bg-primary-container text-white px-4 py-2 rounded-md hover:bg-primary transition-colors focus:ring-2 focus:ring-primary outline-none">
+                    Sign Up
+                </button>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-1 p-margin_mobile md:p-margin_desktop max-w-[1200px] mx-auto w-full">
+<!-- Featured Hero Article -->
+<section class="mb-12">
+<div class="group relative flex flex-col lg:flex-row bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden hover:shadow-[0_4px_20px_rgba(0,0,0,0.05)] transition-shadow duration-300">
+<div class="lg:w-7/12 relative min-h-[300px] lg:min-h-[400px]">
+<img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A striking high-resolution photograph of a futuristic clean energy facility featuring massive solar arrays reflecting a bright, clear blue sky. The scene is shot with a modern, editorial aesthetic, emphasizing geometric lines, crisp whites, deep blacks, and vibrant azure tones. The lighting is high-key and natural, creating a serene, optimistic, and technologically advanced mood suitable for a premium news platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsPT9uOr3OKQz1IU8a5BD_cGahSNdNQrOxE7FlLRqayZeBkjdXe8KP3LWpkyYU0EcUd4H0t2qzlrDtRK5GcAOyKOkHaQn-DLQe40ARkD3kkBFShD3cKiWlK0doeBYI65D8PUhxxJ9gqcI2xWzPpWC9h3qT9vhbx8f-plq6pof_0vxEbMDTrBr3cso_LjyXXlOIUX4F3o9qQJXgvpoJlPtFlv6pkNpW9HXVtuMSXrVpB96QQ9GhW5A"/>
+<div class="absolute top-4 left-4 flex gap-2">
+<span class="bg-primary-container text-white font-label-sm text-label-sm px-3 py-1 rounded-full uppercase tracking-wider text-xs">Technology</span>
+<span class="bg-tertiary-container text-on-tertiary-container font-label-sm text-label-sm px-3 py-1 rounded-full flex items-center text-xs">
+<span class="material-symbols-outlined text-[14px] mr-1">trending_up</span> Bullish
+                            </span>
+</div>
+</div>
+<div class="lg:w-5/12 p-8 flex flex-col justify-center">
+<div class="flex items-center justify-between mb-4">
+<span class="font-metadata text-metadata text-secondary flex items-center">
+<span class="w-2 h-2 rounded-full bg-primary mr-2"></span>
+                                Reuters • 2h ago
+                            </span>
+<button class="text-secondary hover:text-primary transition-colors">
+<span class="material-symbols-outlined">bookmark_add</span>
+</button>
+</div>
+<h1 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface mb-4 leading-tight group-hover:text-primary transition-colors">
+                            Global Consortium Announces Breakthrough in Solid-State Battery Efficiency
+                        </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-6 clamp-3">
+                            A collaborative effort spanning three continents has yielded a functional prototype that promises to triple the range of current electric vehicles while drastically reducing charging times. The new architecture leverages a novel ceramic electrolyte, circumventing longstanding thermal stability issues.
+                        </p>
+<div class="flex items-center mt-auto pt-4 border-t border-outline-variant/30">
+<div class="w-8 h-8 rounded-full bg-surface-variant mr-3 flex items-center justify-center text-secondary font-bold text-sm">JS</div>
+<span class="font-metadata text-metadata text-on-surface">By Julian Sterling, Senior Tech Correspondent</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Trending Strip -->
+<section class="mb-12">
+<div class="flex items-center justify-between mb-6">
+<h2 class="font-headline-md text-headline-md text-on-surface flex items-center">
+<span class="material-symbols-outlined mr-2 text-primary">local_fire_department</span>
+                        Trending Now
+                    </h2>
+<a class="font-label-sm text-label-sm text-primary hover:underline flex items-center" href="#">
+                        View All <span class="material-symbols-outlined text-sm ml-1">arrow_forward</span>
+</a>
+</div>
+<div class="flex overflow-x-auto pb-4 -mx-margin_mobile px-margin_mobile md:mx-0 md:px-0 space-x-4 snap-x hide-scrollbar">
+<!-- Trending Card 1 -->
+<a class="snap-start shrink-0 w-[260px] bg-surface-container-lowest border border-outline-variant rounded-lg p-4 hover:bg-surface-container-low transition-colors group" href="#">
+<div class="flex items-start justify-between mb-2">
+<span class="font-metadata text-metadata text-secondary text-xs">Politics • 1h ago</span>
+<span class="material-symbols-outlined text-secondary group-hover:text-primary text-[18px]">bookmark_add</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface text-[16px] leading-[22px] mb-2 clamp-2 group-hover:text-primary">Senate Reaches Bipartisan Agreement on Infrastructure Spending</h3>
+<div class="flex items-center text-xs font-label-sm text-label-sm text-secondary-container bg-secondary px-2 py-0.5 rounded w-fit">Neutral</div>
+</a>
+<!-- Trending Card 2 -->
+<a class="snap-start shrink-0 w-[260px] bg-surface-container-lowest border border-outline-variant rounded-lg p-4 hover:bg-surface-container-low transition-colors group" href="#">
+<div class="flex items-start justify-between mb-2">
+<span class="font-metadata text-metadata text-secondary text-xs">Business • 3h ago</span>
+<span class="material-symbols-outlined text-secondary group-hover:text-primary text-[18px]">bookmark_add</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface text-[16px] leading-[22px] mb-2 clamp-2 group-hover:text-primary">Tech Giants See Market Correction Amid Regulatory Scrutiny</h3>
+<div class="flex items-center text-xs font-label-sm text-label-sm text-error-container bg-error px-2 py-0.5 rounded w-fit">Skeptical</div>
+</a>
+<!-- Trending Card 3 -->
+<a class="snap-start shrink-0 w-[260px] bg-surface-container-lowest border border-outline-variant rounded-lg p-4 hover:bg-surface-container-low transition-colors group" href="#">
+<div class="flex items-start justify-between mb-2">
+<span class="font-metadata text-metadata text-secondary text-xs">Science • 5h ago</span>
+<span class="material-symbols-outlined text-secondary group-hover:text-primary text-[18px]">bookmark_add</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface text-[16px] leading-[22px] mb-2 clamp-2 group-hover:text-primary">James Webb Telescope Captures Unprecedented View of Exoplanet Atmosphere</h3>
+<div class="flex items-center text-xs font-label-sm text-label-sm text-tertiary-container bg-tertiary-fixed-dim px-2 py-0.5 rounded w-fit">Optimistic</div>
+</a>
+<!-- Trending Card 4 -->
+<a class="snap-start shrink-0 w-[260px] bg-surface-container-lowest border border-outline-variant rounded-lg p-4 hover:bg-surface-container-low transition-colors group" href="#">
+<div class="flex items-start justify-between mb-2">
+<span class="font-metadata text-metadata text-secondary text-xs">Health • 6h ago</span>
+<span class="material-symbols-outlined text-secondary group-hover:text-primary text-[18px]">bookmark_add</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface text-[16px] leading-[22px] mb-2 clamp-2 group-hover:text-primary">New Study Links Urban Green Spaces to Decreased Cognitive Decline</h3>
+<div class="flex items-center text-xs font-label-sm text-label-sm text-tertiary-container bg-tertiary-fixed-dim px-2 py-0.5 rounded w-fit">Optimistic</div>
+</a>
+</div>
+<style>
+                    .hide-scrollbar::-webkit-scrollbar { display: none; }
+                    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+                </style>
+</section>
+<!-- Latest Articles Grid -->
+<section>
+<div class="flex items-center justify-between mb-6">
+<h2 class="font-headline-md text-headline-md text-on-surface">Latest Analysis</h2>
+<div class="flex gap-2">
+<button class="bg-surface-container-low border border-outline-variant rounded-full px-4 py-1.5 text-sm font-label-sm text-on-surface hover:bg-surface-variant transition-colors">All</button>
+<button class="border border-outline-variant rounded-full px-4 py-1.5 text-sm font-label-sm text-secondary hover:bg-surface-container-low transition-colors hidden sm:block">Editor's Picks</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Card 1 -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden flex flex-col group hover:shadow-[0_4px_20px_rgba(0,0,0,0.05)] transition-shadow duration-300">
+<div class="relative h-48 overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="A minimalist photograph of modern glass and steel office buildings stretching upwards towards a pale sky, shot from a low angle. The composition is clean and geometric, featuring high contrast between the dark structural lines and the bright reflections on the glass panels, perfectly capturing a modern corporate aesthetic suitable for a financial news piece." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCofnddrJgZiVHmSy7h8gYz6MkXm-vnv88e5EVYILt8dyvItkZRRH7Mx6F4jPj5wnq6u2e7PvfszKYko1Z9pklG9uE8umPH1K3pEyqYUgwi-yM9_HS9PRzsoGYLPLtqdy6OcXB0l-LyAuehIfyZQ6UFpXm4xPkwAok2-p7Ss-dzRhWJvmo9x2ogvzDPZSdXIrEMTy7IC3FLrKLsCdSjNMoWGRUL5qvhjdaVr5oBqZZQih4MoQC03bU"/>
+<div class="absolute top-3 left-3">
+<span class="bg-surface-container-lowest/90 backdrop-blur text-primary font-label-sm text-label-sm px-2 py-1 rounded text-xs uppercase tracking-wide">Business</span>
+</div>
+</div>
+<div class="p-5 flex flex-col flex-1">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center text-xs font-label-sm text-label-sm text-error-container bg-error px-2 py-0.5 rounded">Skeptical</div>
+<button class="text-secondary hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">bookmark_add</span>
+</button>
+</div>
+<h3 class="font-headline-md text-headline-md text-[20px] leading-tight text-on-surface mb-2 group-hover:text-primary transition-colors">Central Banks Signal Prolonged Tightening Cycle</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4 clamp-2 text-sm">Despite earlier indications of easing, persistent inflation metrics have prompted a unified hawkish stance among major central banks.</p>
+<div class="mt-auto pt-4 border-t border-outline-variant/50 flex items-center justify-between text-secondary">
+<span class="font-metadata text-metadata text-xs">Bloomberg • 4h ago</span>
+</div>
+</div>
+</article>
+<!-- Card 2 -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden flex flex-col group hover:shadow-[0_4px_20px_rgba(0,0,0,0.05)] transition-shadow duration-300">
+<div class="relative h-48 overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="A high-contrast editorial photo of a robotic arm manipulating a delicate green plant in a sterile, bright laboratory environment. The image blends organic and synthetic elements, utilizing crisp whites, deep shadows, and vibrant green accents. The lighting is clinical and precise, conveying a sense of advanced scientific research and technological integration." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvN64ISJKAkF_BuHelNfJ7gb8nWYqHaXEsJiJLnDPI5Xc5DqLv4Xz0lW_DEg9_N1NgcGUj2RwN3SLVAUzLtK4xnmlws58BTWt8_g3tDUvC_uC5filGLoneCHWvxN6GlIpJgW8EqwET8u5V3anQwQspZN0DvmMqq-1qrKiN6S8RL8S0Lms6iBE-PXbWmbCQekMZjbudHcwQv4U_1Ulh6Z4ocQ_If6BWj_RjUS4ugUstrqQP5xEO1Ww"/>
+<div class="absolute top-3 left-3">
+<span class="bg-surface-container-lowest/90 backdrop-blur text-primary font-label-sm text-label-sm px-2 py-1 rounded text-xs uppercase tracking-wide">Science</span>
+</div>
+</div>
+<div class="p-5 flex flex-col flex-1">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center text-xs font-label-sm text-label-sm text-tertiary-container bg-tertiary-fixed-dim px-2 py-0.5 rounded">Optimistic</div>
+<button class="text-secondary hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">bookmark_add</span>
+</button>
+</div>
+<h3 class="font-headline-md text-headline-md text-[20px] leading-tight text-on-surface mb-2 group-hover:text-primary transition-colors">AI-Driven Protein Folding Accelerates Drug Discovery</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4 clamp-2 text-sm">New machine learning models are predicting complex molecular structures in minutes, a process that traditionally took decades of laboratory work.</p>
+<div class="mt-auto pt-4 border-t border-outline-variant/50 flex items-center justify-between text-secondary">
+<span class="font-metadata text-metadata text-xs">Nature • 6h ago</span>
+</div>
+</div>
+</article>
+<!-- Card 3 -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden flex flex-col group hover:shadow-[0_4px_20px_rgba(0,0,0,0.05)] transition-shadow duration-300">
+<div class="relative h-48 overflow-hidden">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="An atmospheric, wide-angle shot of a grand legislative chamber, empty and softly lit, conveying a sense of anticipation and gravity. The aesthetic is formal and editorial, emphasizing the rich wood textures and classical architecture against modern, subtle artificial lighting. The mood is serious and authoritative, fitting for political analysis." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_X2r4kBCxZV0Vd1Dm8YUNXi8StQLYp_j0jeuXN0FPiwaj8AMyjXT_74JOjLYN-hvujs5dYALPO3FtBkKsYj3k4CgLqZgqlDgHe54a8GAztcLOU_DCgUBVN0v_g_XBGKK21AdomFXfTl5zRtbcfjAPwH5xiVfwjzVY8MUeYEi9JalGNNcJO_m9wSgvkUnml6GgAmmsWhNde3rvsQLz52n37J2wt0W0Yz11cghR-Hf-e5L-OqprkWI"/>
+<div class="absolute top-3 left-3">
+<span class="bg-surface-container-lowest/90 backdrop-blur text-primary font-label-sm text-label-sm px-2 py-1 rounded text-xs uppercase tracking-wide">Politics</span>
+</div>
+</div>
+<div class="p-5 flex flex-col flex-1">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center text-xs font-label-sm text-label-sm text-secondary-container bg-secondary px-2 py-0.5 rounded">Neutral</div>
+<button class="text-secondary hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">bookmark_add</span>
+</button>
+</div>
+<h3 class="font-headline-md text-headline-md text-[20px] leading-tight text-on-surface mb-2 group-hover:text-primary transition-colors">Electoral Reform Bill Faces Crucial Committee Vote</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4 clamp-2 text-sm">Key provisions regarding early voting and district drawing are expected to face significant debate as the bill moves forward.</p>
+<div class="mt-auto pt-4 border-t border-outline-variant/50 flex items-center justify-between text-secondary">
+<span class="font-metadata text-metadata text-xs">AP News • 8h ago</span>
+</div>
+</div>
+</article>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-low text-secondary border-t border-outline-variant w-full py-stack_lg flex flex-col md:flex-row justify-between items-center px-margin_desktop mt-12">
+<div class="mb-4 md:mb-0">
+<span class="font-display-lg text-[24px] text-primary tracking-tight">Clarion</span>
+<p class="font-metadata text-metadata mt-1">© 2024 Clarion AI. All rights reserved. Powered by Clarion AI.</p>
+</div>
+<div class="flex flex-wrap gap-4">
+<a class="font-label-sm text-label-sm hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="font-label-sm text-label-sm hover:text-primary transition-colors" href="#">Contact</a>
+<a class="font-label-sm text-label-sm hover:text-primary transition-colors" href="#">About</a>
+</div>
+</footer>
+</div>
+</body></html>

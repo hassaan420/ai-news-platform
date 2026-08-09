@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Clarion - AI-Curated News</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&amp;family=Source+Serif+4:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#777584",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-surface": "#2f3130",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "surface": "#faf9f8",
+                        "surface-container": "#eeeeed",
+                        "tertiary-fixed": "#ffdbcc",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "on-primary": "#ffffff",
+                        "background": "#faf9f8",
+                        "surface-container-high": "#e9e8e7",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "on-error-container": "#93000a",
+                        "secondary": "#5f5e5e",
+                        "surface-variant": "#e3e2e1",
+                        "outline-variant": "#c8c4d5",
+                        "secondary-container": "#e2dfde",
+                        "on-secondary-fixed-variant": "#474746",
+                        "on-tertiary-fixed-variant": "#7a3003",
+                        "on-background": "#1a1c1c",
+                        "surface-container-highest": "#e3e2e1",
+                        "tertiary": "#511c00",
+                        "surface-dim": "#dadad9",
+                        "error-container": "#ffdad6",
+                        "on-surface-variant": "#464553",
+                        "tertiary-fixed-dim": "#ffb694",
+                        "on-primary-fixed": "#0f0069",
+                        "tertiary-container": "#752c00",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed": "#e2dfff",
+                        "surface-bright": "#faf9f8",
+                        "on-secondary-container": "#636262",
+                        "secondary-fixed": "#e5e2e1",
+                        "on-surface": "#1a1c1c",
+                        "primary": "#1f108e",
+                        "primary-container": "#3730a3",
+                        "on-primary-container": "#a9a7ff",
+                        "on-tertiary": "#ffffff",
+                        "inverse-primary": "#c3c0ff",
+                        "surface-container-low": "#f4f3f2",
+                        "error": "#ba1a1a",
+                        "on-error": "#ffffff",
+                        "on-tertiary-container": "#fe9562",
+                        "surface-tint": "#544fc0",
+                        "on-primary-fixed-variant": "#3b35a7",
+                        "inverse-on-surface": "#f1f0f0",
+                        "on-tertiary-fixed": "#351000"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin_desktop": "40px",
+                        "stack_sm": "8px",
+                        "max_content_width": "1200px",
+                        "stack_md": "16px",
+                        "margin_mobile": "16px",
+                        "stack_lg": "32px",
+                        "gutter": "24px",
+                        "sidebar_width": "280px"
+                    },
+                    "fontFamily": {
+                        "metadata": ["Hanken Grotesk"],
+                        "display-lg-mobile": ["\"Source Serif 4\""],
+                        "label-sm": ["Hanken Grotesk"],
+                        "display-lg": ["\"Source Serif 4\""],
+                        "body-lg": ["Hanken Grotesk"],
+                        "headline-md": ["\"Source Serif 4\""],
+                        "body-md": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "metadata": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                        "display-lg-mobile": ["32px", { "lineHeight": "40px", "fontWeight": "700" }],
+                        "label-sm": ["13px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md text-body-md antialiased min-h-screen flex flex-col md:flex-row">
+<!-- Left Side: Editorial Abstract (Hidden on Mobile) -->
+<div class="hidden md:flex w-1/2 relative bg-surface-container-low items-center justify-center overflow-hidden border-r border-outline-variant">
+<div class="absolute inset-0 bg-cover bg-center opacity-70 mix-blend-multiply" data-alt="A sophisticated, minimalist abstract editorial composition representing modern news curation. Soft, blurred edges with an ink-on-paper aesthetic, utilizing deep indigo (#3730A3), pure white (#FFFFFF), and soft grays. The mood is calm, objective, and discerning, reflecting high-end journalistic integrity and AI precision. Subtle noise texture adds a tactile quality." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBgjzmWm3ZHGjA3MHzvSCVl3URPhEV9gsvMGFWNVVQp-ipX95jAxUhBAXslofmL5M06ilglNxOC2cXWXjwfU2qSsZcjLVW-Phb0YLhJzjc40VqSi_PjZCCSVGIAi0ThuDk96yEuIBXHd6q2yLbngW-XftV3xEo2pHFwto4xwim7GjND_9g24bXcoqQpNYqpa-X4y4eGkIbybouJxv4F0x1feM2A-TZh2vkAalttPVKpDufMVGJfMQw')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-low/80 to-transparent"></div>
+<div class="relative z-10 px-margin_desktop max-w-lg text-center">
+<h2 class="font-display-lg text-display-lg text-primary tracking-tight mb-stack_sm">Clarion</h2>
+<p class="font-body-lg text-body-lg text-secondary">Intelligent, objective, and calm. AI-curated news for the discerning reader.</p>
+</div>
+</div>
+<!-- Right Side: Auth Container -->
+<div class="w-full md:w-1/2 flex items-center justify-center p-margin_mobile md:p-margin_desktop min-h-screen">
+<div class="w-full max-w-md bg-surface-container-lowest rounded-xl border border-outline-variant p-stack_lg" style="box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);">
+<!-- Mobile Brand (Hidden on Desktop since it's in the left panel) -->
+<div class="md:hidden text-center mb-stack_lg">
+<h1 class="font-display-lg-mobile text-display-lg-mobile text-primary tracking-tight">Clarion</h1>
+</div>
+<!-- Tab Navigation -->
+<div class="flex border-b border-outline-variant mb-stack_lg relative">
+<!-- Active Tab -->
+<button class="flex-1 pb-stack_sm text-center font-label-sm text-label-sm text-primary border-b-2 border-primary transition-colors focus:outline-none" id="tab-login" onclick="switchTab('login')">
+                    Log In
+                </button>
+<!-- Inactive Tab -->
+<button class="flex-1 pb-stack_sm text-center font-label-sm text-label-sm text-secondary hover:text-primary border-b-2 border-transparent transition-colors focus:outline-none" id="tab-signup" onclick="switchTab('signup')">
+                    Sign Up
+                </button>
+</div>
+<!-- Log In Form -->
+<form class="space-y-stack_md block" id="form-login">
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface mb-stack_sm" for="login-email">Email Address</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-secondary text-[20px]" data-icon="mail">mail</span>
+<input class="w-full pl-10 pr-3 py-2 border border-outline-variant rounded-DEFAULT bg-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none font-body-md text-body-md" id="login-email" placeholder="name@example.com" type="email"/>
+</div>
+</div>
+<div>
+<div class="flex justify-between items-center mb-stack_sm">
+<label class="block font-label-sm text-label-sm text-on-surface" for="login-password">Password</label>
+<a class="font-label-sm text-label-sm text-primary hover:underline" href="#">Forgot?</a>
+</div>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-secondary text-[20px]" data-icon="lock">lock</span>
+<input class="w-full pl-10 pr-3 py-2 border border-outline-variant rounded-DEFAULT bg-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none font-body-md text-body-md" id="login-password" placeholder="••••••••" type="password"/>
+</div>
+</div>
+<button class="w-full bg-primary-container text-on-primary-container py-3 rounded-DEFAULT font-label-sm text-label-sm hover:opacity-90 transition-opacity mt-stack_md flex items-center justify-center gap-2" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="login">login</span>
+                    Log In
+                </button>
+</form>
+<!-- Sign Up Form -->
+<form class="space-y-stack_md hidden" id="form-signup">
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface mb-stack_sm" for="signup-name">Full Name</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-secondary text-[20px]" data-icon="person">person</span>
+<input class="w-full pl-10 pr-3 py-2 border border-outline-variant rounded-DEFAULT bg-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none font-body-md text-body-md" id="signup-name" placeholder="Jane Doe" type="text"/>
+</div>
+</div>
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface mb-stack_sm" for="signup-email">Email Address</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-secondary text-[20px]" data-icon="mail">mail</span>
+<input class="w-full pl-10 pr-3 py-2 border border-outline-variant rounded-DEFAULT bg-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none font-body-md text-body-md" id="signup-email" placeholder="name@example.com" type="email"/>
+</div>
+</div>
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface mb-stack_sm" for="signup-password">Password</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-secondary text-[20px]" data-icon="lock">lock</span>
+<input class="w-full pl-10 pr-3 py-2 border border-outline-variant rounded-DEFAULT bg-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none font-body-md text-body-md" id="signup-password" placeholder="••••••••" type="password"/>
+</div>
+</div>
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface mb-stack_sm" for="signup-confirm-password">Confirm Password</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-secondary text-[20px]" data-icon="lock_reset">lock_reset</span>
+<input class="w-full pl-10 pr-3 py-2 border border-outline-variant rounded-DEFAULT bg-surface focus:ring-2 focus:ring-primary focus:border-transparent outline-none font-body-md text-body-md" id="signup-confirm-password" placeholder="••••••••" type="password"/>
+</div>
+</div>
+<button class="w-full bg-primary-container text-on-primary-container py-3 rounded-DEFAULT font-label-sm text-label-sm hover:opacity-90 transition-opacity mt-stack_md flex items-center justify-center gap-2" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="person_add">person_add</span>
+                    Create Account
+                </button>
+</form>
+<div class="mt-stack_lg text-center">
+<p class="font-metadata text-metadata text-secondary">By continuing, you agree to our <a class="text-primary hover:underline" href="#">Terms of Service</a> and <a class="text-primary hover:underline" href="#">Privacy Policy</a>.</p>
+</div>
+</div>
+</div>
+<script>
+        function switchTab(tab) {
+            const loginForm = document.getElementById('form-login');
+            const signupForm = document.getElementById('form-signup');
+            const loginTab = document.getElementById('tab-login');
+            const signupTab = document.getElementById('tab-signup');
+
+            const activeTabClass = ['text-primary', 'border-primary'];
+            const inactiveTabClass = ['text-secondary', 'hover:text-primary', 'border-transparent'];
+
+            if (tab === 'login') {
+                loginForm.classList.remove('hidden');
+                loginForm.classList.add('block');
+                signupForm.classList.remove('block');
+                signupForm.classList.add('hidden');
+                
+                loginTab.classList.remove(...inactiveTabClass);
+                loginTab.classList.add(...activeTabClass);
+                
+                signupTab.classList.remove(...activeTabClass);
+                signupTab.classList.add(...inactiveTabClass);
+            } else {
+                signupForm.classList.remove('hidden');
+                signupForm.classList.add('block');
+                loginForm.classList.remove('block');
+                loginForm.classList.add('hidden');
+                
+                signupTab.classList.remove(...inactiveTabClass);
+                signupTab.classList.add(...activeTabClass);
+                
+                loginTab.classList.remove(...activeTabClass);
+                loginTab.classList.add(...inactiveTabClass);
+            }
+        }
+    </script>
+</body></html>

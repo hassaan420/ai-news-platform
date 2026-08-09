@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Clarion - Trending</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "secondary-container": "#e2dfde",
+                      "surface-container-lowest": "#ffffff",
+                      "inverse-primary": "#c3c0ff",
+                      "surface-container-highest": "#e3e2e1",
+                      "surface-dim": "#dadad9",
+                      "primary": "#1f108e",
+                      "tertiary": "#511c00",
+                      "tertiary-container": "#752c00",
+                      "surface-container": "#eeeeed",
+                      "primary-fixed-dim": "#c3c0ff",
+                      "on-primary-fixed": "#0f0069",
+                      "tertiary-fixed": "#ffdbcc",
+                      "surface": "#faf9f8",
+                      "surface-container-high": "#e9e8e7",
+                      "on-secondary": "#ffffff",
+                      "inverse-on-surface": "#f1f0f0",
+                      "secondary": "#5f5e5e",
+                      "on-background": "#1a1c1c",
+                      "outline-variant": "#c8c4d5",
+                      "surface-variant": "#e3e2e1",
+                      "primary-fixed": "#e2dfff",
+                      "inverse-surface": "#2f3130",
+                      "secondary-fixed-dim": "#c8c6c5",
+                      "surface-bright": "#faf9f8",
+                      "surface-container-low": "#f4f3f2",
+                      "on-surface": "#1a1c1c",
+                      "surface-tint": "#544fc0",
+                      "on-tertiary-fixed": "#351000",
+                      "on-secondary-fixed-variant": "#474746",
+                      "tertiary-fixed-dim": "#ffb694",
+                      "on-primary-container": "#a9a7ff",
+                      "on-secondary-container": "#636262",
+                      "primary-container": "#3730a3",
+                      "on-primary": "#ffffff",
+                      "error": "#ba1a1a",
+                      "on-surface-variant": "#464553",
+                      "secondary-fixed": "#e5e2e1",
+                      "error-container": "#ffdad6",
+                      "on-error": "#ffffff",
+                      "on-tertiary": "#ffffff",
+                      "on-tertiary-container": "#fe9562",
+                      "on-error-container": "#93000a",
+                      "outline": "#777584",
+                      "on-secondary-fixed": "#1c1b1b",
+                      "on-tertiary-fixed-variant": "#7a3003",
+                      "background": "#faf9f8",
+                      "on-primary-fixed-variant": "#3b35a7"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "stack_md": "16px",
+                      "stack_sm": "8px",
+                      "margin_mobile": "16px",
+                      "margin_desktop": "40px",
+                      "stack_lg": "32px",
+                      "gutter": "24px",
+                      "max_content_width": "1200px",
+                      "sidebar_width": "280px"
+              },
+              "fontFamily": {
+                      "display-lg-mobile": [
+                              "\"Source Serif 4\""
+                      ],
+                      "headline-md": [
+                              "\"Source Serif 4\""
+                      ],
+                      "label-sm": [
+                              "Hanken Grotesk"
+                      ],
+                      "body-lg": [
+                              "Hanken Grotesk"
+                      ],
+                      "display-lg": [
+                              "\"Source Serif 4\""
+                      ],
+                      "metadata": [
+                              "Hanken Grotesk"
+                      ],
+                      "body-md": [
+                              "Hanken Grotesk"
+                      ]
+              },
+              "fontSize": {
+                      "display-lg-mobile": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-sm": [
+                              "13px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "metadata": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+</head>
+<body class="bg-surface text-on-surface antialiased min-h-screen flex flex-col font-body-md text-body-md">
+<!-- TopNavBar -->
+<header class="bg-surface dark:bg-inverse-surface border-b border-outline-variant dark:border-outline docked full-width top-0 sticky z-50 flex justify-between items-center h-16 px-margin_desktop md:ml-[280px]">
+<div class="flex items-center gap-4">
+<!-- Mobile Menu Toggle (Visible only on md:hidden) -->
+<button class="md:hidden text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-inverse-primary transition-colors focus:ring-2 focus:ring-primary outline-none rounded-full p-2">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<div class="md:hidden font-display-lg-mobile text-display-lg-mobile text-primary dark:text-inverse-primary tracking-tight">Clarion</div>
+<!-- Search Bar (on left per JSON) -->
+<div class="hidden md:flex items-center bg-surface-container-low border border-outline-variant rounded-full px-4 py-2 focus-within:ring-2 focus-within:ring-primary transition-all">
+<span class="material-symbols-outlined text-secondary mr-2 text-[20px]" data-icon="search">search</span>
+<input class="bg-transparent border-none outline-none font-body-md text-body-md text-on-surface placeholder:text-secondary w-64 focus:ring-0" placeholder="Search news..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-inverse-primary transition-colors focus:ring-2 focus:ring-primary outline-none rounded-full p-2 flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="dark_mode">dark_mode</span>
+</button>
+<div class="hidden md:flex items-center gap-4 font-label-sm text-label-sm">
+<button class="text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-inverse-primary transition-colors focus:ring-2 focus:ring-primary outline-none px-4 py-2 rounded-full">Log In</button>
+<button class="bg-primary-container text-on-primary rounded-full px-6 py-2 hover:opacity-90 transition-opacity focus:ring-2 focus:ring-primary outline-none">Sign Up</button>
+</div>
+</div>
+</header>
+<div class="flex flex-1">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col h-screen w-[280px] fixed left-0 top-0 py-stack_lg px-stack_md bg-surface dark:bg-inverse-surface border-r border-outline-variant dark:border-outline z-40 overflow-y-auto">
+<div class="mb-12 px-4 flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-display-lg text-[24px] font-bold leading-none tracking-tight">C</div>
+<div>
+<div class="font-display-lg text-[24px] leading-8 text-primary dark:text-inverse-primary tracking-tight">Clarion</div>
+<div class="font-metadata text-metadata text-secondary">AI-Curated News</div>
+</div>
+</div>
+<ul class="flex flex-col gap-2 font-label-sm text-label-sm">
+<!-- Inactive Nav Item -->
+<li>
+<a class="flex items-center gap-4 text-secondary dark:text-secondary-fixed-dim pl-5 py-3 hover:bg-surface-container dark:hover:bg-on-secondary-fixed-variant transition-colors rounded-r-full" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="home">home</span>
+                        Home
+                    </a>
+</li>
+<!-- Active Nav Item (Trending) -->
+<li>
+<a class="flex items-center gap-4 text-primary dark:text-inverse-primary font-bold border-l-4 border-primary dark:border-inverse-primary pl-4 py-3 bg-surface-container-low opacity-90 transition-opacity rounded-r-full" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="trending_up">trending_up</span>
+                        Trending
+                    </a>
+</li>
+<!-- Inactive Nav Items -->
+<li>
+<a class="flex items-center gap-4 text-secondary dark:text-secondary-fixed-dim pl-5 py-3 hover:bg-surface-container dark:hover:bg-on-secondary-fixed-variant transition-colors rounded-r-full" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="bookmark">bookmark</span>
+                        Saved
+                    </a>
+</li>
+<li class="mt-6 mb-2 px-5 text-secondary font-metadata text-metadata uppercase tracking-wider text-[11px]">Categories</li>
+<li>
+<a class="flex items-center gap-4 text-secondary dark:text-secondary-fixed-dim pl-5 py-3 hover:bg-surface-container dark:hover:bg-on-secondary-fixed-variant transition-colors rounded-r-full" href="#">
+<span class="material-symbols-outlined text-[12px] text-tertiary-container" data-icon="fiber_manual_record" data-weight="fill" style="font-variation-settings: 'FILL' 1;">fiber_manual_record</span>
+                        Politics
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-4 text-secondary dark:text-secondary-fixed-dim pl-5 py-3 hover:bg-surface-container dark:hover:bg-on-secondary-fixed-variant transition-colors rounded-r-full" href="#">
+<span class="material-symbols-outlined text-[12px] text-primary" data-icon="fiber_manual_record" data-weight="fill" style="font-variation-settings: 'FILL' 1;">fiber_manual_record</span>
+                        Technology
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-4 text-secondary dark:text-secondary-fixed-dim pl-5 py-3 hover:bg-surface-container dark:hover:bg-on-secondary-fixed-variant transition-colors rounded-r-full" href="#">
+<span class="material-symbols-outlined text-[12px] text-[#059669]" data-icon="fiber_manual_record" data-weight="fill" style="font-variation-settings: 'FILL' 1;">fiber_manual_record</span>
+                        Business
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-4 text-secondary dark:text-secondary-fixed-dim pl-5 py-3 hover:bg-surface-container dark:hover:bg-on-secondary-fixed-variant transition-colors rounded-r-full" href="#">
+<span class="material-symbols-outlined text-[12px] text-[#9333ea]" data-icon="fiber_manual_record" data-weight="fill" style="font-variation-settings: 'FILL' 1;">fiber_manual_record</span>
+                        Science
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-4 text-secondary dark:text-secondary-fixed-dim pl-5 py-3 hover:bg-surface-container dark:hover:bg-on-secondary-fixed-variant transition-colors rounded-r-full" href="#">
+<span class="material-symbols-outlined text-[12px] text-[#e11d48]" data-icon="fiber_manual_record" data-weight="fill" style="font-variation-settings: 'FILL' 1;">fiber_manual_record</span>
+                        Health
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-4 text-secondary dark:text-secondary-fixed-dim pl-5 py-3 hover:bg-surface-container dark:hover:bg-on-secondary-fixed-variant transition-colors rounded-r-full" href="#">
+<span class="material-symbols-outlined text-[12px] text-[#ea580c]" data-icon="fiber_manual_record" data-weight="fill" style="font-variation-settings: 'FILL' 1;">fiber_manual_record</span>
+                        Sports
+                    </a>
+</li>
+</ul>
+<div class="mt-auto pt-8 px-4">
+<button class="w-full bg-primary-container text-on-primary rounded-xl py-3 font-label-sm text-label-sm hover:opacity-90 transition-opacity focus:ring-2 focus:ring-primary outline-none shadow-sm flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]" data-icon="bolt" data-weight="fill" style="font-variation-settings: 'FILL' 1;">bolt</span>
+                    Upgrade to Pro
+                </button>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-[280px] p-margin_mobile md:p-margin_desktop max-w-max_content_width mx-auto w-full">
+<div class="mb-stack_lg flex items-end justify-between border-b border-outline-variant pb-4">
+<div>
+<h1 class="font-display-lg text-display-lg md:text-[56px] md:leading-[64px] text-primary tracking-tight mb-2">Trending Now</h1>
+<p class="font-body-lg text-body-lg text-secondary max-w-2xl">The most significant stories currently gaining traction across our curated network, analyzed in real-time.</p>
+</div>
+<div class="hidden md:flex items-center gap-2 text-secondary font-metadata text-metadata bg-surface-container px-3 py-1.5 rounded-full border border-outline-variant">
+<span class="w-2 h-2 rounded-full bg-[#ef4444] animate-pulse"></span>
+                    Live Updates Active
+                </div>
+</div>
+<!-- Trending List -->
+<div class="flex flex-col gap-4">
+<!-- Rank 1 -->
+<article class="group bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex items-center gap-6 hover:bg-surface-container-low transition-colors duration-200 cursor-pointer relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-[#ef4444]"></div>
+<div class="flex-shrink-0 w-12 text-center">
+<span class="font-display-lg text-[40px] leading-none text-primary opacity-20 font-bold block">1</span>
+</div>
+<div class="flex-shrink-0 relative">
+<img class="w-24 h-24 object-cover rounded-lg border border-outline-variant" data-alt="A high-contrast, editorial style photograph of a modern, glowing server rack in a sleek data center. Minimalist composition, deep shadows, crisp white highlights, communicating advanced technology and cybersecurity. Professional, high-end journalism aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0Zd287Ya0giq5jq-fFvo8NM4YQx3idUMFJu0fn8xz1Luviug3Cp9qWOp0RQumZbhyaGPRfeS8vmlQtK-8HztmvQUv6Tr3rnoTftIs8GixHu5570gLRgmsoJZAkILCxbG8x-WaH6LmclQlDN5RExasBEAbjDReGHx2Dg4jroJ_g-Zwn9xquO2oJoFv5ePI9c_1CjzNZxHZhstG13lHHobX9UdxkPWP8sUnr9vojqGeXO7LXFnkSZ8"/>
+<div class="absolute -top-2 -right-2 bg-surface-container-lowest rounded-full p-1 border border-outline-variant shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[#ef4444] text-[14px]" data-icon="local_fire_department" data-weight="fill" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+<span class="font-label-sm text-[10px] font-bold text-on-surface">9.8</span>
+</div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-3 mb-2">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-label-sm font-bold bg-primary-fixed text-on-primary-fixed border border-primary-fixed-dim">Technology</span>
+<span class="font-metadata text-[12px] text-secondary">Reuters • 2h ago</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-on-surface mb-1 group-hover:text-primary transition-colors line-clamp-2">Global Coalition Announces Sweeping New Protocols for Artificial Intelligence Oversight</h2>
+</div>
+<div class="hidden lg:flex flex-shrink-0 flex-col items-end justify-center w-32 border-l border-outline-variant pl-6">
+<span class="font-body-lg text-[20px] font-bold text-on-surface">2.4M</span>
+<span class="font-metadata text-[12px] text-secondary uppercase tracking-wider">Views</span>
+</div>
+</article>
+<!-- Rank 2 -->
+<article class="group bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex items-center gap-6 hover:bg-surface-container-low transition-colors duration-200 cursor-pointer">
+<div class="flex-shrink-0 w-12 text-center">
+<span class="font-display-lg text-[40px] leading-none text-primary opacity-20 font-bold block">2</span>
+</div>
+<div class="flex-shrink-0 relative">
+<img class="w-24 h-24 object-cover rounded-lg border border-outline-variant" data-alt="An editorial shot of a tense international summit meeting room. Empty chairs around a large circular wooden table, with small flags and microphones. Dramatic, moody lighting, shallow depth of field. Minimalist and serious atmosphere, typical of a high-end news publication." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCobRKvBvwJ86Z5SlWvu4zz7o9YpcyNLQ379_6qED8ohkKi8XJkWgG8vgoSCpMF6CqUeLo8k6rRp68gjQd8BxaWkr87L4vL6m8yugCx-12fIGUcBFG3_oqxZGwjxHSdU8FTkae_h8vkK6eMvHJ4tp-_K0OFWcg7wMnLmKIpfw_c__zz0jl8hKWFfBlpfJEM3KVm4eIZMa4A6Ol8Hqp2zSmMz5Gnokcq7uopz0Y7fMdC3rbiVNpsjSI"/>
+<div class="absolute -top-2 -right-2 bg-surface-container-lowest rounded-full p-1 border border-outline-variant shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[#ef4444] text-[14px]" data-icon="local_fire_department" data-weight="fill" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+<span class="font-label-sm text-[10px] font-bold text-on-surface">9.1</span>
+</div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-3 mb-2">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-label-sm font-bold bg-tertiary-fixed text-on-tertiary-fixed border border-tertiary-fixed-dim">Politics</span>
+<span class="font-metadata text-[12px] text-secondary">AP News • 4h ago</span>
+</div>
+<h2 class="font-headline-md text-[20px] leading-[28px] font-semibold text-on-surface mb-1 group-hover:text-primary transition-colors line-clamp-2">Historic Climate Accord Reached After Marathon Negotiations in Geneva</h2>
+</div>
+<div class="hidden lg:flex flex-shrink-0 flex-col items-end justify-center w-32 border-l border-outline-variant pl-6">
+<span class="font-body-lg text-[20px] font-bold text-on-surface">1.8M</span>
+<span class="font-metadata text-[12px] text-secondary uppercase tracking-wider">Views</span>
+</div>
+</article>
+<!-- Rank 3 -->
+<article class="group bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex items-center gap-6 hover:bg-surface-container-low transition-colors duration-200 cursor-pointer">
+<div class="flex-shrink-0 w-12 text-center">
+<span class="font-display-lg text-[40px] leading-none text-primary opacity-20 font-bold block">3</span>
+</div>
+<div class="flex-shrink-0 relative">
+<img class="w-24 h-24 object-cover rounded-lg border border-outline-variant" data-alt="A clean, abstract architectural photo of a modern financial district. Soaring glass facades reflecting a crisp blue sky. High contrast, sharp lines, editorial aesthetic suitable for a leading business journal. Cool, analytical color palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcJ_duN0hMUn0fjFu9q9Dfzpj9QGj4uc1IZnxuS0OrQHmck4VtD8_R9RUp569A4o4b1JYXgtLUWuTBGmoGL2yfdClqfuqYCVpHQ8UzJD0GN0jJ6rWNXCekgFP8LWfXttyUtFrdSHMN0_Kcwopg3U9ZNphJHnxGn1uKJg1TPIj84S11hiVGvSF30BG9pFzMzFtrtDNZlC1-6nK7MJaUGTr2pwrjSNEZxJK6znJUTOQDnKa0DrHPUAw"/>
+<div class="absolute -top-2 -right-2 bg-surface-container-lowest rounded-full p-1 border border-outline-variant shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[#f97316] text-[14px]" data-icon="local_fire_department" data-weight="fill" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+<span class="font-label-sm text-[10px] font-bold text-on-surface">8.7</span>
+</div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-3 mb-2">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-label-sm font-bold bg-[#d1fae5] text-[#065f46] border border-[#a7f3d0]">Business</span>
+<span class="font-metadata text-[12px] text-secondary">Bloomberg • 5h ago</span>
+</div>
+<h2 class="font-headline-md text-[20px] leading-[28px] font-semibold text-on-surface mb-1 group-hover:text-primary transition-colors line-clamp-2">Markets Rally as Central Bank Signals Potential End to Interest Rate Hikes</h2>
+</div>
+<div class="hidden lg:flex flex-shrink-0 flex-col items-end justify-center w-32 border-l border-outline-variant pl-6">
+<span class="font-body-lg text-[20px] font-bold text-on-surface">945K</span>
+<span class="font-metadata text-[12px] text-secondary uppercase tracking-wider">Views</span>
+</div>
+</article>
+<!-- Rank 4 -->
+<article class="group bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex items-center gap-6 hover:bg-surface-container-low transition-colors duration-200 cursor-pointer">
+<div class="flex-shrink-0 w-12 text-center">
+<span class="font-display-lg text-[32px] leading-none text-secondary opacity-20 font-bold block">4</span>
+</div>
+<div class="flex-shrink-0 relative">
+<img class="w-20 h-20 object-cover rounded-lg border border-outline-variant" data-alt="Microscopic view style illustration of a complex protein structure. Rendered in a clean, high-contrast scientific journal style. Deep indigo background with bright, luminous molecular bonds. Editorial, sterile, and sophisticated." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBykewgMQrcYQ9UIoUAwfh9cqnogdoEpwFveyBQ6tY1f09D1Zqh7FEgE1v7qEJKIjzPpTRfv5XfuUZjdepvOMSzEtHCmpyIV68ZJhKUepq34CyrhY6ZdpMlm0OTRe-Svamxmkfo9BooID1Qecdh1oO47pAG4Axvm8Pmba2GtEoonIpS4BKKFWvybw8yVRfoLCZhZ0BVoPLH0UVZuXkYYpphCYzP3oKfEN0_1iPA1Aw0GbkBpfDgo_E"/>
+<div class="absolute -top-2 -right-2 bg-surface-container-lowest rounded-full p-1 border border-outline-variant shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[#f97316] text-[14px]" data-icon="local_fire_department" data-weight="fill" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+<span class="font-label-sm text-[10px] font-bold text-on-surface">8.2</span>
+</div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-3 mb-2">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-label-sm font-bold bg-[#f3e8ff] text-[#6b21a8] border border-[#e9d5ff]">Science</span>
+<span class="font-metadata text-[12px] text-secondary">Nature • 8h ago</span>
+</div>
+<h2 class="font-headline-md text-[18px] leading-[26px] font-semibold text-on-surface mb-1 group-hover:text-primary transition-colors line-clamp-2">Breakthrough in Cellular Regeneration Offers New Hope for Degenerative Diseases</h2>
+</div>
+<div class="hidden lg:flex flex-shrink-0 flex-col items-end justify-center w-32 border-l border-outline-variant pl-6">
+<span class="font-body-lg text-[18px] font-bold text-secondary">812K</span>
+<span class="font-metadata text-[12px] text-secondary uppercase tracking-wider">Views</span>
+</div>
+</article>
+<!-- Rank 5 -->
+<article class="group bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex items-center gap-6 hover:bg-surface-container-low transition-colors duration-200 cursor-pointer">
+<div class="flex-shrink-0 w-12 text-center">
+<span class="font-display-lg text-[32px] leading-none text-secondary opacity-20 font-bold block">5</span>
+</div>
+<div class="flex-shrink-0 relative">
+<img class="w-20 h-20 object-cover rounded-lg border border-outline-variant" data-alt="A sweeping, minimalist landscape photograph of a vast solar farm in a desert. Shot from a high angle. Pristine, geometric rows of panels receding into the distance. Clean, high-contrast, representing clean energy transition in a premium editorial style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4VKwY69YBi_anotZNcBywtMCyr3Vb18etRkbaSzjBO__bIUKrRf8NaFJEgNghwXOzcQ1OJDPGjJduOocMAm2B_YLsIWyess8yUAl8VSvWQE_15sW601-HOCSaLrF0ThOsVxM-PXgcunqjJ8X4SNdlaZWHw0NvmmaosHrG2O311Evx6oDfG8sZYtOu0yfznT6QwqG_YuNSOn_ywVbb1PbKPfIg7iB0OxXIGAS6hyM9-7rR7tfNYOo"/>
+<div class="absolute -top-2 -right-2 bg-surface-container-lowest rounded-full p-1 border border-outline-variant shadow-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[#f59e0b] text-[14px]" data-icon="local_fire_department" data-weight="fill" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+<span class="font-label-sm text-[10px] font-bold text-on-surface">7.9</span>
+</div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-3 mb-2">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-label-sm font-bold bg-[#d1fae5] text-[#065f46] border border-[#a7f3d0]">Business</span>
+<span class="font-metadata text-[12px] text-secondary">WSJ • 9h ago</span>
+</div>
+<h2 class="font-headline-md text-[18px] leading-[26px] font-semibold text-on-surface mb-1 group-hover:text-primary transition-colors line-clamp-2">Renewable Energy Investment Surpasses Fossil Fuels for First Time Globally</h2>
+</div>
+<div class="hidden lg:flex flex-shrink-0 flex-col items-end justify-center w-32 border-l border-outline-variant pl-6">
+<span class="font-body-lg text-[18px] font-bold text-secondary">640K</span>
+<span class="font-metadata text-[12px] text-secondary uppercase tracking-wider">Views</span>
+</div>
+</article>
+<!-- Load More Button -->
+<button class="mt-6 w-full py-4 border-2 border-dashed border-outline-variant rounded-xl font-label-sm text-label-sm text-secondary hover:text-primary hover:border-primary transition-colors hover:bg-surface-container-low flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]" data-icon="expand_more">expand_more</span>
+                    Load Rankings 6-10
+                </button>
+</div>
+</main>
+</div>
+</body></html>

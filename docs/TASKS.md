@@ -26,10 +26,20 @@ Derived from the source spec's "Fast Execution Plan" and expanded to be actionab
 - [x] Create helper scripts: `scripts/docker-dev.sh`, `scripts/docker-prod.sh`, `scripts/docker-clean.sh` (`DOCKER.md` §9)
 - [x] Update `.env.example` with `JAVA_OPTS` variable and documentation comments (`SECURITY.md` §4)
 
+## Phase 1.6 — API Gateway Implementation
+
+- [x] Configure Spring Cloud Gateway route predicates for all 6 microservices (`ARCHITECTURE.md` §8, `SERVICES.md` §1)
+- [x] Implement path prefix matching without unnecessary path rewriting (`API_SPEC.md`)
+- [x] Configure global CORS with origin pattern matching and credentials support (`SECURITY.md` §9)
+- [x] Implement reactive `RequestLoggingFilter` for `X-Correlation-Id` generation, propagation, response headers, and duration logging (`CODING_RULES.md` §6)
+- [x] Configure Spring Boot Actuator health, info, and metrics endpoints (`SERVICES.md` §9)
+- [x] Add unit tests for `RequestLoggingFilter` (`TESTING.md` §3)
+
+
 ## Phase 2 — Core Backend
 
-- [ ] Design and migrate schema for all 4 databases via Flyway (`DATABASE_SCHEMA.md`, `CODING_RULES.md` §8)
-- [ ] Implement `auth-service`: register, login, refresh, logout, JWT issuance (`API_SPEC.md` §4.4, `SECURITY.md` §1)
+- [x] Design and migrate schema for all 4 databases via Flyway (`DATABASE_SCHEMA.md`, `CODING_RULES.md` §8)
+- [x] Implement `auth-service`: register, login, refresh, logout, JWT issuance (`API_SPEC.md` §4.4, `SECURITY.md` §1)
 - [ ] Implement `category-service`: CRUD + slug generation + seed 13 categories (`DATABASE_SCHEMA.md` §3.1, `API_SPEC.md` §4.3)
 - [ ] Implement `news-service`: entities, repositories, `IngestionPipelineService`, duplicate detection, `/internal/articles/ingest` (`SERVICES.md` §3, `QUEUE_WORKFLOW.md` §2)
 - [ ] Implement `news-service` public read endpoints: latest, trending (placeholder per `DECISIONS.md` A-12), category, article detail + related (`API_SPEC.md` §4.1)

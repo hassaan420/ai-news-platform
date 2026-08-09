@@ -1,12 +1,22 @@
 spring:
   application:
     name: search-service
+  config:
+    import: classpath:application-common.yml
 
 server:
   port: 8084
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,metrics
+
+
+  data:
+    redis:
+      host: ${SPRING_REDIS_HOST:redis}
+      port: ${SPRING_REDIS_PORT:6379}
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000

@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Search Results - Clarion</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&amp;family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#777584",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-surface": "#2f3130",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "surface": "#faf9f8",
+                        "surface-container": "#eeeeed",
+                        "tertiary-fixed": "#ffdbcc",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "on-primary": "#ffffff",
+                        "background": "#faf9f8",
+                        "surface-container-high": "#e9e8e7",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "on-error-container": "#93000a",
+                        "secondary": "#5f5e5e",
+                        "surface-variant": "#e3e2e1",
+                        "outline-variant": "#c8c4d5",
+                        "secondary-container": "#e2dfde",
+                        "on-secondary-fixed-variant": "#474746",
+                        "on-tertiary-fixed-variant": "#7a3003",
+                        "on-background": "#1a1c1c",
+                        "surface-container-highest": "#e3e2e1",
+                        "tertiary": "#511c00",
+                        "surface-dim": "#dadad9",
+                        "error-container": "#ffdad6",
+                        "on-surface-variant": "#464553",
+                        "tertiary-fixed-dim": "#ffb694",
+                        "on-primary-fixed": "#0f0069",
+                        "tertiary-container": "#752c00",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed": "#e2dfff",
+                        "surface-bright": "#faf9f8",
+                        "on-secondary-container": "#636262",
+                        "secondary-fixed": "#e5e2e1",
+                        "on-surface": "#1a1c1c",
+                        "primary": "#1f108e",
+                        "primary-container": "#3730a3",
+                        "on-primary-container": "#a9a7ff",
+                        "on-tertiary": "#ffffff",
+                        "inverse-primary": "#c3c0ff",
+                        "surface-container-low": "#f4f3f2",
+                        "error": "#ba1a1a",
+                        "on-error": "#ffffff",
+                        "on-tertiary-container": "#fe9562",
+                        "surface-tint": "#544fc0",
+                        "on-primary-fixed-variant": "#3b35a7",
+                        "inverse-on-surface": "#f1f0f0",
+                        "on-tertiary-fixed": "#351000"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin_desktop": "40px",
+                        "stack_sm": "8px",
+                        "max_content_width": "1200px",
+                        "stack_md": "16px",
+                        "margin_mobile": "16px",
+                        "stack_lg": "32px",
+                        "gutter": "24px",
+                        "sidebar_width": "280px"
+                    },
+                    "fontFamily": {
+                        "metadata": ["Hanken Grotesk"],
+                        "display-lg-mobile": ["\"Source Serif 4\""],
+                        "label-sm": ["Hanken Grotesk"],
+                        "display-lg": ["\"Source Serif 4\""],
+                        "body-lg": ["Hanken Grotesk"],
+                        "headline-md": ["\"Source Serif 4\""],
+                        "body-md": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "metadata": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                        "display-lg-mobile": ["32px", { "lineHeight": "40px", "fontWeight": "700" }],
+                        "label-sm": ["13px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-screen w-sidebar_width bg-surface dark:bg-inverse-surface border-r border-outline-variant dark:border-outline flex flex-col py-stack_lg px-stack_md z-40">
+<div class="mb-stack_lg px-4">
+<h1 class="font-display-lg text-display-lg text-primary dark:text-inverse-primary tracking-tight">Clarion</h1>
+<p class="font-metadata text-metadata text-secondary mt-1">AI-Curated News</p>
+</div>
+<nav class="flex-1 overflow-y-auto space-y-1">
+<a class="flex items-center text-secondary dark:text-secondary-fixed-dim pl-5 py-3 hover:bg-surface-container dark:hover:bg-on-secondary-fixed-variant transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">home</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</a>
+<a class="flex items-center text-secondary dark:text-secondary-fixed-dim pl-5 py-3 hover:bg-surface-container dark:hover:bg-on-secondary-fixed-variant transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">trending_up</span>
+<span class="font-label-sm text-label-sm">Trending</span>
+</a>
+<a class="flex items-center text-secondary dark:text-secondary-fixed-dim pl-5 py-3 hover:bg-surface-container dark:hover:bg-on-secondary-fixed-variant transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">bookmark</span>
+<span class="font-label-sm text-label-sm">Saved</span>
+</a>
+<a class="flex items-center text-secondary dark:text-secondary-fixed-dim pl-5 py-3 hover:bg-surface-container dark:hover:bg-on-secondary-fixed-variant transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">fiber_manual_record</span>
+<span class="font-label-sm text-label-sm">Politics</span>
+</a>
+<a class="flex items-center text-secondary dark:text-secondary-fixed-dim pl-5 py-3 hover:bg-surface-container dark:hover:bg-on-secondary-fixed-variant transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">fiber_manual_record</span>
+<span class="font-label-sm text-label-sm">Technology</span>
+</a>
+<a class="flex items-center text-primary dark:text-inverse-primary font-bold border-l-4 border-primary dark:border-inverse-primary pl-4 py-3 bg-surface-container rounded-r-lg" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">fiber_manual_record</span>
+<span class="font-label-sm text-label-sm">Business</span>
+</a>
+<a class="flex items-center text-secondary dark:text-secondary-fixed-dim pl-5 py-3 hover:bg-surface-container dark:hover:bg-on-secondary-fixed-variant transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">fiber_manual_record</span>
+<span class="font-label-sm text-label-sm">Science</span>
+</a>
+<a class="flex items-center text-secondary dark:text-secondary-fixed-dim pl-5 py-3 hover:bg-surface-container dark:hover:bg-on-secondary-fixed-variant transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">fiber_manual_record</span>
+<span class="font-label-sm text-label-sm">Health</span>
+</a>
+<a class="flex items-center text-secondary dark:text-secondary-fixed-dim pl-5 py-3 hover:bg-surface-container dark:hover:bg-on-secondary-fixed-variant transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">fiber_manual_record</span>
+<span class="font-label-sm text-label-sm">Sports</span>
+</a>
+</nav>
+<div class="mt-auto pt-4">
+<button class="w-full bg-primary-container text-on-primary-container font-label-sm text-label-sm py-3 rounded-lg flex items-center justify-center hover:bg-primary transition-colors">
+                 Upgrade to Pro
+            </button>
+</div>
+</aside>
+<!-- Main Content Wrapper -->
+<div class="flex-1 ml-sidebar_width flex flex-col min-h-screen">
+<!-- TopNavBar -->
+<header class="bg-surface dark:bg-inverse-surface border-b border-outline-variant dark:border-outline h-16 flex justify-between items-center px-margin_desktop sticky top-0 z-30">
+<div class="flex-1 flex justify-center">
+<div class="relative w-full max-w-xl">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-secondary">search</span>
+<input class="w-full bg-surface-container-low border border-outline-variant rounded-full py-2 pl-12 pr-4 font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-shadow" placeholder="Search Clarion..." type="text" value="Global Economy"/>
+</div>
+</div>
+<div class="flex items-center space-x-4">
+<button class="text-secondary hover:text-primary transition-colors">
+<span class="material-symbols-outlined">dark_mode</span>
+</button>
+<button class="font-label-sm text-label-sm text-secondary hover:text-primary transition-colors">Log In</button>
+<button class="font-label-sm text-label-sm bg-primary text-on-primary px-4 py-2 rounded-lg hover:bg-primary-container transition-colors">Sign Up</button>
+</div>
+</header>
+<!-- Search Results Layout -->
+<main class="flex-1 px-margin_desktop py-stack_lg max-w-max_content_width mx-auto w-full flex gap-gutter">
+<!-- Filters Sidebar -->
+<aside class="w-64 flex-shrink-0 space-y-stack_lg hidden lg:block">
+<div>
+<h3 class="font-label-sm text-label-sm text-secondary uppercase tracking-wider mb-4">Category</h3>
+<div class="space-y-2">
+<label class="flex items-center space-x-2 cursor-pointer group">
+<input checked="" class="form-checkbox text-primary border-outline-variant rounded-sm focus:ring-primary h-4 w-4" type="checkbox"/>
+<span class="font-metadata text-metadata group-hover:text-primary transition-colors">Business &amp; Finance (84)</span>
+</label>
+<label class="flex items-center space-x-2 cursor-pointer group">
+<input class="form-checkbox text-primary border-outline-variant rounded-sm focus:ring-primary h-4 w-4" type="checkbox"/>
+<span class="font-metadata text-metadata group-hover:text-primary transition-colors">Politics (45)</span>
+</label>
+<label class="flex items-center space-x-2 cursor-pointer group">
+<input class="form-checkbox text-primary border-outline-variant rounded-sm focus:ring-primary h-4 w-4" type="checkbox"/>
+<span class="font-metadata text-metadata group-hover:text-primary transition-colors">Technology (13)</span>
+</label>
+</div>
+</div>
+<div>
+<h3 class="font-label-sm text-label-sm text-secondary uppercase tracking-wider mb-4">Sentiment</h3>
+<div class="space-y-2">
+<label class="flex items-center space-x-2 cursor-pointer group">
+<input class="form-checkbox text-primary border-outline-variant rounded-sm focus:ring-primary h-4 w-4" type="checkbox"/>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-metadata text-metadata text-[12px] group-hover:bg-primary-fixed group-hover:text-primary transition-colors">Bullish</span>
+</label>
+<label class="flex items-center space-x-2 cursor-pointer group">
+<input checked="" class="form-checkbox text-primary border-outline-variant rounded-sm focus:ring-primary h-4 w-4" type="checkbox"/>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-metadata text-metadata text-[12px] group-hover:bg-primary-fixed group-hover:text-primary transition-colors">Neutral</span>
+</label>
+<label class="flex items-center space-x-2 cursor-pointer group">
+<input class="form-checkbox text-primary border-outline-variant rounded-sm focus:ring-primary h-4 w-4" type="checkbox"/>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-metadata text-metadata text-[12px] group-hover:bg-primary-fixed group-hover:text-primary transition-colors">Bearish</span>
+</label>
+</div>
+</div>
+<div>
+<h3 class="font-label-sm text-label-sm text-secondary uppercase tracking-wider mb-4">Date Range</h3>
+<select class="w-full bg-surface border border-outline-variant rounded-lg py-2 px-3 font-metadata text-metadata focus:ring-primary focus:border-primary text-on-surface">
+<option>Past 24 Hours</option>
+<option>Past Week</option>
+<option selected="">Past Month</option>
+<option>Past Year</option>
+</select>
+</div>
+</aside>
+<!-- Results List -->
+<div class="flex-1">
+<div class="mb-stack_md flex justify-between items-end border-b border-outline-variant pb-4">
+<h2 class="font-body-lg text-body-lg text-secondary">142 results found for "<span class="text-on-background font-semibold">Global Economy</span>"</h2>
+<div class="flex items-center space-x-2">
+<span class="font-metadata text-metadata text-secondary">Sort by:</span>
+<select class="bg-transparent border-none font-metadata text-metadata font-semibold text-primary focus:ring-0 cursor-pointer p-0 pr-4">
+<option>Relevance</option>
+<option>Newest</option>
+<option>Oldest</option>
+</select>
+</div>
+</div>
+<div class="space-y-stack_md">
+<!-- Result Card 1 -->
+<article class="group flex flex-col sm:flex-row gap-6 bg-surface-container-lowest p-4 rounded-xl border border-outline-variant hover:border-primary-fixed transition-colors">
+<div class="sm:w-1/3 aspect-[4/3] rounded-lg overflow-hidden shrink-0">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A sophisticated digital illustration of global financial markets, featuring minimalist intersecting lines and subtle upward trending graphs in a pristine light-mode aesthetic. Soft white lighting illuminates deep indigo accents and clean geometric shapes, conveying modern financial intelligence." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdTGSuAGqfRGtxtRn6uC8WBkoPKgpo8DBU5lMthorF-ZoVmRSjAMZan_7175UvNYUNumPz6Usnz5N056MtJ16w2CukJRg7XMfsGk-Slw-kYG-9IPk3b-5F-qy-4t3bqmPfbqIEksLY6pPT6_r8wCU9JUnCC1cxRcD6PYKuDTT0N__LzTLdz_MU-WsmfSJoLqMHSWmDZ_Gs8RiY9zDX0wuoyPKlthtlPJUd39iMg3ExQsSbwUKN9SY"/>
+</div>
+<div class="flex flex-col justify-between flex-1 py-1">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="font-metadata text-metadata text-secondary flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span> 2 hours ago
+                                    </span>
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant font-metadata text-metadata text-[12px]">Skeptical</span>
+</div>
+<h3 class="font-headline-md text-headline-md mb-2 group-hover:text-primary transition-colors cursor-pointer">Central Banks Signal Caution as Inflationary Pressures Ease Unevenly</h3>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2">Global monetary authorities are adopting a wait-and-see approach this quarter, citing mixed indicators in labor markets and persistent service sector inflation despite overall cooling trends.</p>
+</div>
+<div class="mt-4 flex items-center justify-between">
+<span class="font-metadata text-metadata font-semibold text-primary">Financial Times · Reuters</span>
+<button class="text-secondary hover:text-primary transition-colors" title="Save article">
+<span class="material-symbols-outlined">bookmark_border</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Result Card 2 -->
+<article class="group flex flex-col sm:flex-row gap-6 bg-surface-container-lowest p-4 rounded-xl border border-outline-variant hover:border-primary-fixed transition-colors">
+<div class="sm:w-1/3 aspect-[4/3] rounded-lg overflow-hidden shrink-0">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A minimalist architectural photograph showing the intersection of modern steel and glass buildings in a major financial district. The image features high-key lighting, soft white skies, and strict grid patterns, reflecting structural stability and corporate elegance in a bright, modern palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNP9Eppem8gbyJdiMsT7wO0948hMLHj1e1TD0s4v8UVptV9KBv2LzvJU0wp1Z1g_9Aezi_Z21CSBwf40BAWvWfUIx-gMvhXjhoEVvdyWzQN6i9clV9bBv-ZM9I8vvR-Yfn2ytVIbsTvAfYa5lvyrS3ogrntq9G_lg-DAGfonYaNR-liTVMlBAs_aV57OYP4lrzdKqku_iZBmez26CGPBeyh1n84WPobyQh-usHe0g15xYCezmY9l4"/>
+</div>
+<div class="flex flex-col justify-between flex-1 py-1">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="font-metadata text-metadata text-secondary flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span> 5 hours ago
+                                    </span>
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant font-metadata text-metadata text-[12px]">Bullish</span>
+</div>
+<h3 class="font-headline-md text-headline-md mb-2 group-hover:text-primary transition-colors cursor-pointer">Emerging Markets Lead Q3 Growth Projections Amid Supply Chain Shifts</h3>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2">A new consensus report suggests Southeast Asian and Latin American economies are poised for significant expansion as multinational corporations continue to diversify their manufacturing bases away from traditional hubs.</p>
+</div>
+<div class="mt-4 flex items-center justify-between">
+<span class="font-metadata text-metadata font-semibold text-primary">Bloomberg · The Economist</span>
+<button class="text-secondary hover:text-primary transition-colors" title="Save article">
+<span class="material-symbols-outlined">bookmark_border</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Result Card 3 -->
+<article class="group flex flex-col sm:flex-row gap-6 bg-surface-container-lowest p-4 rounded-xl border border-outline-variant hover:border-primary-fixed transition-colors">
+<div class="sm:w-1/3 aspect-[4/3] rounded-lg overflow-hidden shrink-0 bg-surface-container flex items-center justify-center">
+<span class="material-symbols-outlined text-[48px] text-outline-variant">article</span>
+</div>
+<div class="flex flex-col justify-between flex-1 py-1">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="font-metadata text-metadata text-secondary flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span> 1 day ago
+                                    </span>
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-surface-variant text-on-surface-variant font-metadata text-metadata text-[12px]">Neutral</span>
+</div>
+<h3 class="font-headline-md text-headline-md mb-2 group-hover:text-primary transition-colors cursor-pointer">Trade Tariffs Impact Assessment: A Sector-by-Sector Analysis</h3>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2">Detailed breakdown of how newly implemented cross-border tariffs are affecting agricultural exports versus technology hardware imports in the short term.</p>
+</div>
+<div class="mt-4 flex items-center justify-between">
+<span class="font-metadata text-metadata font-semibold text-primary">Wall Street Journal</span>
+<button class="text-secondary hover:text-primary transition-colors" title="Save article">
+<span class="material-symbols-outlined">bookmark_border</span>
+</button>
+</div>
+</div>
+</article>
+</div>
+<!-- Pagination -->
+<div class="mt-stack_lg flex justify-center items-center space-x-2">
+<button class="w-10 h-10 rounded-lg border border-outline-variant flex items-center justify-center text-secondary hover:border-primary hover:text-primary transition-colors disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="w-10 h-10 rounded-lg bg-primary text-on-primary font-label-sm text-label-sm flex items-center justify-center">1</button>
+<button class="w-10 h-10 rounded-lg border border-outline-variant font-label-sm text-label-sm text-secondary hover:border-primary hover:text-primary transition-colors flex items-center justify-center">2</button>
+<button class="w-10 h-10 rounded-lg border border-outline-variant font-label-sm text-label-sm text-secondary hover:border-primary hover:text-primary transition-colors flex items-center justify-center">3</button>
+<span class="text-secondary px-2">...</span>
+<button class="w-10 h-10 rounded-lg border border-outline-variant flex items-center justify-center text-secondary hover:border-primary hover:text-primary transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-low dark:bg-inverse-surface border-t border-outline-variant dark:border-outline w-full py-stack_lg px-margin_desktop flex flex-col md:flex-row justify-between items-center mt-auto">
+<div class="font-display-lg text-display-lg text-primary dark:text-inverse-primary text-[24px] mb-4 md:mb-0">Clarion</div>
+<div class="flex space-x-6 mb-4 md:mb-0">
+<a class="font-metadata text-metadata text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-inverse-primary transition-colors" href="#">Privacy Policy</a>
+<a class="font-metadata text-metadata text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-inverse-primary transition-colors" href="#">Terms of Service</a>
+<a class="font-metadata text-metadata text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-inverse-primary transition-colors" href="#">Contact</a>
+<a class="font-metadata text-metadata text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-inverse-primary transition-colors" href="#">About</a>
+</div>
+<div class="font-metadata text-metadata text-secondary dark:text-secondary-fixed-dim text-sm">
+                 © 2024 Clarion AI. All rights reserved. Powered by Clarion AI.
+             </div>
+</footer>
+</div>
+</body></html>

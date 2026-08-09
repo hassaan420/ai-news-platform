@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  OWASP Dependency-Check Suppressions
+  Use this file to suppress false-positive CVEs that have been reviewed and accepted.
+  Reference: https://jeremylong.github.io/DependencyCheck/general/suppression.html
+-->
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+
+  <!--
+  Example suppression (remove or replace with real entries after review):
+
+  <suppress>
+    <notes>CVE-XXXX-YYYY - Reviewed on DATE. Not applicable because this component
+    is only used in test scope and the vulnerability requires direct file access.</notes>
+    <cve>CVE-XXXX-YYYY</cve>
+  </suppress>
+  -->
+
+</suppressions>
