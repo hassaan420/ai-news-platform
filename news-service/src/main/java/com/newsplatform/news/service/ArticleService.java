@@ -14,7 +14,7 @@ public interface ArticleService {
     
     NewsResponse getArticleById(Long id);
     
-    PagedResponse<NewsSummaryResponse> getLatestArticles(Pageable pageable);
+    PagedResponse<NewsSummaryResponse> getLatestArticles(Pageable pageable, String dateFilter, String from, String to);
     
     PagedResponse<NewsSummaryResponse> getTrendingArticles(Pageable pageable);
     

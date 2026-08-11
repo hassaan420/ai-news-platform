@@ -12,6 +12,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.CascadeType;
 import java.time.Instant;
 import java.util.List;
@@ -202,4 +203,10 @@ public class Article {
 
   public List<ArticleTag> getTags() { return tags; }
   public void setTags(List<ArticleTag> tags) { this.tags = tags; }
+
+  @OneToOne(mappedBy = "article", fetch = FetchType.LAZY)
+  private ArticleStats stats;
+
+  public ArticleStats getStats() { return stats; }
+  public void setStats(ArticleStats stats) { this.stats = stats; }
 }

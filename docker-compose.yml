@@ -168,6 +168,17 @@ services:
       INTERNAL_API_KEY: ${INTERNAL_API_KEY}
       GOOGLE_API_KEY: ${GOOGLE_API_KEY}
       JAVA_OPTS: ${JAVA_OPTS:-}
+      # ── AI worker concurrency (keep small to protect Gemini free-tier quota) ──
+      AI_PROCESSING_WORKER_COUNT: ${AI_PROCESSING_WORKER_COUNT:-2}
+      # ── Gemini rate limiting ──────────────────────────────────────────────────
+      GEMINI_RATE_LIMIT_ENABLED: ${GEMINI_RATE_LIMIT_ENABLED:-true}
+      GEMINI_MIN_INTERVAL_MS: ${GEMINI_MIN_INTERVAL_MS:-6000}
+      GEMINI_COOLDOWN_SECONDS: ${GEMINI_COOLDOWN_SECONDS:-60}
+      GEMINI_MAX_COOLDOWN_SECONDS: ${GEMINI_MAX_COOLDOWN_SECONDS:-300}
+      # ── Gemini retry (transient errors only, NOT 429) ─────────────────────────
+      GEMINI_RETRY_MAX_ATTEMPTS: ${GEMINI_RETRY_MAX_ATTEMPTS:-2}
+      GEMINI_RETRY_INITIAL_BACKOFF_MS: ${GEMINI_RETRY_INITIAL_BACKOFF_MS:-1000}
+      GEMINI_RETRY_MAX_BACKOFF_MS: ${GEMINI_RETRY_MAX_BACKOFF_MS:-10000}
     networks:
       - news-platform-net
     depends_on:

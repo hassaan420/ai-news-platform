@@ -2,6 +2,7 @@ package com.newsplatform.news.service;
 
 import com.newsplatform.news.entity.ArticleStats;
 import com.newsplatform.news.repository.ArticleStatsRepository;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ public class TrendingEngineService {
         this.articleRepository = articleRepository;
     }
 
+    @CacheEvict(value = "trending_articles", allEntries = true)
     @Scheduled(fixedRate = 300000, initialDelay = 10000) // Run every 5 minutes
     @Transactional
     public void calculateTrendingScores() {

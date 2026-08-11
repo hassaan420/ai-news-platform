@@ -40,7 +40,7 @@ public class ArticleControllerTest {
     public void testGetArticles_ReturnsPagedResponse() throws Exception {
         NewsSummaryResponse summary = new NewsSummaryResponse(
                 1L, "Title", "Desc", "img", "url", "author", Instant.now(), 1L, null,
-                null, null, null, null, null, null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null, null, null, null, null, 0, 0);
         PagedResponse<NewsSummaryResponse> response = new PagedResponse<>(
                 List.of(summary), 0, 20, 1, 1, true);
 
@@ -57,7 +57,7 @@ public class ArticleControllerTest {
     public void testGetArticleById_ReturnsArticle() throws Exception {
         NewsResponse article = new NewsResponse(
                 1L, "Title", "Desc", "content", "img", "url", "author", "en", Instant.now(), "hash", 1L, null, 
-                null, null, null, null, null, null, null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null, null, null, null, null, null, 0, 0);
 
         Mockito.when(articleService.getArticleById(1L)).thenReturn(article);
 

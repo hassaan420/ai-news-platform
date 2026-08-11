@@ -3,8 +3,12 @@ import { Article, PagedResponse } from '../types/news';
 
 
 export const newsApi = {
-  getLatestNews: async (page = 0, size = 10): Promise<PagedResponse<Article>> => {
-    const response = await axiosClient.get<PagedResponse<Article>>(`/news/latest?page=${page}&size=${size}`);
+  getLatestNews: async (page = 0, size = 10, dateFilter?: string, from?: string, to?: string): Promise<PagedResponse<Article>> => {
+    let url = `/news/latest?page=${page}&size=${size}`;
+    if (dateFilter) url += `&dateFilter=${dateFilter}`;
+    if (from) url += `&from=${from}`;
+    if (to) url += `&to=${to}`;
+    const response = await axiosClient.get<PagedResponse<Article>>(url);
     return response.data;
   },
 

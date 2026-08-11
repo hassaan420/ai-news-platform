@@ -23,6 +23,8 @@ public record NewsSummaryResponse(
     String processingStatus,
     Instant processedAt,
     java.util.List<String> keywords,
-    java.util.List<String> tags
+    java.util.List<String> tags,
+    Integer views,
+    Integer bookmarks
 ) implements java.io.Serializable {
 }

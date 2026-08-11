@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { fetchLatestNews, fetchTrendingNews } from '@/store/newsSlice';
+import { fetchLatestNews, fetchTrendingNews, clearLatestNews } from '@/store/newsSlice';
 import ArticleCard from '@/components/ArticleCard';
 import HeroArticle from '@/components/HeroArticle';
 import TrendingCard from '@/components/TrendingCard';
+import DateFilterDropdown, { DateFilterType } from '@/components/DateFilterDropdown';
 import { Skeleton } from '@/components/ui/skeleton';
 import { newsApi } from '@/api/newsApi';
 import { Article } from '@/types/news';
@@ -13,15 +15,41 @@ export default function Home() {
   const dispatch = useAppDispatch();
   const { latestNews, trendingNews, status, error } = useAppSelector((state) => state.news);
   
-  const [latestPage, setLatestPage] = useState(0);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const dateFilter = (searchParams.get('dateFilter') as DateFilterType) || 'LATEST';
+  const from = searchParams.get('from') || '';
+  const to = searchParams.get('to') || '';
+  const latestPage = parseInt(searchParams.get('page') || '0', 10);
+  
   const [activeTab, setActiveTab] = useState<'latest' | 'foryou'>('latest');
   const [personalizedNews, setPersonalizedNews] = useState<Article[]>([]);
   const [loadingPersonalized, setLoadingPersonalized] = useState(false);
   const { isAuthenticated } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
-    dispatch(fetchLatestNews({ page: latestPage, size: 7 })); 
-  }, [dispatch, latestPage]);
+    dispatch(fetchLatestNews({ page: latestPage, size: 7, dateFilter, from, to })); 
+  }, [dispatch, latestPage, dateFilter, from, to]);
+
+  const handleFilterChange = (filter: DateFilterType, customFrom?: string, customTo?: string) => {
+    dispatch(clearLatestNews());
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set('dateFilter', filter);
+    newParams.set('page', '0');
+    if (filter === 'CUSTOM' && customFrom && customTo) {
+      newParams.set('from', customFrom);
+      newParams.set('to', customTo);
+    } else {
+      newParams.delete('from');
+      newParams.delete('to');
+    }
+    setSearchParams(newParams);
+  };
+
+  const handlePageChange = (newPage: number) => {
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set('page', newPage.toString());
+    setSearchParams(newParams);
+  };
 
   useEffect(() => {
     dispatch(fetchTrendingNews({ page: 0, size: 10 })); 
@@ -91,8 +119,18 @@ export default function Home() {
 
       {/* Latest Analysis / Feed */}
       <section>
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="font-headline-md text-headline-md text-foreground">Latest Analysis</h2>
+        <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
+          <h2 className="font-headline-md text-headline-md text-foreground flex items-center gap-4 flex-wrap">
+            Latest Analysis
+            {activeTab === 'latest' && (
+              <DateFilterDropdown 
+                value={dateFilter} 
+                onChange={handleFilterChange} 
+                from={from} 
+                to={to} 
+              />
+            )}
+          </h2>
           <div className="flex gap-2">
             <button 
               className={`rounded-lg px-4 py-1.5 text-sm font-medium transition-colors ${activeTab === 'latest' ? 'bg-muted text-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'}`}
@@ -123,12 +161,25 @@ export default function Home() {
                   ))}
                 </div>
 
+                {gridArticles.length === 0 && !heroArticle && status === 'succeeded' && (
+                  <div className="text-center py-12 bg-card rounded-xl shadow-subtle border border-border/50">
+                    <span className="material-symbols-outlined text-4xl text-muted-foreground mb-4">search_off</span>
+                    <p className="text-muted-foreground mb-4 font-medium">No articles found for this period.</p>
+                    <button 
+                      onClick={() => handleFilterChange('LATEST')}
+                      className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors shadow-sm"
+                    >
+                      Try another date range
+                    </button>
+                  </div>
+                )}
+
                 {latestNews && latestNews.totalPages > 1 && (
                   <div className="flex items-center justify-center gap-4 pt-6 border-t border-border/30">
                     <button
                       className="rounded-lg px-4 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors disabled:opacity-50"
                       disabled={latestNews.pageNumber === 0 || status === 'loading'}
-                      onClick={() => setLatestPage(p => Math.max(0, p - 1))}
+                      onClick={() => handlePageChange(Math.max(0, latestPage - 1))}
                     >
                       Previous
                     </button>
@@ -138,7 +189,7 @@ export default function Home() {
                     <button
                       className="rounded-lg px-4 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors disabled:opacity-50"
                       disabled={latestNews.last || status === 'loading'}
-                      onClick={() => setLatestPage(p => p + 1)}
+                      onClick={() => handlePageChange(latestPage + 1)}
                     >
                       Next
                     </button>

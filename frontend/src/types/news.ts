@@ -28,6 +28,8 @@ export interface Article {
   keywords?: string[];
   tags?: string[];
   relatedArticles?: Article[];
+  views?: number;
+  bookmarks?: number;
 }
 
 export interface PagedResponse<T> {

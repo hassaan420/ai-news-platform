@@ -9,13 +9,16 @@ export default function Trending() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
   useEffect(() => {
     const fetchTrending = async () => {
       try {
         setLoading(true);
-        const data = await newsApi.getTrendingNews(0, 10);
+        const data = await newsApi.getTrendingNews(page, 20);
         setArticles(data.content);
+        setTotalPages(data.totalPages);
       } catch (err) {
         setError('Failed to load trending news.');
       } finally {
@@ -23,7 +26,7 @@ export default function Trending() {
       }
     };
     fetchTrending();
-  }, []);
+  }, [page]);
 
   const getSentimentStyle = (sentiment: string) => {
     switch(sentiment?.toLowerCase()) {
@@ -96,8 +99,8 @@ export default function Trending() {
                 {index === 0 && <div className="absolute top-0 left-0 w-1 h-full bg-rose-500"></div>}
                 
                 <div className="flex-shrink-0 w-8 md:w-12 text-center">
-                  <span className={`font-display-lg text-[32px] md:text-[40px] leading-none font-bold block ${index < 3 ? 'text-primary opacity-40' : 'text-muted-foreground opacity-20'}`}>
-                    {index + 1}
+                  <span className={`font-display-lg text-[32px] md:text-[40px] leading-none font-bold block ${index + (page * 20) < 3 ? 'text-primary opacity-40' : 'text-muted-foreground opacity-20'}`}>
+                    {index + 1 + (page * 20)}
                   </span>
                 </div>
                 
@@ -114,9 +117,9 @@ export default function Trending() {
                     <div className="w-24 h-24 rounded-lg bg-muted" />
                   )}
                   <div className="absolute -top-2 -right-2 bg-card rounded-full p-1 shadow-subtle flex items-center gap-1">
-                    <span className={`material-symbols-outlined text-[14px] ${index < 3 ? 'text-rose-500' : 'text-amber-500 dark:text-amber-400'}`}>local_fire_department</span>
+                    <span className={`material-symbols-outlined text-[14px] ${index + (page * 20) < 3 ? 'text-rose-500' : 'text-amber-500 dark:text-amber-400'}`}>local_fire_department</span>
                     <span className="text-[10px] font-bold text-foreground">
-                      {(10 - index * 0.4).toFixed(1)}
+                      {article.trendingScore != null ? article.trendingScore.toFixed(1) : (10 - index * 0.4).toFixed(1)}
                     </span>
                   </div>
                 </div>
@@ -140,13 +143,34 @@ export default function Trending() {
                 
                 <div className="hidden lg:flex flex-shrink-0 flex-col items-end justify-center w-32 border-l border-border/30 pl-6">
                   <span className="text-[20px] font-bold text-foreground">
-                    {Math.floor(Math.random() * 900 + 100)}K
+                    {article.views != null ? (article.views >= 1000 ? (article.views / 1000).toFixed(1) + 'K' : article.views) : 0}
                   </span>
                   <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Views</span>
                 </div>
               </Link>
             </motion.div>
           ))}
+          {totalPages > 1 && (
+            <div className="mt-8 flex justify-between items-center bg-card p-4 rounded-xl shadow-subtle">
+              <button
+                onClick={() => { setPage(Math.max(0, page - 1)); window.scrollTo(0, 0); }}
+                disabled={page === 0}
+                className="px-4 py-2 text-sm font-medium rounded-md bg-secondary/50 text-foreground disabled:opacity-50 hover:bg-secondary transition-colors"
+              >
+                Previous
+              </button>
+              <span className="text-sm font-medium text-muted-foreground">
+                Page {page + 1} of {totalPages}
+              </span>
+              <button
+                onClick={() => { setPage(Math.min(totalPages - 1, page + 1)); window.scrollTo(0, 0); }}
+                disabled={page >= totalPages - 1}
+                className="px-4 py-2 text-sm font-medium rounded-md bg-secondary/50 text-foreground disabled:opacity-50 hover:bg-secondary transition-colors"
+              >
+                Next
+              </button>
+            </div>
+          )}
         </div>
       )}
     </motion.div>

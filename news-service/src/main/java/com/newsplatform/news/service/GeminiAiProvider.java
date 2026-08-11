@@ -15,14 +15,25 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * AI provider backed by Google Gemini (default model {@code gemini-1.5-flash}).
+ * AI provider backed by Google Gemini.
  *
- * <p>The provider asks Gemini to return strict JSON, then parses the response
- * into the {@link AiProvider} contract. If anything goes wrong — network
- * failure, malformed JSON, non-JSON output — it throws a
- * {@link GeminiCallException} which the caller ({@link AiService}) catches to
- * fall back to the heuristic provider. The Gemini path therefore never
- * produces an article-processing failure.
+ * <h3>Rate limiting</h3>
+ * <p>All Gemini API calls flow through {@link GeminiClient#generate(String)}, which
+ * checks the centralized {@link GeminiRateLimiter} before every request. This class
+ * does <em>not</em> need to manage rate limiting itself.
+ *
+ * <h3>Combined-call optimisation</h3>
+ * <p>Instead of 3 separate Gemini API calls (summarize, sentiment, keywords), this
+ * provider issues a <em>single</em> structured prompt and parses the JSON response into
+ * all three fields simultaneously. This reduces Gemini quota consumption by ~66%.
+ *
+ * <p>The legacy individual methods ({@link #summarize}, {@link #sentiment},
+ * {@link #keywords}) are preserved for API compatibility and fall back to parsing
+ * from the combined response when possible.
+ *
+ * <p>If anything goes wrong — network failure, malformed JSON, non-JSON output,
+ * cooldown active — a {@link GeminiCallException} is thrown. The orchestrator
+ * ({@link AiService}) catches this and falls back to {@link HeuristicAiProvider}.
  */
 @Component
 public class GeminiAiProvider implements AiProvider {
@@ -48,18 +59,88 @@ public class GeminiAiProvider implements AiProvider {
         return "gemini";
     }
 
-    @Override
-    public String summarize(String content) {
-        if (content == null || content.isBlank()) return "";
+    // ─── Combined analysis (primary method, single Gemini call) ──────────────
+
+    /**
+     * Perform summary + sentiment + keyword extraction in a SINGLE Gemini call.
+     *
+     * <p>Returns an {@link ArticleAnalysis} record, or throws {@link GeminiCallException}
+     * on any failure so the caller can fall back to heuristics for all fields at once.
+     *
+     * @param content article text (will be truncated to 4000 chars if necessary)
+     * @param maxKeywords maximum number of keywords to request
+     */
+    public ArticleAnalysis analyzeArticle(String content, int maxKeywords) {
+        if (content == null || content.isBlank()) {
+            throw new GeminiCallException("Empty content supplied to analyzeArticle", null);
+        }
+
         String prompt = """
-            Summarize the following news article in 1-3 sentences.
-            Keep it factual. Output ONLY the summary, no preamble, no labels.
+            Analyze the following news article and respond with ONLY a single JSON object.
+            The JSON must have exactly these fields:
+              "summary"   : string — 1-3 sentence factual summary (no preamble)
+              "sentiment" : object — { "label": "Positive"|"Neutral"|"Negative", "score": <number -1..1> }
+              "keywords"  : array  — up to %d lowercase strings in order of importance
+
+            Example output:
+            {"summary":"The Fed raised interest rates by 0.25 percent.","sentiment":{"label":"Neutral","score":0.1},"keywords":["interest rates","federal reserve","monetary policy"]}
 
             ARTICLE:
             %s
-            """.formatted(truncate(content, 4000));
-        String response = callOrThrow(prompt);
-        return stripWrapping(response);
+            """.formatted(maxKeywords, truncate(content, 4000));
+
+        String raw = callOrThrow(prompt);
+        String json = extractJsonObject(raw);
+
+        try {
+            JsonNode node = mapper.readTree(json);
+
+            // --- summary ---
+            String summary = node.path("summary").asText("").trim();
+
+            // --- sentiment ---
+            JsonNode sentimentNode = node.path("sentiment");
+            String label = sentimentNode.path("label").asText("Neutral");
+            if (!isValidLabel(label)) label = "Neutral";
+            double score = sentimentNode.path("score").asDouble(0.0);
+            score = Math.max(-1.0, Math.min(1.0, score));
+            AiProvider.SentimentResult sentimentResult = new AiProvider.SentimentResult(label, score);
+
+            // --- keywords ---
+            JsonNode kwNode = node.path("keywords");
+            List<String> keywords = new ArrayList<>();
+            if (kwNode.isArray()) {
+                for (JsonNode el : kwNode) {
+                    String v = el.asText("").trim().toLowerCase(Locale.ROOT);
+                    if (!v.isEmpty()) keywords.add(v);
+                    if (keywords.size() >= maxKeywords) break;
+                }
+            }
+
+            return new ArticleAnalysis(summary, sentimentResult, keywords);
+
+        } catch (Exception ex) {
+            throw new GeminiCallException("Combined analysis JSON parse failed: " + ex.getMessage(), ex);
+        }
+    }
+
+    /**
+     * Immutable result from {@link #analyzeArticle(String, int)}.
+     */
+    public record ArticleAnalysis(
+            String summary,
+            AiProvider.SentimentResult sentiment,
+            List<String> keywords) {
+    }
+
+    // ─── Legacy single-operation methods (preserved for API compatibility) ───
+
+    @Override
+    public String summarize(String content) {
+        if (content == null || content.isBlank()) return "";
+        // Reuse combined call so we don't burn a separate Gemini request
+        ArticleAnalysis analysis = analyzeArticle(content, 5);
+        return analysis.summary();
     }
 
     @Override
@@ -67,66 +148,23 @@ public class GeminiAiProvider implements AiProvider {
         if (content == null || content.isBlank()) {
             return new AiProvider.SentimentResult("Neutral", 0.0);
         }
-        String prompt = """
-            Analyze the sentiment of this news article. Respond with ONLY a
-            JSON object of the form {"label":"Positive|Neutral|Negative","score":<-1..1>}.
-            Score: -1 very negative, 0 neutral, +1 very positive.
-
-            ARTICLE:
-            %s
-            """.formatted(truncate(content, 4000));
-
-        String raw = callOrThrow(prompt);
-        String json = extractJsonObject(raw);
-        try {
-            JsonNode node = mapper.readTree(json);
-            String label = node.path("label").asText("Neutral");
-            if (!isValidLabel(label)) label = "Neutral";
-            double score = node.path("score").asDouble(0.0);
-            if (score < -1.0) score = -1.0;
-            if (score > 1.0) score = 1.0;
-            return new AiProvider.SentimentResult(label, score);
-        } catch (Exception ex) {
-            throw new GeminiCallException("Sentiment JSON parse failed: " + ex.getMessage(), ex);
-        }
+        ArticleAnalysis analysis = analyzeArticle(content, 5);
+        return analysis.sentiment();
     }
 
     @Override
     public List<String> keywords(String content, int maxKeywords) {
         if (content == null || content.isBlank()) return Collections.emptyList();
-        String prompt = """
-            Extract the %d most important keywords or short phrases from this
-            news article. Respond with ONLY a JSON array of strings, lowercased,
-            in order of importance. Example: ["inflation","central bank"].
-
-            ARTICLE:
-            %s
-            """.formatted(maxKeywords, truncate(content, 4000));
-
-        String raw = callOrThrow(prompt);
-        String json = extractJsonArray(raw);
-        try {
-            JsonNode node = mapper.readTree(json);
-            List<String> out = new ArrayList<>();
-            if (node.isArray()) {
-                for (JsonNode el : node) {
-                    String v = el.asText("").trim().toLowerCase(Locale.ROOT);
-                    if (!v.isEmpty()) out.add(v);
-                    if (out.size() >= maxKeywords) break;
-                }
-            }
-            return out;
-        } catch (Exception ex) {
-            throw new GeminiCallException("Keywords JSON parse failed: " + ex.getMessage(), ex);
-        }
+        ArticleAnalysis analysis = analyzeArticle(content, maxKeywords);
+        return analysis.keywords();
     }
 
-    // ----- internals -----
+    // ─── Internals ───────────────────────────────────────────────────────────
 
     private String callOrThrow(String prompt) {
         String response = client.generate(prompt);
         if (response == null || response.isBlank()) {
-            throw new GeminiCallException("Gemini returned empty response", null);
+            throw new GeminiCallException("Gemini returned empty/null response (rate-limited or unavailable)", null);
         }
         return response;
     }
@@ -143,24 +181,6 @@ public class GeminiAiProvider implements AiProvider {
         int close = raw.lastIndexOf('}');
         if (open >= 0 && close > open) return raw.substring(open, close + 1);
         return raw.trim();
-    }
-
-    private String extractJsonArray(String raw) {
-        if (raw == null) return "[]";
-        int open = raw.indexOf('[');
-        int close = raw.lastIndexOf(']');
-        if (open >= 0 && close > open) return raw.substring(open, close + 1);
-        return "[]";
-    }
-
-    private String stripWrapping(String raw) {
-        if (raw == null) return "";
-        String trimmed = raw.trim();
-        if (trimmed.startsWith("```")) {
-            trimmed = trimmed.replaceFirst("^```(?:json)?", "")
-                .replaceFirst("```$", "").trim();
-        }
-        return trimmed;
     }
 
     private static boolean isValidLabel(String label) {

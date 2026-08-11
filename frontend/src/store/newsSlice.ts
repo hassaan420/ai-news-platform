@@ -22,8 +22,8 @@ const initialState: NewsState = {
   error: null,
 };
 
-export const fetchLatestNews = createAsyncThunk('news/fetchLatest', async ({ page = 0, size = 10 }: { page?: number; size?: number }) => {
-  return await newsApi.getLatestNews(page, size);
+export const fetchLatestNews = createAsyncThunk('news/fetchLatest', async ({ page = 0, size = 10, dateFilter, from, to }: { page?: number; size?: number; dateFilter?: string; from?: string; to?: string }) => {
+  return await newsApi.getLatestNews(page, size, dateFilter, from, to);
 });
 
 export const fetchTrendingNews = createAsyncThunk('news/fetchTrending', async ({ page = 0, size = 10 }: { page?: number; size?: number }) => {
@@ -46,7 +46,11 @@ export const fetchArticleById = createAsyncThunk('news/fetchById', async (id: nu
 const newsSlice = createSlice({
   name: 'news',
   initialState,
-  reducers: {},
+  reducers: {
+    clearLatestNews: (state) => {
+      state.latestNews = null;
+    }
+  },
   extraReducers: (builder) => {
     // Latest News
     builder.addCase(fetchLatestNews.pending, (state) => {
@@ -90,5 +94,7 @@ const newsSlice = createSlice({
     });
   },
 });
+
+export const { clearLatestNews } = newsSlice.actions;
 
 export default newsSlice.reducer;

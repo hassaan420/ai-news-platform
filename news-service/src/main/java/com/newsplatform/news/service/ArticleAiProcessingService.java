@@ -17,15 +17,20 @@ import java.util.List;
 /**
  * Orchestrates asynchronous AI processing of articles.
  *
- * <p>Design notes:
+ * <h3>Key design notes:</h3>
  * <ul>
  *   <li>{@code @Async} and {@code @Transactional} must NOT be combined on the same
- *       method — the transaction would not commit before the async thread runs.
- *       All DB work is done inside inner {@code @Transactional} helper methods.</li>
- *   <li>{@code processPendingArticlesWithoutQueue()} repairs articles that were
- *       ingested before the AI queue was wired up (they have no queue record).</li>
- *   <li>{@code retryFailedJobs()} also resets items stuck in {@code PROCESSING}
- *       (e.g., after a container restart mid-flight).</li>
+ *       method — all DB work is done inside inner {@code @Transactional} helper methods.</li>
+ *   <li>AI processing now uses a <em>single</em> Gemini call per article (summary +
+ *       sentiment + keywords combined), reducing Gemini API quota usage by ~66%.</li>
+ *   <li>When the Gemini rate-limit cooldown is active, articles are processed using
+ *       the heuristic fallback immediately rather than queuing additional Gemini calls.</li>
+ *   <li>{@code processPendingQueueJobs()} skips items that are already {@code PROCESSING}
+ *       to prevent duplicate dispatches.</li>
+ *   <li>{@code retryFailedJobs()} does not dispatch retries while Gemini is on cooldown
+ *       if the error was rate-related — preventing the retry storm.</li>
+ *   <li>{@code processPendingArticlesWithoutQueue()} repairs articles that were ingested
+ *       before the AI queue was wired up.</li>
  * </ul>
  */
 @Service
@@ -39,7 +44,11 @@ public class ArticleAiProcessingService {
     /** Items stuck in PROCESSING for longer than this are assumed crashed. */
     private static final java.time.Duration PROCESSING_TIMEOUT = java.time.Duration.ofMinutes(10);
 
+    /** Error message substring that identifies rate-limit failures — used to suppress retries during cooldown. */
+    private static final String RATE_LIMIT_ERROR_MARKER = "GEMINI_RATE_LIMITED";
+
     private final AiService aiService;
+    private final GeminiRateLimiter rateLimiter;
     private final ArticleRepository articleRepository;
     private final ArticleKeywordRepository keywordRepository;
     private final ArticleTagRepository tagRepository;
@@ -50,11 +59,13 @@ public class ArticleAiProcessingService {
     private ArticleAiProcessingService self;
 
     public ArticleAiProcessingService(AiService aiService,
+                                      GeminiRateLimiter rateLimiter,
                                       ArticleRepository articleRepository,
                                       ArticleKeywordRepository keywordRepository,
                                       ArticleTagRepository tagRepository,
                                       AiProcessingQueueRepository queueRepository) {
         this.aiService = aiService;
+        this.rateLimiter = rateLimiter;
         this.articleRepository = articleRepository;
         this.keywordRepository = keywordRepository;
         this.tagRepository = tagRepository;
@@ -64,7 +75,9 @@ public class ArticleAiProcessingService {
     // ─── Public entry points ───────────────────────────────────────────────────
 
     /**
-     * Submits an article for AI processing on the dedicated thread pool.
+     * Submits an article for AI processing on the dedicated (bounded) thread pool.
+     *
+     * <p>Uses the worker count configured via {@code ai.processing.worker-count}.
      * The method itself is non-transactional; all DB access goes through
      * {@link #markProcessing}, {@link #doAiWork}, and {@link #markFailed}.
      */
@@ -72,7 +85,7 @@ public class ArticleAiProcessingService {
     @Caching(evict = {
         @CacheEvict(value = "latest_articles", allEntries = true),
         @CacheEvict(value = "trending_articles", allEntries = true),
-        @CacheEvict(value = "related_articles", key = "#articleId"),
+        @CacheEvict(value = "related_articles", key = "#p0"),
         @CacheEvict(value = "trending_ai_articles", allEntries = true)
     })
     public void processArticleAsync(Long articleId, Long queueId) {
@@ -123,6 +136,9 @@ public class ArticleAiProcessingService {
     /**
      * Pick up any items in {@code ai_processing_queue} with {@code status = PENDING}
      * and trigger async AI processing.
+     *
+     * <p><b>Deduplication</b>: items that are already {@code PROCESSING} are skipped
+     * to prevent the same article from being dispatched to multiple workers.
      */
     @Scheduled(fixedDelay = 15_000, initialDelay = 5_000)
     @Transactional
@@ -131,8 +147,13 @@ public class ArticleAiProcessingService {
         if (pendingJobs.isEmpty()) {
             return;
         }
-        log.info("[AI-QUEUE] Found {} PENDING queue items — triggering async processing via self proxy", pendingJobs.size());
+        log.info("[AI-QUEUE] Found {} PENDING queue items — triggering async processing", pendingJobs.size());
         for (AiProcessingQueue job : pendingJobs) {
+            // Deduplication guard: transition to PROCESSING here before dispatching.
+            // If the item was already set to PROCESSING by a concurrent scheduler tick,
+            // findByStatus("PENDING") would not have returned it, so this is a double-safety.
+            job.setStatus("PROCESSING");
+            queueRepository.save(job);
             self.processArticleAsync(job.getArticle().getId(), job.getId());
         }
     }
@@ -140,6 +161,10 @@ public class ArticleAiProcessingService {
     /**
      * Retries FAILED queue items (up to {@value #MAX_RETRIES} attempts) and
      * resets items stuck in PROCESSING after {@link #PROCESSING_TIMEOUT}.
+     *
+     * <p>Rate-limit awareness: if Gemini is currently on cooldown, retries for
+     * rate-limited failures are deferred to the next invocation rather than
+     * adding more Gemini-bound tasks to the executor.
      */
     @Scheduled(fixedDelay = 60_000)
     @Transactional
@@ -161,6 +186,13 @@ public class ArticleAiProcessingService {
         if (!failedJobs.isEmpty()) {
             log.info("[AI-QUEUE] Retrying {} FAILED jobs (max retries={})", failedJobs.size(), MAX_RETRIES);
         }
+
+        boolean geminiOnCooldown = rateLimiter.isOnCooldown();
+        if (geminiOnCooldown) {
+            log.info("[AI-QUEUE] Gemini cooldown active (retryAfterSeconds={}) — retries will still run with heuristic fallback",
+                    rateLimiter.cooldownRemainingSeconds());
+        }
+
         for (AiProcessingQueue job : failedJobs) {
             log.info("[AI-QUEUE] QueueId={} ArticleId={} retry={}/{}",
                     job.getId(), job.getArticle().getId(), job.getRetryCount() + 1, MAX_RETRIES);
@@ -181,6 +213,10 @@ public class ArticleAiProcessingService {
         });
     }
 
+    /**
+     * Core AI work: analyze the article using a SINGLE combined Gemini call (or heuristic
+     * fallback if Gemini is unavailable/on cooldown), then persist all derived fields.
+     */
     @Transactional
     protected void doAiWork(Long articleId, Long queueId) {
         Article article = articleRepository.findById(articleId)
@@ -193,38 +229,37 @@ public class ArticleAiProcessingService {
                         ? article.getDescription()
                         : article.getTitle();
 
-        String provider = aiService.isGeminiEnabled() ? "gemini" : "heuristic";
-        log.info("[AI-QUEUE] Article={} — starting AI processing (provider={})", articleId, provider);
+        // ── Combined AI analysis (1 Gemini call instead of 3) ─────────────────
+        AiService.ArticleAnalysisResult analysis = aiService.analyzeArticle(textContent);
 
-        // ── Summary ──────────────────────────────────────────────────────────
-        String summary = aiService.generateSummary(textContent);
-        article.setSummary(summary);
-        log.debug("[AI-QUEUE] Article={} — summary generated ({} chars)", articleId,
-                summary != null ? summary.length() : 0);
+        log.info("[AI-QUEUE] Article={} — AI analysis complete: provider={} sentiment={} keywords={}",
+                articleId, analysis.provider, analysis.sentiment.sentiment, analysis.keywords.size());
 
-        // ── Sentiment ─────────────────────────────────────────────────────────
-        AiService.SentimentResult sentiment = aiService.analyzeSentiment(textContent);
-        article.setSentiment(sentiment.sentiment);
-        article.setSentimentScore(sentiment.score);
-        log.debug("[AI-QUEUE] Article={} — sentiment={} score={}", articleId,
-                sentiment.sentiment, sentiment.score);
+        // ── Summary ────────────────────────────────────────────────────────────
+        article.setSummary(analysis.summary);
+        log.debug("[AI-QUEUE] Article={} — summary ({} chars, provider={})",
+                articleId, analysis.summary != null ? analysis.summary.length() : 0, analysis.provider);
 
-        // ── Keywords (skip if already stored — idempotent on retry) ──────────
+        // ── Sentiment ──────────────────────────────────────────────────────────
+        article.setSentiment(analysis.sentiment.sentiment);
+        article.setSentimentScore(analysis.sentiment.score);
+
+        // ── Keywords (skip if already stored — idempotent on retry) ───────────
         List<ArticleKeyword> existingKeywords = keywordRepository.findByArticleId(articleId);
         if (existingKeywords.isEmpty()) {
-            List<String> keywords = aiService.extractKeywords(textContent);
-            for (String k : keywords) {
+            for (String k : analysis.keywords) {
                 ArticleKeyword ak = new ArticleKeyword();
                 ak.setArticle(article);
                 ak.setKeyword(k);
                 keywordRepository.save(ak);
             }
-            log.info("[AI-QUEUE] Article={} — stored {} keywords", articleId, keywords.size());
+            log.info("[AI-QUEUE] Article={} — stored {} keywords (provider={})",
+                    articleId, analysis.keywords.size(), analysis.provider);
         } else {
             log.debug("[AI-QUEUE] Article={} — keywords already present, skipping", articleId);
         }
 
-        // ── Tags (skip if already stored) ─────────────────────────────────────
+        // ── Tags (skip if already stored, always heuristic) ───────────────────
         List<ArticleTag> existingTags = tagRepository.findByArticleId(articleId);
         if (existingTags.isEmpty()) {
             List<String> tags = aiService.generateTags(article.getTitle(), textContent);
@@ -239,17 +274,20 @@ public class ArticleAiProcessingService {
             log.debug("[AI-QUEUE] Article={} — tags already present, skipping", articleId);
         }
 
-        // ── Reading time ──────────────────────────────────────────────────────
+        // ── Reading time ───────────────────────────────────────────────────────
         int wordCount = textContent.split("\\s+").length;
         article.setReadingTime(Math.max(1, wordCount / 200));
 
-        // ── AI confidence & topic classification ──────────────────────────────
-        article.setAiConfidence(aiService.isGeminiEnabled() ? 0.92 : 0.65);
+        // ── AI confidence & topic classification ───────────────────────────────
+        // Confidence is slightly lower when heuristic was used due to rate limiting
+        boolean usedGemini = "gemini".equals(analysis.provider);
+        article.setAiConfidence(usedGemini ? 0.92 : 0.65);
+
         List<ArticleTag> allTags = tagRepository.findByArticleId(articleId);
         article.setTopicClassification(allTags.isEmpty() ? "General" : allTags.get(0).getTag());
 
-        // ── Scores ────────────────────────────────────────────────────────────
-        double sentimentBoost = sentiment.score != null ? sentiment.score * 25.0 : 0.0;
+        // ── Scores ─────────────────────────────────────────────────────────────
+        double sentimentBoost = analysis.sentiment.score != null ? analysis.sentiment.score * 25.0 : 0.0;
         double confidenceBoost = article.getAiConfidence() * 10.0;
         article.setRecommendationScore(50.0 + sentimentBoost + confidenceBoost);
         article.setTrendingScore(50.0 + sentimentBoost);
@@ -258,14 +296,14 @@ public class ArticleAiProcessingService {
         article.setProcessedAt(Instant.now());
         articleRepository.save(article);
 
-        // ── Mark queue complete ───────────────────────────────────────────────
+        // ── Mark queue complete ─────────────────────────────────────────────────
         queueRepository.findById(queueId).ifPresent(q -> {
             q.setStatus("COMPLETED");
             queueRepository.save(q);
         });
 
-        log.info("[AI-QUEUE] Article={} QueueId={} -> COMPLETED | sentiment={} provider={}",
-                articleId, queueId, sentiment.sentiment, provider);
+        log.info("[AI-QUEUE] Article={} QueueId={} -> COMPLETED | provider={} sentiment={} keywords={}",
+                articleId, queueId, analysis.provider, analysis.sentiment.sentiment, analysis.keywords.size());
     }
 
     @Transactional

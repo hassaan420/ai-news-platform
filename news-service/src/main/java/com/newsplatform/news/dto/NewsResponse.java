@@ -28,6 +28,8 @@ public record NewsResponse(
     Instant processedAt,
     List<String> keywords,
     List<String> tags,
-    List<NewsSummaryResponse> relatedArticles
+    List<NewsSummaryResponse> relatedArticles,
+    Integer views,
+    Integer bookmarks
 ) {
 }

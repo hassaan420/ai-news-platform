@@ -50,7 +50,7 @@ public class InternalArticleControllerTest {
     public void testCreateInternalNews_Success() throws Exception {
         NewsRequest request = new NewsRequest(1L, 1L, "Title", "Desc", "content", "img", "url", "author", "en", Instant.now(), "hash");
         NewsResponse response = new NewsResponse(1L, "Title", "Desc", "content", "img", "url", "author", "en", Instant.now(), "hash", 1L, null,
-                null, null, null, null, null, null, null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null, null, null, null, null, null, 0, 0);
 
         Mockito.when(articleService.createInternalNews(any(NewsRequest.class))).thenReturn(response);
 

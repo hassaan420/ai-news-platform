@@ -20,10 +20,14 @@ public interface NewsMapper {
     @Mapping(target = "relatedArticles", ignore = true)
     @Mapping(target = "keywords", source = "keywords")
     @Mapping(target = "tags", source = "tags")
+    @Mapping(target = "views", source = "stats.views")
+    @Mapping(target = "bookmarks", source = "stats.bookmarks")
     NewsResponse toNewsResponse(Article article);
 
     @Mapping(target = "keywords", source = "keywords")
     @Mapping(target = "tags", source = "tags")
+    @Mapping(target = "views", source = "stats.views")
+    @Mapping(target = "bookmarks", source = "stats.bookmarks")
     NewsSummaryResponse toNewsSummaryResponse(Article article);
 
     @Mapping(target = "searchScore", ignore = true)

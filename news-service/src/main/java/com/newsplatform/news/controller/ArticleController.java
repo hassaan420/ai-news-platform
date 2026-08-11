@@ -37,8 +37,12 @@ public class ArticleController {
 
     @GetMapping("/latest")
     @Operation(summary = "Get latest news articles")
-    public ResponseEntity<PagedResponse<NewsSummaryResponse>> getLatestArticles(@PageableDefault(size = 20) Pageable pageable) {
-        return ResponseEntity.ok(articleService.getLatestArticles(pageable));
+    public ResponseEntity<PagedResponse<NewsSummaryResponse>> getLatestArticles(
+            @PageableDefault(size = 20) Pageable pageable,
+            @RequestParam(value = "dateFilter", required = false) String dateFilter,
+            @RequestParam(value = "from", required = false) String from,
+            @RequestParam(value = "to", required = false) String to) {
+        return ResponseEntity.ok(articleService.getLatestArticles(pageable, dateFilter, from, to));
     }
 
     @GetMapping("/trending")

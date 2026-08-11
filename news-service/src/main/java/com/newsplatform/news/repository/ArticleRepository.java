@@ -14,17 +14,26 @@ import java.util.Optional;
 
 @Repository
 public interface ArticleRepository extends JpaRepository<Article, Long> {
-    @EntityGraph(attributePaths = {"source"})
+    @EntityGraph(attributePaths = {"source", "stats"})
     Optional<Article> findByHash(String hash);
 
-    @EntityGraph(attributePaths = {"source"})
+    @EntityGraph(attributePaths = {"source", "stats"})
     Page<Article> findByCategoryIdOrderByPublishedAtDesc(Long categoryId, Pageable pageable);
 
-    @EntityGraph(attributePaths = {"source"})
+    @EntityGraph(attributePaths = {"source", "stats"})
     Page<Article> findBySourceIdOrderByPublishedAtDesc(Long sourceId, Pageable pageable);
 
-    @EntityGraph(attributePaths = {"source"})
+    @EntityGraph(attributePaths = {"source", "stats"})
     Page<Article> findAllByOrderByPublishedAtDesc(Pageable pageable);
+
+    @EntityGraph(attributePaths = {"source", "stats"})
+    Page<Article> findAllByPublishedAtBetweenOrderByPublishedAtDesc(java.time.Instant start, java.time.Instant end, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"source", "stats"})
+    Page<Article> findAllByPublishedAtAfterOrderByPublishedAtDesc(java.time.Instant start, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"source", "stats"})
+    Page<Article> findAllByPublishedAtBeforeOrderByPublishedAtDesc(java.time.Instant end, Pageable pageable);
 
     @Query(value = "SELECT a.* FROM articles a " +
            "LEFT JOIN article_keywords ak ON a.id = ak.article_id AND ak.keyword LIKE CONCAT('%', :keyword, '%') " +
@@ -49,10 +58,10 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
            nativeQuery = true)
     Page<Article> searchArticles(@Param("keyword") String keyword, Pageable pageable);
 
-    @EntityGraph(attributePaths = {"source"})
+    @EntityGraph(attributePaths = {"source", "stats"})
     Optional<Article> findById(Long id);
 
-    @EntityGraph(attributePaths = {"source"})
+    @EntityGraph(attributePaths = {"source", "stats"})
     Page<Article> findAll(Pageable pageable);
 
     @org.springframework.data.jpa.repository.Modifying
@@ -74,9 +83,9 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
             nativeQuery = true)
     List<Article> findPendingWithoutQueueEntry(@Param("limit") int limit);
 
-    @EntityGraph(attributePaths = {"source"})
+    @EntityGraph(attributePaths = {"source", "stats"})
     Page<Article> findAllByOrderByTrendingScoreDesc(Pageable pageable);
 
-    @EntityGraph(attributePaths = {"source"})
+    @EntityGraph(attributePaths = {"source", "stats"})
     List<Article> findTop5ByCategoryIdAndIdNot(Long categoryId, Long id);
 }

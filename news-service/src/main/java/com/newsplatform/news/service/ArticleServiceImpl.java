@@ -61,16 +61,63 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    @Cacheable(value = "latest_articles", key = "#p0.pageNumber + '-' + #p0.pageSize")
-    public PagedResponse<NewsSummaryResponse> getLatestArticles(Pageable pageable) {
-        return createPagedResponse(articleRepository.findAllByOrderByPublishedAtDesc(pageable));
+    @Cacheable(value = "latest_articles", key = "#p0.pageNumber + '-' + #p0.pageSize + '-' + (#p1 != null ? #p1 : 'LATEST') + '-' + (#p2 != null ? #p2 : '') + '-' + (#p3 != null ? #p3 : '')")
+    public PagedResponse<NewsSummaryResponse> getLatestArticles(Pageable pageable, String dateFilter, String from, String to) {
+        if (dateFilter == null || dateFilter.isBlank()) {
+            dateFilter = "LATEST";
+        }
+        
+        java.time.ZoneId zoneId = java.time.ZoneId.of("Asia/Karachi");
+        java.time.ZonedDateTime now = java.time.ZonedDateTime.now(zoneId);
+        
+        return switch (dateFilter.toUpperCase()) {
+            case "TODAY" -> {
+                java.time.Instant start = now.toLocalDate().atStartOfDay(zoneId).toInstant();
+                java.time.Instant end = now.toLocalDate().plusDays(1).atStartOfDay(zoneId).toInstant();
+                yield createPagedResponse(articleRepository.findAllByPublishedAtBetweenOrderByPublishedAtDesc(start, end, pageable));
+            }
+            case "YESTERDAY" -> {
+                java.time.Instant start = now.toLocalDate().minusDays(1).atStartOfDay(zoneId).toInstant();
+                java.time.Instant end = now.toLocalDate().atStartOfDay(zoneId).toInstant();
+                yield createPagedResponse(articleRepository.findAllByPublishedAtBetweenOrderByPublishedAtDesc(start, end, pageable));
+            }
+            case "LAST_7_DAYS" -> {
+                java.time.Instant start = now.toLocalDate().minusDays(7).atStartOfDay(zoneId).toInstant();
+                yield createPagedResponse(articleRepository.findAllByPublishedAtAfterOrderByPublishedAtDesc(start, pageable));
+            }
+            case "LAST_30_DAYS" -> {
+                java.time.Instant start = now.toLocalDate().minusDays(30).atStartOfDay(zoneId).toInstant();
+                yield createPagedResponse(articleRepository.findAllByPublishedAtAfterOrderByPublishedAtDesc(start, pageable));
+            }
+            case "OLDER" -> {
+                java.time.Instant end = now.toLocalDate().minusDays(30).atStartOfDay(zoneId).toInstant();
+                yield createPagedResponse(articleRepository.findAllByPublishedAtBeforeOrderByPublishedAtDesc(end, pageable));
+            }
+            case "CUSTOM" -> {
+                if (from != null && to != null && !from.isBlank() && !to.isBlank()) {
+                    try {
+                        java.time.LocalDate fromDate = java.time.LocalDate.parse(from);
+                        java.time.LocalDate toDate = java.time.LocalDate.parse(to);
+                        if (fromDate.isAfter(toDate)) {
+                            throw new com.newsplatform.common.exception.BadRequestException("From date cannot be after To date");
+                        }
+                        java.time.Instant start = fromDate.atStartOfDay(zoneId).toInstant();
+                        java.time.Instant end = toDate.plusDays(1).atStartOfDay(zoneId).toInstant();
+                        yield createPagedResponse(articleRepository.findAllByPublishedAtBetweenOrderByPublishedAtDesc(start, end, pageable));
+                    } catch (java.time.format.DateTimeParseException e) {
+                        throw new com.newsplatform.common.exception.BadRequestException("Invalid date format. Expected YYYY-MM-DD");
+                    }
+                }
+                yield createPagedResponse(articleRepository.findAllByOrderByPublishedAtDesc(pageable));
+            }
+            default -> createPagedResponse(articleRepository.findAllByOrderByPublishedAtDesc(pageable));
+        };
     }
 
     @Override
     @Cacheable(value = "trending_articles", key = "#p0.pageNumber + '-' + #p0.pageSize")
     public PagedResponse<NewsSummaryResponse> getTrendingArticles(Pageable pageable) {
-        // Trending logic mocked to latest for now as views count is not in schema
-        return createPagedResponse(articleRepository.findAllByOrderByPublishedAtDesc(pageable));
+        return createPagedResponse(articleRepository.findAllByOrderByTrendingScoreDesc(pageable));
     }
 
     @Override
