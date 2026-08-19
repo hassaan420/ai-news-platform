@@ -101,10 +101,10 @@ public class NewsApiProvider implements NewsProvider {
             article.setImage(item.getUrlToImage() != null ? item.getUrlToImage() : "");
             
             String author = item.getAuthor();
-            if (author == null || author.isBlank()) {
-                author = (item.getSource() != null) ? item.getSource().getName() : "";
-            }
             article.setAuthor(author != null ? author : "");
+            
+            String publisher = (item.getSource() != null) ? item.getSource().getName() : "";
+            article.setPublisher(publisher);
             
             article.setSourceId(getSourceId());
             article.setCategoryId(categoryId);
@@ -121,5 +121,85 @@ public class NewsApiProvider implements NewsProvider {
     @Override
     public List<NormalizedArticle> fetchNews(String categorySlug, Long categoryId) {
         return fetchNews(categorySlug, categoryId, null);
+    }
+
+    @Override
+    public List<NormalizedArticle> searchNews(String query) {
+        return searchNews(query, null);
+    }
+
+    @Override
+    public List<NormalizedArticle> searchNews(String query, List<String> domains) {
+        if (apiKey == null || apiKey.isBlank()) return List.of();
+        try {
+            String encodedQuery = java.net.URLEncoder.encode(query, java.nio.charset.StandardCharsets.UTF_8.toString());
+            String domainsParam = (domains != null && !domains.isEmpty())
+                    ? String.join(",", domains)
+                    : null;
+            return executeSearch(encodedQuery, domainsParam);
+        } catch (Exception e) {
+            log.error("Failed to search NewsAPI", e);
+            return List.of();
+        }
+    }
+
+    /**
+     * Builds the NewsAPI /v2/everything URL and maps the response to NormalizedArticles.
+     *
+     * @param encodedQuery URL-encoded search query (required)
+     * @param domainsParam comma-separated bare domains to restrict results to (e.g. "bbc.com,reuters.com"),
+     *                     or {@code null} for unfiltered search. Passed directly to NewsAPI's
+     *                     documented {@code domains} parameter on /v2/everything.
+     */
+    private List<NormalizedArticle> executeSearch(String encodedQuery, String domainsParam) {
+        StringBuilder urlBuilder = new StringBuilder();
+        urlBuilder.append("https://newsapi.org/v2/everything?q=").append(encodedQuery)
+                  .append("&language=en&sortBy=relevancy&pageSize=10&apiKey=").append(apiKey);
+        if (domainsParam != null && !domainsParam.isBlank()) {
+            urlBuilder.append("&domains=").append(domainsParam);
+        }
+        String url = urlBuilder.toString();
+        log.info("Searching NewsAPI: url={}", url.replace(apiKey, "***"));
+
+        NewsApiResponse response = restTemplate.getForObject(url, NewsApiResponse.class);
+        if (response == null || !"ok".equals(response.getStatus()) || response.getArticles() == null) {
+            return List.of();
+        }
+
+        List<NormalizedArticle> mappedArticles = new ArrayList<>();
+        for (NewsApiResponse.Article item : response.getArticles()) {
+            String title = item.getTitle();
+            if (title == null || title.isBlank() || "[Removed]".equals(title)) continue;
+
+            NormalizedArticle article = new NormalizedArticle();
+            article.setTitle(title);
+            article.setDescription(item.getDescription() != null ? item.getDescription() : "");
+            article.setContent(item.getContent() != null ? item.getContent() : article.getDescription());
+
+            String articleUrl = item.getUrl();
+            String uuid = UUID.randomUUID().toString();
+            if (articleUrl != null) {
+                try {
+                    java.security.MessageDigest md = java.security.MessageDigest.getInstance("SHA-256");
+                    byte[] hashBytes = md.digest(articleUrl.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                    StringBuilder sb = new StringBuilder();
+                    for (byte b : hashBytes) sb.append(String.format("%02x", b));
+                    uuid = sb.toString();
+                } catch (Exception e) { /* fallback to random UUID */ }
+            }
+            article.setUrl(articleUrl != null ? articleUrl : "https://newsapi.org/" + uuid);
+            article.setImage(item.getUrlToImage() != null ? item.getUrlToImage() : "");
+            article.setAuthor(item.getAuthor() != null ? item.getAuthor() : "");
+            String publisher = (item.getSource() != null) ? item.getSource().getName() : "";
+            article.setPublisher(publisher);
+            article.setSourceId(getSourceId());
+            article.setCategoryId(null); // No specific category for search
+            article.setLanguage("en");
+            article.setPublishedAt(item.getPublishedAt() != null ? item.getPublishedAt() : Instant.now().toString());
+            article.setHash(uuid);
+
+            mappedArticles.add(article);
+        }
+        return mappedArticles;
     }
 }

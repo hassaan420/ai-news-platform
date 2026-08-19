@@ -99,11 +99,13 @@ public class GNewsProvider implements NewsProvider {
             
             article.setImage(item.getImage() != null ? item.getImage() : "");
             
-            String author = "";
+            String publisher = "";
             if (item.getSource() != null && item.getSource().getName() != null) {
-                author = item.getSource().getName();
+                publisher = item.getSource().getName();
             }
-            article.setAuthor(author);
+            article.setPublisher(publisher);
+            // GNews doesn't have an explicit author, so keep author empty or fallback if needed
+            article.setAuthor("");
             
             article.setSourceId(getSourceId());
             article.setCategoryId(categoryId);
@@ -120,5 +122,65 @@ public class GNewsProvider implements NewsProvider {
     @Override
     public List<NormalizedArticle> fetchNews(String categorySlug, Long categoryId) {
         return fetchNews(categorySlug, categoryId, null);
+    }
+
+    @Override
+    public List<NormalizedArticle> searchNews(String query) {
+        if (apiKey == null || apiKey.isBlank()) return List.of();
+        
+        try {
+            // GNews v4 search API does not support domain/source filtering as of this implementation.
+            // The interface default for searchNews(String, List<String>) falls back to this method.
+            String encodedQuery = java.net.URLEncoder.encode(query, java.nio.charset.StandardCharsets.UTF_8.toString());
+            String url = String.format("https://gnews.io/api/v4/search?q=%s&lang=en&max=10&apikey=%s", encodedQuery, apiKey);
+            log.info("Searching GNews for query: {}", query);
+            
+            GNewsResponse response = restTemplate.getForObject(url, GNewsResponse.class);
+            if (response == null || response.getArticles() == null) return List.of();
+            
+            List<NormalizedArticle> mappedArticles = new ArrayList<>();
+            for (GNewsResponse.Article item : response.getArticles()) {
+                String title = item.getTitle();
+                if (title == null || title.isBlank()) continue;
+                
+                NormalizedArticle article = new NormalizedArticle();
+                article.setTitle(title);
+                article.setDescription(item.getDescription() != null ? item.getDescription() : "");
+                article.setContent(item.getContent() != null ? item.getContent() : article.getDescription());
+                
+                String articleUrl = item.getUrl();
+                String uuid = UUID.randomUUID().toString();
+                if (articleUrl != null) {
+                    try {
+                        java.security.MessageDigest md = java.security.MessageDigest.getInstance("SHA-256");
+                        byte[] hashBytes = md.digest(articleUrl.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                        StringBuilder sb = new StringBuilder();
+                        for (byte b : hashBytes) sb.append(String.format("%02x", b));
+                        uuid = sb.toString();
+                    } catch (Exception e) {}
+                }
+                article.setUrl(articleUrl != null ? articleUrl : "https://gnews.io/" + uuid);
+                article.setImage(item.getImage() != null ? item.getImage() : "");
+                
+                String publisher = "";
+                if (item.getSource() != null && item.getSource().getName() != null) {
+                    publisher = item.getSource().getName();
+                }
+                article.setPublisher(publisher);
+                article.setAuthor("");
+                
+                article.setSourceId(getSourceId());
+                article.setCategoryId(null);
+                article.setLanguage("en");
+                article.setPublishedAt(item.getPublishedAt() != null ? item.getPublishedAt() : Instant.now().toString());
+                article.setHash(uuid);
+                
+                mappedArticles.add(article);
+            }
+            return mappedArticles;
+        } catch (Exception e) {
+            log.error("Failed to search GNews", e);
+            return List.of();
+        }
     }
 }

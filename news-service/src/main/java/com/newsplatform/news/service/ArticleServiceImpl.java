@@ -31,6 +31,7 @@ public class ArticleServiceImpl implements ArticleService {
     private final com.newsplatform.news.repository.AiProcessingQueueRepository aiProcessingQueueRepository;
     private final com.newsplatform.news.service.ArticleAiProcessingService aiProcessingService;
     private final com.newsplatform.news.repository.ArticleStatsRepository articleStatsRepository;
+    private final com.newsplatform.news.repository.ArticleVerificationRepository verificationRepository;
 
     public ArticleServiceImpl(ArticleRepository articleRepository, 
                               SourceRepository sourceRepository, 
@@ -38,7 +39,8 @@ public class ArticleServiceImpl implements ArticleService {
                               org.springframework.web.client.RestTemplate restTemplate,
                               com.newsplatform.news.repository.AiProcessingQueueRepository aiProcessingQueueRepository,
                               com.newsplatform.news.service.ArticleAiProcessingService aiProcessingService,
-                              com.newsplatform.news.repository.ArticleStatsRepository articleStatsRepository) {
+                              com.newsplatform.news.repository.ArticleStatsRepository articleStatsRepository,
+                              com.newsplatform.news.repository.ArticleVerificationRepository verificationRepository) {
         this.articleRepository = articleRepository;
         this.sourceRepository = sourceRepository;
         this.newsMapper = newsMapper;
@@ -46,6 +48,7 @@ public class ArticleServiceImpl implements ArticleService {
         this.aiProcessingQueueRepository = aiProcessingQueueRepository;
         this.aiProcessingService = aiProcessingService;
         this.articleStatsRepository = articleStatsRepository;
+        this.verificationRepository = verificationRepository;
     }
 
     @Override
@@ -250,6 +253,34 @@ public class ArticleServiceImpl implements ArticleService {
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Article not found with id: " + id));
         articleRepository.delete(article);
+    }
+
+    @Override
+    @Cacheable(value = "article_verification", key = "#p0")
+    public com.newsplatform.news.dto.ArticleVerificationDto getVerification(Long articleId) {
+        com.newsplatform.news.entity.ArticleVerification verification = verificationRepository.findByArticleId(articleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Verification data not found for article: " + articleId));
+        
+        List<com.newsplatform.news.dto.VerificationSourceDto> sources = verification.getVerificationSources().stream()
+                .map(s -> new com.newsplatform.news.dto.VerificationSourceDto(
+                        s.getId(), s.getSourceName(), s.getUrl(), s.getPublishedAt(), s.getSimilarityScore(), s.getRelationship()))
+                .collect(Collectors.toList());
+                
+        List<com.newsplatform.news.dto.VerificationConflictDto> conflicts = verification.getVerificationConflicts().stream()
+                .map(c -> new com.newsplatform.news.dto.VerificationConflictDto(
+                        c.getId(), c.getClaimText(), c.getConflictingSourceUrl()))
+                .collect(Collectors.toList());
+                
+        return new com.newsplatform.news.dto.ArticleVerificationDto(
+                verification.getId(),
+                verification.getStatus(),
+                verification.getVerificationScore(),
+                verification.getSourcesFound(),
+                verification.getIndependentSources(),
+                verification.getLastVerifiedAt(),
+                sources,
+                conflicts
+        );
     }
 
     private PagedResponse<NewsSummaryResponse> createPagedResponse(Page<Article> page) {

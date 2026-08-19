@@ -100,10 +100,10 @@ public class MediastackProvider implements NewsProvider {
             article.setImage(item.getImage() != null ? item.getImage() : "");
             
             String author = item.getAuthor();
-            if (author == null || author.isBlank()) {
-                author = item.getSource();
-            }
             article.setAuthor(author != null ? author : "");
+            
+            String publisher = item.getSource();
+            article.setPublisher(publisher != null ? publisher : "");
             
             article.setSourceId(getSourceId());
             article.setCategoryId(categoryId);
@@ -120,5 +120,64 @@ public class MediastackProvider implements NewsProvider {
     @Override
     public List<NormalizedArticle> fetchNews(String categorySlug, Long categoryId) {
         return fetchNews(categorySlug, categoryId, null);
+    }
+
+    @Override
+    public List<NormalizedArticle> searchNews(String query) {
+        if (apiKey == null || apiKey.isBlank()) return List.of();
+        
+        try {
+            // Mediastack search does not support domain filtering by raw domain string (e.g. "bbc.com").
+            // Its source filtering uses proprietary internal source IDs obtainable only via /v1/sources,
+            // which cannot be mapped from bare domain strings at search time without an additional API call.
+            // The interface default for searchNews(String, List<String>) falls back to this method.
+            String encodedQuery = java.net.URLEncoder.encode(query, java.nio.charset.StandardCharsets.UTF_8.toString());
+            String url = String.format("http://api.mediastack.com/v1/news?keywords=%s&languages=en&limit=10&access_key=%s", encodedQuery, apiKey);
+            log.info("Searching Mediastack for query: {}", query);
+            
+            MediastackResponse response = restTemplate.getForObject(url, MediastackResponse.class);
+            if (response == null || response.getData() == null) return List.of();
+            
+            List<NormalizedArticle> mappedArticles = new ArrayList<>();
+            for (MediastackResponse.Article item : response.getData()) {
+                String title = item.getTitle();
+                if (title == null || title.isBlank()) continue;
+                
+                NormalizedArticle article = new NormalizedArticle();
+                article.setTitle(title);
+                article.setDescription(item.getDescription() != null ? item.getDescription() : "");
+                article.setContent(article.getDescription());
+                
+                String articleUrl = item.getUrl();
+                String uuid = UUID.randomUUID().toString();
+                if (articleUrl != null) {
+                    try {
+                        java.security.MessageDigest md = java.security.MessageDigest.getInstance("SHA-256");
+                        byte[] hashBytes = md.digest(articleUrl.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                        StringBuilder sb = new StringBuilder();
+                        for (byte b : hashBytes) sb.append(String.format("%02x", b));
+                        uuid = sb.toString();
+                    } catch (Exception e) {}
+                }
+                article.setUrl(articleUrl != null ? articleUrl : "https://mediastack.com/" + uuid);
+                article.setImage(item.getImage() != null ? item.getImage() : "");
+                
+                article.setAuthor(item.getAuthor() != null ? item.getAuthor() : "");
+                String publisher = item.getSource();
+                article.setPublisher(publisher != null ? publisher : "");
+                
+                article.setSourceId(getSourceId());
+                article.setCategoryId(null);
+                article.setLanguage("en");
+                article.setPublishedAt(item.getPublishedAt() != null ? item.getPublishedAt() : Instant.now().toString());
+                article.setHash(uuid);
+                
+                mappedArticles.add(article);
+            }
+            return mappedArticles;
+        } catch (Exception e) {
+            log.error("Failed to search Mediastack", e);
+            return List.of();
+        }
     }
 }

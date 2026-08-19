@@ -24,6 +24,8 @@ services:
   gateway-service:
     ports:
       - "8080:8080"
+    volumes:
+      - ./gateway-service/src/main/resources/application.yml:/app/config/application.yml:ro
     environment:
       SPRING_PROFILES_ACTIVE: dev
       JAVA_OPTS: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=50.0"
@@ -48,6 +50,7 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: dev
       JAVA_OPTS: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=50.0"
+      OPENWEATHERMAP_API_KEY: ${OPENWEATHERMAP_API_KEY}
 
   search-service:
     ports:

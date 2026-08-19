@@ -64,12 +64,16 @@ graph TD
 - **Saved Articles**: Bookmark favorite articles for later reading.
 - **Admin Dashboard**: Internal portal for system management and metrics.
 
-## AI Features Explanation
+## AI Features & Architecture
 
-The platform leverages Artificial Intelligence to enhance the news consumption experience:
-1. **AI Summarization**: Long-form articles are automatically summarized into concise, easily readable bullets using NLP models.
-2. **Sentiment Analysis**: Articles are tagged with sentiment badges (Positive, Neutral, Negative) to help readers quickly gauge the tone.
-3. **Smart Categorization**: Uncategorized articles are automatically assigned to the most relevant categories using AI classification algorithms.
+The platform leverages Artificial Intelligence to enhance the news consumption experience. The AI processing pipeline is built for **production reliability** and **quota efficiency**:
+
+1. **Combined Analysis Prompting**: To minimize API calls and avoid quota exhaustion, the system uses a single, structured Gemini prompt per article to extract a summary, sentiment label, and relevant keywords simultaneously (a 66% reduction in API calls compared to individual requests).
+2. **AI Summarization**: Long-form articles are automatically summarized into concise, easily readable sentences using the Gemini model.
+3. **Sentiment Analysis**: Articles are tagged with sentiment badges (Positive, Neutral, Negative) and numerical scores to help readers quickly gauge the tone.
+4. **Smart Categorization**: Uncategorized articles are automatically assigned to the most relevant categories using AI classification algorithms.
+5. **Centralized Rate Limiting & Circuit Breaker**: All AI threads share a central `GeminiRateLimiter`. It enforces a minimum interval between requests and provides a global cooldown (circuit breaker) if the provider returns an HTTP 429 (Too Many Requests).
+6. **Heuristic Fallback Engine**: If the Gemini API is rate-limited, times out, or fails, the orchestrator immediately falls back to a fast, local NLP heuristic provider. Articles are never permanently blocked by an LLM outage.
 
 ## Requirements
 
@@ -105,10 +109,19 @@ Services will be available at:
 ## Environment Variables
 
 All configuration is managed centrally via `.env`. Key variables include:
+
+### Core Configuration
 - `MYSQL_ROOT_PASSWORD`, `MYSQL_USER`, `MYSQL_PASSWORD`: Database credentials.
 - `JWT_SECRET`: Secret key for signing JWTs (must be at least 32 characters).
 - `INTERNAL_API_KEY`: Secret used for internal service-to-service communication.
 - `SPRING_PROFILES_ACTIVE`: Set to `dev` for local development or `prod` for production.
+
+### AI & Gemini Configuration
+- `GOOGLE_API_KEY`: Your Gemini API key for the LLM integration.
+- `AI_PROCESSING_WORKER_COUNT`: Number of concurrent AI worker threads (default: `2`). Keep this small to protect your free-tier quota.
+- `GEMINI_RATE_LIMIT_ENABLED`: Enable or disable the centralized rate limiter (default: `true`).
+- `GEMINI_MIN_INTERVAL_MS`: Minimum time between API calls across all threads (default: `6000`ms).
+- `GEMINI_COOLDOWN_SECONDS`: Default circuit breaker cooldown when an HTTP 429 is received (default: `60`s).
 
 ## Running Backend (Manual)
 

@@ -11,6 +11,7 @@ public record ArticleDto(
     String image,
     String url,
     String author,
+    String publisher,
     CategorySummaryDto category,
     SourceDto source,
     Instant publishedAt,

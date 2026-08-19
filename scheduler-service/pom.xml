@@ -34,6 +34,12 @@
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.wiremock</groupId>
+      <artifactId>wiremock-standalone</artifactId>
+      <version>3.9.1</version>
+      <scope>test</scope>
+    </dependency>
 
     <!-- Database -->
     <dependency>
@@ -85,6 +91,13 @@
     <dependency>
       <groupId>org.springframework.cloud</groupId>
       <artifactId>spring-cloud-starter-openfeign</artifactId>
+    </dependency>
+
+    <!-- RSS Parsing -->
+    <dependency>
+      <groupId>com.rometools</groupId>
+      <artifactId>rome</artifactId>
+      <version>2.1.0</version>
     </dependency>
   </dependencies>
 

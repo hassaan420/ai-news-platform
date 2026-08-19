@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clarion AI — Cinematic Ad</title>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+<style>
+/* === CLARION DARK MODE TOKENS === */
+:root {
+  --background: hsl(228, 15%, 7%);
+  --foreground: hsl(220, 14%, 92%);
+  --card: hsl(228, 14%, 10%);
+  --primary: hsl(243, 80%, 72%);
+  --primary-rgb: 139, 124, 246; /* Approx for rgba */
+  --muted: hsl(225, 12%, 15%);
+  --muted-foreground: hsl(220, 9%, 55%);
+  --border: hsla(225, 10%, 16%, 0.6);
+  --success: hsl(150, 60%, 45%);
+  --warning: hsl(40, 90%, 55%);
+  --danger: hsl(0, 70%, 55%);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  width: 100vw; height: 100vh; overflow: hidden;
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.viewport-wrapper {
+  position: absolute; top: 50%; left: 50%;
+  width: 1920px; height: 1080px;
+  transform: translate(-50%, -50%);
+  transform-origin: center center;
+}
+#bgVideo { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover; z-index: 0; opacity: 0.2; }
+
+canvas#bgCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; opacity: 0.4; }
+
+.scene {
+  position: absolute; top: 0; left: 0; width: 1920px; height: 1080px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  opacity: 0; z-index: 10; pointer-events: none;
+  transition: opacity 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.scene.active { opacity: 1; }
+
+/* === TYPOGRAPHY === */
+h1, h2, h3 { font-family: 'Inter', sans-serif; font-weight: 600; }
+.text-primary { color: var(--primary); }
+.text-muted { color: var(--muted-foreground); }
+.text-success { color: var(--success); }
+.text-danger { color: var(--danger); }
+
+/* === UI COMPONENTS === */
+.clarion-card {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.clarion-btn {
+  background-color: var(--primary);
+  color: #fff;
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-weight: 600;
+  font-size: 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+
+.badge {
+  background: rgba(var(--primary-rgb), 0.15);
+  color: var(--primary);
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* === 1. OPENING === */
+#s1 .light-streak {
+  position: absolute; top: 50%; left: -500px;
+  width: 500px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--primary), transparent);
+  box-shadow: 0 0 20px var(--primary);
+  transition: transform 3s ease-in-out;
+}
+#s1 .logo-container { opacity: 0; transform: scale(0.95); transition: all 3s ease-out; text-align: center; }
+#s1 .logo { font-size: 100px; font-weight: 700; letter-spacing: -2px; color: var(--primary); margin-bottom: 16px; }
+#s1 .tagline { font-size: 32px; color: var(--muted-foreground); font-weight: 400; }
+
+/* === 2. NEWS PROBLEM === */
+#s2 { position: relative; }
+.floating-news-card {
+  position: absolute;
+  width: 380px; padding: 24px;
+  opacity: 0; transform: translateY(30px);
+  transition: all 1.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.floating-news-card img { width: 100%; height: 180px; object-fit: cover; border-radius: 8px; margin-bottom: 16px; background: var(--muted); }
+.floating-news-card .title { font-size: 20px; margin-bottom: 8px; line-height: 1.4; }
+.floating-news-card .meta { display: flex; justify-content: space-between; font-size: 13px; color: var(--muted-foreground); }
+
+/* === 3. INGESTION === */
+#s3 .ingestion-grid { display: flex; align-items: center; gap: 60px; }
+.sources-col, .clarion-col, .db-col { display: flex; flex-direction: column; gap: 30px; }
+.source-pill { 
+  background: var(--card); border: 1px solid var(--border); border-radius: 8px; 
+  padding: 20px 40px; font-size: 24px; font-weight: 500; display: flex; align-items: center; gap: 16px;
+  opacity: 0; transform: translateX(-30px); transition: all 1s ease;
+}
+.clarion-hub {
+  width: 250px; height: 250px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--primary-rgb),0.2) 0%, var(--card) 70%);
+  border: 1px solid rgba(var(--primary-rgb),0.5);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 40px; font-weight: 700; color: var(--primary);
+  opacity: 0; transition: all 1s ease;
+}
+.flow-line { height: 2px; width: 0; background: linear-gradient(90deg, transparent, var(--primary)); transition: width 1s ease; }
+.db-box { padding: 40px; text-align: center; opacity: 0; transition: all 1s ease; }
+
+/* === 4. HOME EXPERIENCE (REAL UI MOCK) === */
+.mock-browser {
+  width: 1700px; height: 950px; border-radius: 12px; border: 1px solid var(--border);
+  background: var(--background); display: flex; flex-direction: column; overflow: hidden;
+  box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+}
+.mock-header { height: 80px; border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 40px; justify-content: space-between; }
+.mock-search { background: rgba(255,255,255,0.05); border-radius: 8px; width: 600px; height: 44px; display: flex; align-items: center; padding: 0 16px; gap: 12px; color: var(--muted-foreground); }
+.mock-body { display: flex; flex: 1; }
+.mock-sidebar { width: 280px; border-right: 1px solid var(--border); padding: 30px; display: flex; flex-direction: column; gap: 24px; }
+.mock-nav-item { display: flex; align-items: center; gap: 16px; color: var(--muted-foreground); font-size: 18px; font-weight: 500; padding: 12px 16px; border-radius: 8px; }
+.mock-nav-item.active { background: rgba(var(--primary-rgb),0.1); color: var(--primary); }
+.mock-content { flex: 1; padding: 40px; display: flex; flex-direction: column; gap: 40px; }
+.mock-hero-article { display: flex; gap: 40px; height: 400px; }
+.mock-hero-img { flex: 1.5; border-radius: 12px; background: #2a2d36; position: relative; overflow: hidden; }
+.mock-hero-content { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.mock-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+.mock-article-card { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+.mock-card-img { height: 200px; border-radius: 8px; background: #2a2d36; }
+
+/* === 5. AI PROCESSING === */
+#s5 .ai-focus-container { display: flex; gap: 60px; align-items: center; width: 1600px; }
+.ai-article { width: 600px; padding: 40px; opacity: 0; transform: translateX(-40px); transition: all 1s ease; }
+.ai-processing-visual { flex: 1; position: relative; height: 700px; }
+.ai-node { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 120px; height: 120px; border-radius: 50%; border: 2px solid var(--primary); display: flex; align-items: center; justify-content: center; color: var(--primary); box-shadow: 0 0 40px rgba(var(--primary-rgb),0.3); opacity: 0; }
+.ai-result-panel {
+  position: absolute; right: 0; width: 500px;
+  display: flex; flex-direction: column; gap: 24px;
+}
+.ai-metric { padding: 24px; opacity: 0; transform: translateX(40px); transition: all 1s ease; }
+.ai-metric-title { display: flex; align-items: center; gap: 12px; color: var(--primary); font-size: 16px; font-weight: 600; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
+
+/* === 6. SEARCH === */
+#s6 .search-hero { width: 1000px; }
+.giant-search { 
+  font-size: 40px; padding: 30px 40px; border-radius: 16px; 
+  background: var(--card); border: 1px solid var(--primary);
+  display: flex; align-items: center; gap: 24px; box-shadow: 0 20px 60px rgba(var(--primary-rgb),0.2);
+  margin-bottom: 60px;
+}
+.giant-search-text { color: var(--foreground); }
+.cursor { display: inline-block; width: 3px; height: 40px; background: var(--primary); animation: blink 1s infinite; vertical-align: middle; }
+@keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+.search-results-list { display: flex; flex-direction: column; gap: 20px; }
+.search-res-item { padding: 24px 30px; display: flex; gap: 30px; opacity: 0; transform: translateY(20px); transition: all 0.8s; }
+.res-relevance { color: var(--primary); font-size: 24px; font-weight: 700; width: 80px; }
+
+/* === 7. RECOMMENDATIONS === */
+#s7 .reco-layout { display: flex; width: 1600px; gap: 60px; }
+.main-article { flex: 2; padding: 60px; }
+.reco-sidebar { flex: 1; display: flex; flex-direction: column; gap: 24px; opacity: 0; transition: opacity 1s; }
+.reco-item { padding: 20px; display: flex; gap: 20px; opacity: 0; transform: translateX(20px); transition: all 0.8s; }
+.reco-img { width: 100px; height: 80px; border-radius: 6px; background: #2a2d36; }
+
+/* === 8. TRENDING === */
+#s8 .trending-container { width: 1200px; }
+.trending-header { font-size: 48px; margin-bottom: 60px; display: flex; align-items: center; gap: 20px; }
+.trending-item-row { 
+  display: flex; align-items: center; padding: 30px 40px; margin-bottom: 20px;
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  opacity: 0; transform: translateY(30px); transition: all 0.8s;
+}
+.trend-rank { font-size: 64px; font-weight: 700; color: rgba(var(--primary-rgb), 0.2); width: 100px; }
+.trend-content { flex: 1; }
+.trend-metrics { display: flex; gap: 24px; color: var(--muted-foreground); font-size: 16px; }
+
+/* === 9. VERIFICATION === */
+#s9 .verif-layout { width: 1600px; display: flex; align-items: center; justify-content: space-between; }
+.verif-main { width: 600px; padding: 50px; opacity: 0; }
+.verif-badge-large { 
+  background: linear-gradient(135deg, rgba(var(--primary-rgb),0.2), transparent);
+  border: 1px solid var(--primary); padding: 12px 24px; border-radius: 50px;
+  color: var(--primary); font-size: 18px; font-weight: 600; display: inline-flex; align-items: center; gap: 12px;
+  margin-bottom: 30px;
+}
+.verif-sources-list { width: 700px; display: flex; flex-direction: column; gap: 20px; }
+.v-source { padding: 24px; display: flex; align-items: center; justify-content: space-between; font-size: 20px; opacity: 0; transform: translateX(40px); transition: all 0.6s; }
+.v-check { color: var(--success); display: flex; align-items: center; gap: 10px; }
+.v-conflict { color: var(--danger); display: flex; align-items: center; gap: 10px; }
+.v-result-final { margin-top: 40px; font-size: 32px; font-weight: 700; color: var(--success); opacity: 0; text-align: center; padding: 30px; background: rgba(150, 255, 150, 0.05); border-radius: 12px; border: 1px solid var(--success); }
+
+/* === 10. ADMIN === */
+#s10 .admin-dash { width: 1700px; height: 950px; }
+.admin-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; margin-bottom: 30px; }
+.stat-card { padding: 30px; opacity: 0; transform: translateY(20px); transition: all 0.6s; }
+.stat-val { font-size: 48px; font-weight: 700; margin-top: 10px; }
+.admin-main-chart { height: 400px; padding: 40px; opacity: 0; transition: all 1s; }
+
+/* === 11. ARCHITECTURE === */
+#s11 .arch-container { width: 1600px; height: 900px; position: relative; }
+.arch-node { position: absolute; padding: 20px 40px; border-radius: 12px; font-size: 20px; font-weight: 600; text-align: center; opacity: 0; transition: all 0.8s; }
+.arch-node.core { background: rgba(var(--primary-rgb),0.2); border: 1px solid var(--primary); color: var(--primary); }
+.arch-node.service { background: var(--card); border: 1px solid var(--border); }
+.arch-node.data { border: 1px dashed var(--muted-foreground); color: var(--muted-foreground); }
+.arch-line { position: absolute; background: var(--border); opacity: 0; transition: all 0.8s; }
+
+/* === 12. OBSERVABILITY === */
+#s12 .grafana-mock { width: 1600px; height: 900px; background: #111217; border: 1px solid #333; border-radius: 12px; padding: 30px; opacity: 0; transition: all 1s; }
+.g-header { display: flex; justify-content: space-between; color: #ccc; font-family: monospace; font-size: 20px; margin-bottom: 40px; }
+.g-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.g-panel { background: #181b1f; border: 1px solid #222; height: 250px; border-radius: 4px; position: relative; overflow: hidden; opacity: 0; transform: scale(0.95); transition: all 0.5s; }
+.g-line { position: absolute; bottom: 0; left: 0; width: 100%; height: 60%; background: linear-gradient(0deg, rgba(var(--primary-rgb),0.2) 0%, transparent 100%); border-top: 2px solid var(--primary); }
+
+/* === 13. FINAL HERO === */
+#s13 .final-content { text-align: center; opacity: 0; transition: all 2s ease; }
+#s13 .f-logo { font-size: 120px; font-weight: 700; color: var(--primary); letter-spacing: -2px; margin-bottom: 20px; }
+#s13 .f-tag { font-size: 40px; color: var(--foreground); font-weight: 300; margin-bottom: 60px; }
+#s13 .f-pillars { display: flex; gap: 40px; font-size: 20px; color: var(--muted-foreground); font-weight: 500; letter-spacing: 2px; text-transform: uppercase; }
+
+/* === PROGRESS & VO === */
+.progress-bar { position: fixed; top: 0; left: 0; height: 4px; background: var(--primary); z-index: 1000; width: 0%; transition: width 0.1s linear; }
+.vo-caption { position: fixed; bottom: 50px; left: 50%; transform: translateX(-50%); max-width: 1200px; text-align: center; font-size: 24px; font-weight: 400; color: rgba(255,255,255,0.8); z-index: 1000; font-style: italic; opacity: 0; transition: opacity 0.5s; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
+.vo-caption.show { opacity: 1; }
+
+</style>
+</head>
+<body>
+
+<video id="bgVideo" src="https://assets.codepen.io/3364143/7btrrd.mp4" autoplay loop muted playsinline style="position:fixed; top:0; left:0; width:100vw; height:100vh; object-fit:cover; z-index:0; opacity:0.4; pointer-events:none;"></video>
+<canvas id="bgCanvas"></canvas>
+<audio id="bgMusic" src="https://cdn.pixabay.com/audio/2022/10/25/audio_249219eef6.mp3" autoplay loop></audio>
+
+<div class="viewport-wrapper">
+
+<div class="progress-bar" id="progress"></div>
+<div class="vo-caption" id="vo"></div>
+
+<!-- 1. OPENING (0-8s) -->
+<div class="scene" id="s1">
+  <div class="light-streak" id="s1_streak"></div>
+  <div class="logo-container" id="s1_logo">
+    <div class="logo">Clarion</div>
+    <div class="tagline">Intelligence behind the news.</div>
+  </div>
+</div>
+
+<!-- 2. NEWS PROBLEM (8-15s) -->
+<div class="scene" id="s2">
+  <div id="s2_cards_container" style="position:absolute;width:100%;height:100%;"></div>
+</div>
+
+<!-- 3. INGESTION (15-23s) -->
+<div class="scene" id="s3">
+  <div class="ingestion-grid">
+    <div class="sources-col">
+      <div class="source-pill clarion-card" id="s3_src1"><span class="material-symbols-outlined text-primary">rss_feed</span> NewsAPI</div>
+      <div class="source-pill clarion-card" id="s3_src2"><span class="material-symbols-outlined text-primary">public</span> GNews</div>
+      <div class="source-pill clarion-card" id="s3_src3"><span class="material-symbols-outlined text-primary">newspaper</span> The Guardian</div>
+      <div class="source-pill clarion-card" id="s3_src4"><span class="material-symbols-outlined text-primary">article</span> MediaStack</div>
+    </div>
+    <div class="flow-line" id="s3_flow1"></div>
+    <div class="clarion-hub" id="s3_hub">Clarion</div>
+    <div class="flow-line" id="s3_flow2"></div>
+    <div class="db-col">
+      <div class="db-box clarion-card" id="s3_db">
+        <span class="material-symbols-outlined" style="font-size:64px;color:var(--primary);margin-bottom:16px;">database</span>
+        <h3>Unified Database</h3>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 4. HOME EXPERIENCE (23-30s) -->
+<div class="scene" id="s4">
+  <div class="mock-browser" id="s4_browser" style="opacity:0; transform:scale(0.98); transition:all 1s;">
+    <div class="mock-header">
+      <div style="font-size:28px;font-weight:700;color:var(--primary);">Clarion</div>
+      <div class="mock-search"><span class="material-symbols-outlined">search</span> Search curated news...</div>
+      <div style="display:flex;gap:20px;align-items:center;">
+        <span class="material-symbols-outlined">dark_mode</span>
+        <div style="font-weight:600;">Log In</div>
+        <div class="clarion-btn">Sign Up</div>
+      </div>
+    </div>
+    <div class="mock-body">
+      <div class="mock-sidebar">
+        <div class="mock-nav-item active"><span class="material-symbols-outlined">home</span> Home</div>
+        <div class="mock-nav-item"><span class="material-symbols-outlined">trending_up</span> Trending</div>
+        <div style="margin-top:20px;font-size:12px;color:var(--muted-foreground);font-weight:700;letter-spacing:1px;">CATEGORIES</div>
+        <div class="mock-nav-item"><span class="material-symbols-outlined">account_balance</span> Politics</div>
+        <div class="mock-nav-item"><span class="material-symbols-outlined">memory</span> Technology</div>
+        <div class="mock-nav-item"><span class="material-symbols-outlined">storefront</span> Business</div>
+      </div>
+      <div class="mock-content">
+        <div class="mock-hero-article clarion-card">
+          <img class="mock-hero-img" src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Hero">
+          <div class="mock-hero-content" style="padding:40px;">
+            <div class="badge" style="width:fit-content;margin-bottom:20px;">Technology</div>
+            <h1 style="font-size:48px;line-height:1.2;margin-bottom:20px;">The Next Generation of AI Processors Unleashed</h1>
+            <p style="font-size:18px;color:var(--muted-foreground);line-height:1.6;margin-bottom:40px;">Silicon giants reveal new architecture promising to accelerate machine learning workloads by an unprecedented margin.</p>
+            <div style="display:flex;align-items:center;gap:12px;"><div style="width:40px;height:40px;border-radius:50%;background:var(--muted);"></div> Reuters · Just now</div>
+          </div>
+        </div>
+        <div class="mock-grid">
+          <div class="mock-article-card clarion-card"><img class="mock-card-img" src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" style="object-fit:cover;" /><h3>Global Markets Rally</h3><p class="text-muted">Investors react positively to new inflation data...</p></div>
+          <div class="mock-article-card clarion-card"><img class="mock-card-img" src="https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" style="object-fit:cover;" /><h3>Renewable Energy Milestone</h3><p class="text-muted">Solar output exceeds expectations in Q3...</p></div>
+          <div class="mock-article-card clarion-card"><img class="mock-card-img" src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" style="object-fit:cover;" /><h3>Space Telescope Discoveries</h3><p class="text-muted">New images reveal distant galaxy clusters...</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 5. AI PROCESSING (30-40s) -->
+<div class="scene" id="s5">
+  <div class="ai-focus-container">
+    <div class="ai-article clarion-card" id="s5_art">
+      <div class="badge" style="width:fit-content;margin-bottom:16px;">Technology</div>
+      <h2 style="font-size:32px;margin-bottom:20px;">Major Breakthrough in Natural Language Models</h2>
+      <p style="font-size:18px;color:var(--muted-foreground);line-height:1.6;">Researchers have published a new methodology that drastically reduces hallucination rates in large language models while maintaining creative outputs. The paper suggests...</p>
+    </div>
+    <div class="ai-processing-visual">
+      <div class="ai-node" id="s5_node"><span class="material-symbols-outlined" style="font-size:48px;">psychology</span></div>
+      <!-- connecting lines will be drawn with JS if needed, but keeping it simple -->
+    </div>
+    <div class="ai-result-panel">
+      <div class="ai-metric clarion-card" id="s5_m1">
+        <div class="ai-metric-title"><span class="material-symbols-outlined">auto_awesome</span> AI Summary</div>
+        <p>New methodology reduces AI hallucinations while maintaining creativity, offering a significant step forward for enterprise deployment.</p>
+      </div>
+      <div class="ai-metric clarion-card" id="s5_m2">
+        <div class="ai-metric-title"><span class="material-symbols-outlined">label</span> Keywords</div>
+        <div style="display:flex;gap:10px;"><span class="badge">LLM</span><span class="badge">Research</span><span class="badge">Enterprise</span></div>
+      </div>
+      <div class="ai-metric clarion-card" id="s5_m3">
+        <div class="ai-metric-title"><span class="material-symbols-outlined">mood</span> Sentiment</div>
+        <div class="text-success" style="font-size:24px;font-weight:700;">Positive</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 6. SEARCH (40-47s) -->
+<div class="scene" id="s6">
+  <div class="search-hero">
+    <div class="giant-search" id="s6_search">
+      <span class="material-symbols-outlined" style="font-size:40px;color:var(--primary);">search</span>
+      <div class="giant-search-text"><span id="s6_type"></span><span class="cursor"></span></div>
+    </div>
+    <div class="search-results-list" id="s6_results">
+      <div class="search-res-item clarion-card" id="s6_r1">
+        <div class="res-relevance">98%</div>
+        <div><h3 style="font-size:24px;margin-bottom:8px;">The Future of Artificial Intelligence</h3><p class="text-muted">In-depth analysis of AI trajectories...</p></div>
+      </div>
+      <div class="search-res-item clarion-card" id="s6_r2">
+        <div class="res-relevance">92%</div>
+        <div><h3 style="font-size:24px;margin-bottom:8px;">AI Investment Hits Record Highs</h3><p class="text-muted">Venture capital floods into ML startups...</p></div>
+      </div>
+      <div class="search-res-item clarion-card" id="s6_r3">
+        <div class="res-relevance">85%</div>
+        <div><h3 style="font-size:24px;margin-bottom:8px;">Regulating Artificial Intelligence</h3><p class="text-muted">Governments propose new frameworks...</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 7. RECOMMENDATIONS (47-54s) -->
+<div class="scene" id="s7">
+  <div class="reco-layout">
+    <div class="main-article clarion-card" id="s7_main" style="opacity:0;transform:translateY(30px);transition:all 1s;">
+      <h1 style="font-size:48px;margin-bottom:30px;">Global Shift Towards Renewable Energy Accelerates</h1>
+      <img src="https://images.unsplash.com/photo-1509391366360-2e959784a276?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" style="width:100%;height:400px;object-fit:cover;border-radius:12px;margin-bottom:30px;">
+      <p style="font-size:20px;color:var(--muted-foreground);line-height:1.6;">Nations across the globe are accelerating their transition to renewable energy sources, driven by technological advancements and economic incentives...</p>
+    </div>
+    <div class="reco-sidebar" id="s7_side">
+      <h3 style="font-size:24px;margin-bottom:10px;display:flex;align-items:center;gap:12px;"><span class="material-symbols-outlined text-primary">recommend</span> Recommended For You</h3>
+      <div class="reco-item clarion-card" id="s7_r1"><img class="reco-img" src="https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" style="object-fit:cover;"><div><h4 style="font-size:18px;margin-bottom:8px;">Solar Tech Innovations</h4><p class="text-muted" style="font-size:14px;">Latest breakthroughs in efficiency</p></div></div>
+      <div class="reco-item clarion-card" id="s7_r2"><img class="reco-img" src="https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" style="object-fit:cover;"><div><h4 style="font-size:18px;margin-bottom:8px;">Economic Impact of Green Energy</h4><p class="text-muted" style="font-size:14px;">Market analysis for Q4</p></div></div>
+      <div class="reco-item clarion-card" id="s7_r3"><img class="reco-img" src="https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80" style="object-fit:cover;"><div><h4 style="font-size:18px;margin-bottom:8px;">Climate Policy Updates</h4><p class="text-muted" style="font-size:14px;">New international agreements</p></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 8. TRENDING (54-60s) -->
+<div class="scene" id="s8">
+  <div class="trending-container">
+    <div class="trending-header" id="s8_h" style="opacity:0;transform:translateY(20px);transition:all 1s;">
+      <span class="material-symbols-outlined" style="font-size:64px;color:var(--primary);">trending_up</span> Trending Now
+      <div style="margin-left:auto;font-size:16px;display:flex;align-items:center;gap:10px;background:rgba(255,0,0,0.1);color:#ff4444;padding:8px 16px;border-radius:20px;"><div style="width:8px;height:8px;border-radius:50%;background:#ff4444;"></div>Live Updates</div>
+    </div>
+    <div class="trending-item-row" id="s8_t1">
+      <div class="trend-rank">1</div>
+      <div class="trend-content"><h3 style="font-size:28px;margin-bottom:10px;">Central Banks Announce Interest Rate Decisions</h3><div class="trend-metrics"><span class="material-symbols-outlined" style="font-size:20px;">visibility</span> 124K Views</div></div>
+    </div>
+    <div class="trending-item-row" id="s8_t2">
+      <div class="trend-rank">2</div>
+      <div class="trend-content"><h3 style="font-size:28px;margin-bottom:10px;">Major Tech Merger Finalized</h3><div class="trend-metrics"><span class="material-symbols-outlined" style="font-size:20px;">visibility</span> 98K Views</div></div>
+    </div>
+    <div class="trending-item-row" id="s8_t3">
+      <div class="trend-rank">3</div>
+      <div class="trend-content"><h3 style="font-size:28px;margin-bottom:10px;">Breakthrough in Medical Science</h3><div class="trend-metrics"><span class="material-symbols-outlined" style="font-size:20px;">visibility</span> 85K Views</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 9. VERIFICATION (60-72s) -->
+<div class="scene" id="s9">
+  <div class="verif-layout">
+    <div class="verif-main clarion-card" id="s9_main">
+      <div class="verif-badge-large"><span class="material-symbols-outlined">verified</span> SOURCE VERIFICATION</div>
+      <h2 style="font-size:36px;margin-bottom:20px;">Trade Agreement Signed</h2>
+      <p style="font-size:20px;color:var(--muted-foreground);line-height:1.6;margin-bottom:30px;">Original Source: Reuters</p>
+      <div style="height:2px;background:var(--border);margin:40px 0;"></div>
+      <div style="font-size:18px;color:var(--primary);display:flex;align-items:center;gap:10px;"><span class="material-symbols-outlined">sync</span> Cross-checking curated network...</div>
+    </div>
+    <div class="verif-sources-list">
+      <div class="v-source clarion-card" id="s9_v1"><span>NewsAPI</span><div class="v-check"><span class="material-symbols-outlined">check_circle</span> Corroborated</div></div>
+      <div class="v-source clarion-card" id="s9_v2"><span>GNews</span><div class="v-check"><span class="material-symbols-outlined">check_circle</span> Corroborated</div></div>
+      <div class="v-source clarion-card" id="s9_v3"><span>The Guardian</span><div class="v-check"><span class="material-symbols-outlined">check_circle</span> Corroborated</div></div>
+      <div class="v-source clarion-card" id="s9_v4"><span>MediaStack</span><div class="v-check"><span class="material-symbols-outlined">check_circle</span> Corroborated</div></div>
+      <div class="v-result-final" id="s9_res">STRONGLY CORROBORATED</div>
+    </div>
+  </div>
+</div>
+
+<!-- 10. ADMIN (72-78s) -->
+<div class="scene" id="s10">
+  <div class="admin-dash clarion-card" id="s10_dash" style="opacity:0;transform:scale(0.98);transition:all 1s;">
+    <div style="padding:30px;border-bottom:1px solid var(--border);font-size:24px;font-weight:600;display:flex;align-items:center;gap:16px;"><span class="material-symbols-outlined">admin_panel_settings</span> Administrator Dashboard</div>
+    <div style="padding:40px;">
+      <div class="admin-grid">
+        <div class="stat-card clarion-card" id="s10_c1"><div class="text-muted">Total Users</div><div class="stat-val">12,458</div></div>
+        <div class="stat-card clarion-card" id="s10_c2"><div class="text-muted">Articles Indexed</div><div class="stat-val">84,291</div></div>
+        <div class="stat-card clarion-card" id="s10_c3"><div class="text-muted">AI Processing Queue</div><div class="stat-val" style="color:var(--primary);">12</div></div>
+        <div class="stat-card clarion-card" id="s10_c4"><div class="text-muted">System Health</div><div class="stat-val text-success">Optimal</div></div>
+      </div>
+      <div class="admin-main-chart clarion-card" id="s10_chart">
+        <div style="font-size:18px;font-weight:600;margin-bottom:30px;">Traffic Overview</div>
+        <div style="width:100%;height:70%;background:linear-gradient(0deg, rgba(var(--primary-rgb),0.1) 0%, transparent 100%);border-bottom:2px solid var(--border);position:relative;">
+          <!-- Fake chart line -->
+          <svg width="100%" height="100%" preserveAspectRatio="none"><path d="M0,200 L200,150 L400,180 L600,100 L800,120 L1000,50 L1200,80 L1400,20 L1600,60" fill="none" stroke="var(--primary)" stroke-width="4"/></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 11. ARCHITECTURE (78-85s) -->
+<div class="scene" id="s11">
+  <div class="arch-container">
+    <div class="arch-node core" id="a_clarion" style="left:700px;top:50px;width:200px;">CLARION</div>
+    <div class="arch-line" id="al_1" style="left:800px;top:110px;width:2px;height:60px;"></div>
+    
+    <div class="arch-node service" id="a_gate" style="left:700px;top:170px;width:200px;">API Gateway</div>
+    
+    <div class="arch-line" id="al_2" style="left:300px;top:250px;width:1000px;height:2px;"></div>
+    <div class="arch-line" id="al_2a" style="left:800px;top:230px;width:2px;height:20px;"></div>
+    
+    <div class="arch-line" id="al_3" style="left:300px;top:250px;width:2px;height:40px;"></div>
+    <div class="arch-line" id="al_4" style="left:633px;top:250px;width:2px;height:40px;"></div>
+    <div class="arch-line" id="al_5" style="left:966px;top:250px;width:2px;height:40px;"></div>
+    <div class="arch-line" id="al_6" style="left:1300px;top:250px;width:2px;height:40px;"></div>
+
+    <div class="arch-node service" id="a_s1" style="left:200px;top:290px;width:200px;">News Service</div>
+    <div class="arch-node service" id="a_s2" style="left:533px;top:290px;width:200px;">Search Service</div>
+    <div class="arch-node service" id="a_s3" style="left:866px;top:290px;width:200px;">Category Service</div>
+    <div class="arch-node service" id="a_s4" style="left:1200px;top:290px;width:200px;">Admin Service</div>
+
+    <div class="arch-line" id="al_7" style="left:300px;top:350px;width:2px;height:60px;"></div>
+    <div class="arch-node service" id="a_ai" style="left:200px;top:410px;width:200px;border-color:var(--primary);color:var(--primary);">AI Pipeline</div>
+
+    <div class="arch-line" id="al_8" style="left:800px;top:480px;width:2px;height:60px;"></div>
+    <div class="arch-node data" id="a_db" style="left:700px;top:540px;width:200px;">Unified Database</div>
+    <div class="arch-node data" id="a_redis" style="left:700px;top:620px;width:200px;">Redis Cache</div>
+
+    <div class="arch-node core" id="a_docker" style="left:200px;top:700px;width:1200px;background:rgba(255,255,255,0.02);border-color:#444;font-size:24px;padding:30px;">Docker Containerized Environment</div>
+    <div class="arch-node" id="a_k8s" style="left:700px;top:800px;width:200px;background:transparent;border:1px solid #444;color:#888;">Kubernetes Ready</div>
+  </div>
+</div>
+
+<!-- 12. OBSERVABILITY (85-90s) -->
+<div class="scene" id="s12">
+  <div class="grafana-mock" id="s12_grafana">
+    <div class="g-header"><span>Grafana</span><span>Clarion System Overview</span><span>Last 6 hours</span></div>
+    <div class="g-grid">
+      <div class="g-panel" id="s12_p1"><div style="padding:15px;color:#888;">CPU Usage</div><div class="g-line" style="height:40%;"></div><div style="position:absolute;top:20px;right:20px;font-size:32px;color:#fff;">34%</div></div>
+      <div class="g-panel" id="s12_p2"><div style="padding:15px;color:#888;">Memory</div><div class="g-line" style="height:60%;border-color:var(--warning);"></div><div style="position:absolute;top:20px;right:20px;font-size:32px;color:#fff;">4.2GB</div></div>
+      <div class="g-panel" id="s12_p3"><div style="padding:15px;color:#888;">HTTP Requests/s</div><div class="g-line" style="height:80%;border-color:var(--success);"></div><div style="position:absolute;top:20px;right:20px;font-size:32px;color:#fff;">1,245</div></div>
+      <div class="g-panel" id="s12_p4"><div style="padding:15px;color:#888;">API Latency</div><div class="g-line" style="height:20%;"></div><div style="position:absolute;top:20px;right:20px;font-size:32px;color:#fff;">42ms</div></div>
+      <div class="g-panel" id="s12_p5"><div style="padding:15px;color:#888;">Error Rate</div><div class="g-line" style="height:5%;border-color:var(--danger);"></div><div style="position:absolute;top:20px;right:20px;font-size:32px;color:#fff;">0.01%</div></div>
+      <div class="g-panel" id="s12_p6"><div style="padding:15px;color:#888;">Active Services</div><div style="position:absolute;bottom:20px;left:20px;font-size:64px;color:var(--success);font-weight:700;">12/12</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 13. FINAL HERO (90s+) -->
+<div class="scene" id="s13">
+  <div class="final-content" id="s13_content">
+    <div class="f-logo">Clarion</div>
+    <div class="f-tag">News, understood.</div>
+    <div class="f-pillars">
+      <span>AI</span><span>•</span>
+      <span>Discovery</span><span>•</span>
+      <span>Verification</span><span>•</span>
+      <span>Intelligence</span>
+    </div>
+  </div>
+</div>
+
+</div> <!-- viewport-wrapper -->
+
+<script>
+// --- RESIZE LOGIC ---
+function resizeViewport() {
+  const wrapper = document.querySelector('.viewport-wrapper');
+  const scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+  wrapper.style.transform = `translate(-50%, -50%) scale(${scale})`;
+}
+window.addEventListener('resize', resizeViewport);
+resizeViewport();
+
+// --- AUTO-START LOGIC ---
+window.addEventListener('load', () => {
+  const bgMusic = document.getElementById('bgMusic');
+  const bgVideo = document.getElementById('bgVideo');
+  // Note: Browsers may still block unmuted audio autoplay without interaction
+  bgMusic.play().catch(e => console.log("Audio autoplay blocked by browser policy"));
+  bgVideo.play().catch(e => console.log("Video autoplay blocked"));
+  run();
+});
+
+// --- BACKGROUND PARTICLES ---
+const canvas = document.getElementById('bgCanvas');
+const ctx = canvas.getContext('2d');
+canvas.width = 1920; canvas.height = 1080;
+const particles = [];
+for(let i=0; i<150; i++) {
+  particles.push({
+    x: Math.random() * 1920,
+    y: Math.random() * 1080,
+    vx: (Math.random() - 0.5) * 0.2,
+    vy: (Math.random() - 0.5) * 0.2,
+    r: Math.random() * 1.5,
+    a: Math.random() * 0.5
+  });
+}
+function draw() {
+  ctx.clearRect(0,0,1920,1080);
+  ctx.fillStyle = 'rgba(139,124,246,1)';
+  particles.forEach(p => {
+    ctx.globalAlpha = p.a;
+    ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fill();
+    p.x += p.vx; p.y += p.vy;
+    if(p.x < 0) p.x = 1920; if(p.x > 1920) p.x = 0;
+    if(p.y < 0) p.y = 1080; if(p.y > 1080) p.y = 0;
+  });
+  requestAnimationFrame(draw);
+}
+draw();
+
+// --- TIMELINE ENGINE ---
+const TOTAL_DURATION = 95000; // 95 seconds total
+const START_TIME = performance.now();
+const voEl = document.getElementById('vo');
+
+function setVO(text) {
+  voEl.classList.remove('show');
+  setTimeout(() => {
+    if(text) { voEl.textContent = text; voEl.classList.add('show'); }
+  }, 300);
+}
+
+function activate(id) {
+  document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function delay(fn, ms) { setTimeout(fn, ms); }
+
+// The Script
+const script = [
+  { time: 0, fn: () => {
+    activate('s1');
+    setVO('');
+    delay(() => { document.getElementById('s1_streak').style.transform = 'translateX(2500px)'; }, 500);
+    delay(() => { 
+      const l = document.getElementById('s1_logo');
+      l.style.opacity = '1'; l.style.transform = 'scale(1)';
+    }, 2500);
+  }},
+  { time: 8000, fn: () => {
+    activate('s2');
+    setVO('"Every day, thousands of stories emerge across countless sources..."');
+    const container = document.getElementById('s2_cards_container');
+    const categories = ['World', 'Politics', 'Technology', 'Business', 'Sports', 'Health', 'Science'];
+    // Spawn cards carefully without overlap
+    const positions = [
+      {x: 100, y: 100}, {x: 1400, y: 150}, {x: 200, y: 600}, {x: 1300, y: 700},
+      {x: 750, y: 80}, {x: 750, y: 720}, {x: 100, y: 350}, {x: 1400, y: 450}
+    ];
+    positions.forEach((pos, i) => {
+      delay(() => {
+        const card = document.createElement('div');
+        card.className = 'floating-news-card clarion-card';
+        card.style.left = pos.x + 'px'; card.style.top = pos.y + 'px';
+        card.innerHTML = `<img src="https://images.unsplash.com/photo-1585829365295-ab7cd400c167?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" style="width:100%;height:180px;object-fit:cover;border-radius:8px;margin-bottom:16px;"/><div class="title">Breaking ${categories[i%categories.length]} News: Global shifts impact markets</div><div class="meta"><span>Source ${i+1}</span><span>2h ago</span></div>`;
+        container.appendChild(card);
+        setTimeout(() => { card.style.opacity = '1'; card.style.transform = 'translateY(0)'; }, 50);
+      }, i * 600);
+    });
+    delay(() => setVO('"Finding what matters is becoming harder."'), 4000);
+  }},
+  { time: 15000, fn: () => {
+    activate('s3');
+    setVO('"Clarion brings stories together through multiple news providers and automated ingestion."');
+    delay(() => document.getElementById('s3_src1').style.cssText = 'opacity:1; transform:translateX(0)', 500);
+    delay(() => document.getElementById('s3_src2').style.cssText = 'opacity:1; transform:translateX(0)', 900);
+    delay(() => document.getElementById('s3_src3').style.cssText = 'opacity:1; transform:translateX(0)', 1300);
+    delay(() => document.getElementById('s3_src4').style.cssText = 'opacity:1; transform:translateX(0)', 1700);
+    
+    delay(() => document.getElementById('s3_flow1').style.width = '200px', 2500);
+    delay(() => document.getElementById('s3_hub').style.opacity = '1', 3200);
+    
+    delay(() => document.getElementById('s3_flow2').style.width = '200px', 4500);
+    delay(() => document.getElementById('s3_db').style.opacity = '1', 5200);
+  }},
+  { time: 23000, fn: () => {
+    activate('s4');
+    setVO(''); // Let UI speak
+    delay(() => {
+      document.getElementById('s4_browser').style.opacity = '1';
+      document.getElementById('s4_browser').style.transform = 'scale(1)';
+    }, 500);
+  }},
+  { time: 30000, fn: () => {
+    activate('s5');
+    setVO('"Clarion\'s intelligence layer analyzes articles automatically, extracting summaries, keywords and sentiment."');
+    delay(() => document.getElementById('s5_art').style.cssText = 'opacity:1; transform:translateX(0)', 800);
+    delay(() => document.getElementById('s5_node').style.opacity = '1', 2000);
+    
+    delay(() => document.getElementById('s5_m1').style.cssText = 'opacity:1; transform:translateX(0)', 3500);
+    delay(() => document.getElementById('s5_m2').style.cssText = 'opacity:1; transform:translateX(0)', 4500);
+    delay(() => document.getElementById('s5_m3').style.cssText = 'opacity:1; transform:translateX(0)', 5500);
+  }},
+  { time: 40000, fn: () => {
+    activate('s6');
+    setVO('"Search becomes more than keywords, ranking content around relevance and context."');
+    const q = "artificial intelligence";
+    let i = 0;
+    delay(() => {
+      const type = setInterval(() => {
+        if(i < q.length) { document.getElementById('s6_type').textContent += q.charAt(i); i++; }
+        else clearInterval(type);
+      }, 70);
+    }, 1000);
+    
+    delay(() => document.getElementById('s6_r1').style.cssText = 'opacity:1; transform:translateY(0)', 3500);
+    delay(() => document.getElementById('s6_r2').style.cssText = 'opacity:1; transform:translateY(0)', 4000);
+    delay(() => document.getElementById('s6_r3').style.cssText = 'opacity:1; transform:translateY(0)', 4500);
+  }},
+  { time: 47000, fn: () => {
+    activate('s7');
+    setVO('"As readers explore, Clarion learns what content is relevant and surfaces related stories."');
+    delay(() => document.getElementById('s7_main').style.cssText = 'opacity:1; transform:translateY(0)', 500);
+    delay(() => document.getElementById('s7_side').style.opacity = '1', 2000);
+    delay(() => document.getElementById('s7_r1').style.cssText = 'opacity:1; transform:translateX(0)', 2500);
+    delay(() => document.getElementById('s7_r2').style.cssText = 'opacity:1; transform:translateX(0)', 3000);
+    delay(() => document.getElementById('s7_r3').style.cssText = 'opacity:1; transform:translateX(0)', 3500);
+  }},
+  { time: 54000, fn: () => {
+    activate('s8');
+    setVO('"Trending stories rise naturally from engagement and recency."');
+    delay(() => document.getElementById('s8_h').style.cssText = 'opacity:1; transform:translateY(0)', 500);
+    delay(() => document.getElementById('s8_t1').style.cssText = 'opacity:1; transform:translateY(0)', 1500);
+    delay(() => document.getElementById('s8_t2').style.cssText = 'opacity:1; transform:translateY(0)', 2000);
+    delay(() => document.getElementById('s8_t3').style.cssText = 'opacity:1; transform:translateY(0)', 2500);
+  }},
+  { time: 60000, fn: () => {
+    activate('s9');
+    setVO('"When verification matters, Clarion compares reports across independent sources, highlighting corroboration and conflicting claims."');
+    delay(() => document.getElementById('s9_main').style.opacity = '1', 500);
+    
+    delay(() => document.getElementById('s9_v1').style.cssText = 'opacity:1; transform:translateX(0)', 2500);
+    delay(() => document.getElementById('s9_v2').style.cssText = 'opacity:1; transform:translateX(0)', 3500);
+    delay(() => document.getElementById('s9_v3').style.cssText = 'opacity:1; transform:translateX(0)', 4500);
+    delay(() => document.getElementById('s9_v4').style.cssText = 'opacity:1; transform:translateX(0)', 5500);
+    
+    delay(() => document.getElementById('s9_res').style.cssText = 'opacity:1; transform:scale(1)', 7500);
+  }},
+  { time: 72000, fn: () => {
+    activate('s10');
+    setVO('"Behind the experience, administrators monitor users, content, and system health from a centralized control layer."');
+    delay(() => document.getElementById('s10_dash').style.cssText = 'opacity:1; transform:scale(1)', 500);
+    delay(() => document.getElementById('s10_c1').style.cssText = 'opacity:1; transform:translateY(0)', 1500);
+    delay(() => document.getElementById('s10_c2').style.cssText = 'opacity:1; transform:translateY(0)', 1800);
+    delay(() => document.getElementById('s10_c3').style.cssText = 'opacity:1; transform:translateY(0)', 2100);
+    delay(() => document.getElementById('s10_c4').style.cssText = 'opacity:1; transform:translateY(0)', 2400);
+    delay(() => document.getElementById('s10_chart').style.opacity = '1', 3000);
+  }},
+  { time: 78000, fn: () => {
+    activate('s11');
+    setVO(''); // let visuals breathe
+    delay(() => document.getElementById('a_clarion').style.opacity = '1', 500);
+    delay(() => document.getElementById('al_1').style.opacity = '1', 1000);
+    delay(() => document.getElementById('a_gate').style.opacity = '1', 1500);
+    
+    delay(() => {
+      ['al_2','al_2a','al_3','al_4','al_5','al_6'].forEach(id => document.getElementById(id).style.opacity = '1');
+    }, 2500);
+    
+    delay(() => {
+      ['a_s1','a_s2','a_s3','a_s4'].forEach(id => document.getElementById(id).style.opacity = '1');
+    }, 3500);
+    
+    delay(() => { document.getElementById('al_7').style.opacity = '1'; document.getElementById('a_ai').style.opacity = '1'; }, 4500);
+    delay(() => { document.getElementById('al_8').style.opacity = '1'; document.getElementById('a_db').style.opacity = '1'; document.getElementById('a_redis').style.opacity = '1'; }, 5000);
+    delay(() => { document.getElementById('a_docker').style.opacity = '1'; }, 6000);
+    delay(() => { document.getElementById('a_k8s').style.opacity = '1'; }, 6500);
+  }},
+  { time: 85000, fn: () => {
+    activate('s12');
+    setVO('"And observability gives Clarion visibility into the health of the entire platform."');
+    delay(() => document.getElementById('s12_grafana').style.opacity = '1', 500);
+    
+    ['s12_p1','s12_p2','s12_p3','s12_p4','s12_p5','s12_p6'].forEach((id, idx) => {
+      delay(() => document.getElementById(id).style.cssText = 'opacity:1; transform:scale(1)', 1500 + idx*300);
+    });
+  }},
+  { time: 90000, fn: () => {
+    activate('s13');
+    setVO('');
+    delay(() => document.getElementById('s13_content').style.opacity = '1', 500);
+  }}
+];
+
+let executed = new Set();
+let startTime = 0;
+let isRunning = false;
+function run() {
+  if (!isRunning) {
+    startTime = performance.now();
+    isRunning = true;
+  }
+  const now = performance.now() - startTime;
+  document.getElementById('progress').style.width = Math.min(100, (now / TOTAL_DURATION) * 100) + '%';
+  
+  script.forEach((step, i) => {
+    if (now >= step.time && !executed.has(i)) {
+      executed.add(i);
+      step.fn();
+    }
+  });
+  
+  if (now < TOTAL_DURATION + 2000) {
+    requestAnimationFrame(run);
+  } else {
+    setVO('');
+  }
+}
+// run() is triggered by the start button
+</script>
+</body>
+</html>

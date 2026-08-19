@@ -42,3 +42,29 @@ export interface PagedResponse<T> {
 }
 
 export type NewsResponse = Article;
+
+export interface VerificationSourceDto {
+  id: number;
+  sourceName: string;
+  url: string;
+  publishedAt: string;
+  similarityScore: number | null;
+  relationship: string;
+}
+
+export interface VerificationConflictDto {
+  id: number;
+  claimText: string;
+  conflictingSourceUrl: string;
+}
+
+export interface ArticleVerificationDto {
+  id: number;
+  status: string;
+  verificationScore: number;
+  sourcesFound: number;
+  independentSources: number;
+  lastVerifiedAt: string;
+  sources: VerificationSourceDto[];
+  conflicts: VerificationConflictDto[];
+}

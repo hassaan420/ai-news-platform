@@ -17,9 +17,11 @@ import jakarta.persistence.CascadeType;
 import java.time.Instant;
 import java.util.List;
 
+import java.io.Serializable;
+
 @Entity
 @Table(name = "articles")
-public class Article {
+public class Article implements Serializable {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -61,6 +63,9 @@ public class Article {
 
   @Column(name = "created_at", nullable = false, updatable = false)
   private Instant createdAt;
+
+  @Column(length = 200)
+  private String publisher;
 
   @Column(name = "updated_at", nullable = false)
   private Instant updatedAt;
@@ -134,6 +139,9 @@ public class Article {
 
   public Instant getCreatedAt() { return createdAt; }
   public Instant getUpdatedAt() { return updatedAt; }
+
+  public String getPublisher() { return publisher; }
+  public void setPublisher(String publisher) { this.publisher = publisher; }
 
   public String getSummary() { return summary; }
   public void setSummary(String summary) { this.summary = summary; }

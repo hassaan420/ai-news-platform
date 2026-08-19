@@ -1,10 +1,11 @@
 package com.newsplatform.news.entity;
 
 import jakarta.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "article_keywords")
-public class ArticleKeyword {
+public class ArticleKeyword implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

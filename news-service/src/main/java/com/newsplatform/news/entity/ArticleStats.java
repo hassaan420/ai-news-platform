@@ -2,10 +2,11 @@ package com.newsplatform.news.entity;
 
 import jakarta.persistence.*;
 import java.time.Instant;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "article_stats")
-public class ArticleStats {
+public class ArticleStats implements Serializable {
     @Id
     @Column(name = "article_id")
     private Long articleId;

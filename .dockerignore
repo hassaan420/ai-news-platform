@@ -57,3 +57,10 @@ scripts/
 # ─── Frontend ─────────────────────────────────────────────────
 frontend/node_modules/
 frontend/dist/
+
+.agents/
+brain/
+browser/
+.tempmediaStorage/
+clarion-showcase/node_modules/
+clarion-showcase/dist/

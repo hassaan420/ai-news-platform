@@ -14,8 +14,11 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -50,32 +53,38 @@ public class GeminiClient {
 
     private final RestTemplate restTemplate;
     private final GeminiRateLimiter rateLimiter;
-    private final String apiKey;
+    private final List<String> apiKeys;
     private final String model;
     private final int maxAttempts;
     private final long initialBackoffMs;
     private final long maxBackoffMs;
 
+    private final ConcurrentHashMap<Integer, Long> keyCooldowns = new ConcurrentHashMap<>();
+    private final AtomicInteger currentKeyIndex = new AtomicInteger(0);
+
     public GeminiClient(
             RestTemplate restTemplate,
             GeminiRateLimiter rateLimiter,
-            @Value("${ai.gemini.api-key:${GOOGLE_API_KEY:}}") String apiKey,
+            @Value("${ai.gemini.api-keys:${GOOGLE_API_KEYS:${ai.gemini.api-key:${GOOGLE_API_KEY:}}}}") String rawApiKeys,
             @Value("${ai.gemini.model:gemini-flash-latest}") String model,
             @Value("${gemini.retry.max-attempts:2}") int maxAttempts,
             @Value("${gemini.retry.initial-backoff-ms:1000}") long initialBackoffMs,
             @Value("${gemini.retry.max-backoff-ms:10000}") long maxBackoffMs) {
         this.restTemplate = restTemplate;
         this.rateLimiter = rateLimiter;
-        this.apiKey = apiKey == null ? "" : apiKey.trim();
+        this.apiKeys = Arrays.stream((rawApiKeys == null ? "" : rawApiKeys).split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .toList();
         this.model = model;
         this.maxAttempts = maxAttempts;
         this.initialBackoffMs = initialBackoffMs;
         this.maxBackoffMs = maxBackoffMs;
     }
 
-    /** True when a non-empty API key has been configured. */
+    /** True when at least one non-empty API key has been configured. */
     public boolean isConfigured() {
-        return !apiKey.isEmpty();
+        return !apiKeys.isEmpty();
     }
 
     public String model() {
@@ -124,62 +133,119 @@ public class GeminiClient {
     // ─── Private helpers ─────────────────────────────────────────────────────
 
     /**
+     * Finds the next available key index that is not in a per-key cooldown.
+     * Returns -1 if all configured keys are currently on cooldown.
+     */
+    private int getNextAvailableKeyIndex() {
+        if (apiKeys.isEmpty()) return -1;
+        
+        int n = apiKeys.size();
+        long now = System.currentTimeMillis();
+        
+        for (int i = 0; i < n; i++) {
+            int index = currentKeyIndex.getAndUpdate(current -> (current + 1) % n);
+            Long cooldownExpiry = keyCooldowns.get(index);
+            if (cooldownExpiry == null || cooldownExpiry <= now) {
+                return index;
+            }
+        }
+        return -1;
+    }
+
+    /**
      * Execute the Gemini HTTP call with exponential backoff for transient errors.
-     * 429 errors are NEVER retried — they activate the cooldown and return null immediately.
+     * 429 errors switch the key and retry immediately. If all keys hit 429, it activates the global cooldown.
      */
     @SuppressWarnings("unchecked")
     private String executeWithRetry(String prompt) {
-        Map<String, Object> body = Map.of(
-                "contents", List.of(Map.of(
-                        "parts", List.of(Map.of("text", prompt))
-                )),
-                "generationConfig", Map.of(
-                        "temperature", 0.2,
-                        "maxOutputTokens", 512
-                )
-        );
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        String url = BASE_URL + "/" + model + ":generateContent?key=" + apiKey;
-        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
-
-        long backoffMs = initialBackoffMs;
-        for (int attempt = 1; attempt <= maxAttempts; attempt++) {
-            try {
-                ResponseEntity<Map> resp = restTemplate.exchange(url, HttpMethod.POST, entity, Map.class);
-                return extractFirstText(resp.getBody());
-
-            } catch (HttpClientErrorException ex) {
-                if (ex.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
-                    // *** 429 — activate cooldown, do NOT retry ***
-                    long retryDelaySecs = parseRetryDelay(ex.getResponseBodyAsString());
-                    log.warn("[GeminiClient] HTTP 429 received — activating global cooldown (providerRetryDelaySecs={})",
-                            retryDelaySecs > 0 ? retryDelaySecs : "not provided");
-                    rateLimiter.recordRateLimitHit(retryDelaySecs);
-                    return null; // Caller falls back to heuristic
-                }
-                // Other 4xx (400, 403, etc.) — not transient, do not retry
-                log.warn("[GeminiClient] HTTP {} error (non-retriable): {}", ex.getStatusCode(), ex.getMessage());
+        while (true) {
+            int keyIndex = getNextAvailableKeyIndex();
+            if (keyIndex < 0) {
+                log.warn("[GeminiClient] All configured API keys are in per-key cooldown. Activating global rate limiter.");
+                rateLimiter.recordRateLimitHit(-1); // delegates duration to rateLimiter defaults
                 return null;
+            }
 
-            } catch (RestClientException ex) {
-                // Network / 5xx — potentially transient; retry with backoff
-                if (attempt >= maxAttempts) {
-                    log.warn("[GeminiClient] Gemini request failed after {} attempts: {}", maxAttempts, ex.getMessage());
+            String currentKey = apiKeys.get(keyIndex);
+            
+            boolean isGroq = currentKey.startsWith("gsk_");
+            String url = isGroq 
+                ? "https://api.groq.com/openai/v1/chat/completions" 
+                : BASE_URL + "/" + model + ":generateContent?key=" + currentKey;
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            if (isGroq) {
+                headers.setBearerAuth(currentKey);
+            }
+            
+            Map<String, Object> reqBody;
+            if (isGroq) {
+                reqBody = Map.of(
+                    "model", "llama-3.1-70b-versatile",
+                    "messages", List.of(Map.of("role", "user", "content", prompt)),
+                    "temperature", 0.2,
+                    "max_tokens", 1024
+                );
+            } else {
+                reqBody = Map.of(
+                    "contents", List.of(Map.of(
+                            "parts", List.of(Map.of("text", prompt))
+                    )),
+                    "generationConfig", Map.of(
+                            "temperature", 0.2,
+                            "maxOutputTokens", 1024
+                    )
+                );
+            }
+
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(reqBody, headers);
+
+            long backoffMs = initialBackoffMs;
+            boolean switchKey = false;
+            
+            for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+                try {
+                    ResponseEntity<Map> resp = restTemplate.exchange(url, HttpMethod.POST, entity, Map.class);
+                    return extractFirstText(resp.getBody(), isGroq);
+
+                } catch (HttpClientErrorException ex) {
+                    if (ex.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
+                        long retryDelaySecs = parseRetryDelay(ex.getResponseBodyAsString());
+                        long cooldownDurationMs = (retryDelaySecs > 0 ? retryDelaySecs : 60) * 1000L;
+                        log.warn("[GeminiClient] HTTP 429 received for key index {} — putting key in cooldown for {}s", 
+                                keyIndex, cooldownDurationMs / 1000);
+                        keyCooldowns.put(keyIndex, System.currentTimeMillis() + cooldownDurationMs);
+                        switchKey = true;
+                        break; // break inner loop to try next key
+                    }
+                    // Other 4xx (400, 403, etc.) — not transient, do not retry
+                    log.warn("[GeminiClient] HTTP {} error (non-retriable) on key index {}: {}", ex.getStatusCode(), keyIndex, ex.getMessage());
+                    return null;
+
+                } catch (RestClientException ex) {
+                    // Network / 5xx — potentially transient; retry with backoff
+                    if (attempt >= maxAttempts) {
+                        log.warn("[GeminiClient] Gemini request failed after {} attempts on key index {}: {}", maxAttempts, keyIndex, ex.getMessage());
+                        return null;
+                    }
+                    log.warn("[GeminiClient] Gemini request failed (attempt {}/{}), retrying in {}ms: {}",
+                            attempt, maxAttempts, backoffMs, ex.getMessage());
+                    sleep(backoffMs);
+                    backoffMs = Math.min(backoffMs * 2, maxBackoffMs);
+
+                } catch (RuntimeException ex) {
+                    log.warn("[GeminiClient] Unexpected error calling Gemini on key index {}: {}", keyIndex, ex.getMessage());
                     return null;
                 }
-                log.warn("[GeminiClient] Gemini request failed (attempt {}/{}), retrying in {}ms: {}",
-                        attempt, maxAttempts, backoffMs, ex.getMessage());
-                sleep(backoffMs);
-                backoffMs = Math.min(backoffMs * 2, maxBackoffMs);
-
-            } catch (RuntimeException ex) {
-                log.warn("[GeminiClient] Unexpected error calling Gemini: {}", ex.getMessage());
+            }
+            
+            // If inner loop exhausted without a 429, don't continue key rotation
+            if (!switchKey) {
                 return null;
             }
         }
-        return null;
     }
 
     /**
@@ -212,18 +278,27 @@ public class GeminiClient {
     }
 
     @SuppressWarnings("unchecked")
-    private String extractFirstText(Map body) {
+    private String extractFirstText(Map body, boolean isGroq) {
         if (body == null) return null;
-        List<Map<String, Object>> candidates = (List<Map<String, Object>>) body.get("candidates");
-        if (candidates == null || candidates.isEmpty()) return null;
-        Map<String, Object> first = candidates.get(0);
-        if (first == null) return null;
-        Map<String, Object> content = (Map<String, Object>) first.get("content");
-        if (content == null) return null;
-        List<Map<String, Object>> parts = (List<Map<String, Object>>) content.get("parts");
-        if (parts == null || parts.isEmpty()) return null;
-        Object text = parts.get(0).get("text");
-        return text == null ? null : text.toString().trim();
+        if (isGroq) {
+            List<Map<String, Object>> choices = (List<Map<String, Object>>) body.get("choices");
+            if (choices == null || choices.isEmpty()) return null;
+            Map<String, Object> message = (Map<String, Object>) choices.get(0).get("message");
+            if (message == null) return null;
+            Object content = message.get("content");
+            return content == null ? null : content.toString().trim();
+        } else {
+            List<Map<String, Object>> candidates = (List<Map<String, Object>>) body.get("candidates");
+            if (candidates == null || candidates.isEmpty()) return null;
+            Map<String, Object> first = candidates.get(0);
+            if (first == null) return null;
+            Map<String, Object> content = (Map<String, Object>) first.get("content");
+            if (content == null) return null;
+            List<Map<String, Object>> parts = (List<Map<String, Object>>) content.get("parts");
+            if (parts == null || parts.isEmpty()) return null;
+            Object text = parts.get(0).get("text");
+            return text == null ? null : text.toString().trim();
+        }
     }
 
     private static void sleep(long ms) {

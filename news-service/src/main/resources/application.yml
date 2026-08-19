@@ -36,6 +36,7 @@ server:
 ai:
   gemini:
     api-key: ${GOOGLE_API_KEY:}
+    api-keys: ${GOOGLE_API_KEYS:}
     model: ${AI_GEMINI_MODEL:gemini-flash-latest}
 
   # Number of AI worker threads.

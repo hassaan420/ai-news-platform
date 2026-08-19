@@ -53,6 +53,7 @@ public class ArticleAiProcessingService {
     private final ArticleKeywordRepository keywordRepository;
     private final ArticleTagRepository tagRepository;
     private final AiProcessingQueueRepository queueRepository;
+    private final ArticleVerificationService verificationService;
 
     @org.springframework.context.annotation.Lazy
     @org.springframework.beans.factory.annotation.Autowired
@@ -63,13 +64,15 @@ public class ArticleAiProcessingService {
                                       ArticleRepository articleRepository,
                                       ArticleKeywordRepository keywordRepository,
                                       ArticleTagRepository tagRepository,
-                                      AiProcessingQueueRepository queueRepository) {
+                                      AiProcessingQueueRepository queueRepository,
+                                      @org.springframework.context.annotation.Lazy ArticleVerificationService verificationService) {
         this.aiService = aiService;
         this.rateLimiter = rateLimiter;
         this.articleRepository = articleRepository;
         this.keywordRepository = keywordRepository;
         this.tagRepository = tagRepository;
         this.queueRepository = queueRepository;
+        this.verificationService = verificationService;
     }
 
     // ─── Public entry points ───────────────────────────────────────────────────
@@ -219,6 +222,17 @@ public class ArticleAiProcessingService {
      */
     @Transactional
     protected void doAiWork(Long articleId, Long queueId) {
+        AiProcessingQueue queueItem = queueRepository.findById(queueId)
+                .orElseThrow(() -> new IllegalArgumentException("Queue item not found: " + queueId));
+        String taskType = queueItem.getTaskType();
+
+        if ("VERIFICATION".equals(taskType)) {
+            verificationService.runVerification(articleId);
+            queueItem.setStatus("COMPLETED");
+            queueRepository.save(queueItem);
+            return;
+        }
+
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new IllegalArgumentException("Article not found: " + articleId));
 
@@ -297,13 +311,20 @@ public class ArticleAiProcessingService {
         articleRepository.save(article);
 
         // ── Mark queue complete ─────────────────────────────────────────────────
-        queueRepository.findById(queueId).ifPresent(q -> {
-            q.setStatus("COMPLETED");
-            queueRepository.save(q);
-        });
+        queueItem.setStatus("COMPLETED");
+        queueRepository.save(queueItem);
 
         log.info("[AI-QUEUE] Article={} QueueId={} -> COMPLETED | provider={} sentiment={} keywords={}",
                 articleId, queueId, analysis.provider, analysis.sentiment.sentiment, analysis.keywords.size());
+
+        // Trigger Verification task asynchronously
+        AiProcessingQueue verifQueue = new AiProcessingQueue();
+        verifQueue.setArticle(article);
+        verifQueue.setStatus("PENDING");
+        verifQueue.setTaskType("VERIFICATION");
+        verifQueue.setRetryCount(0);
+        AiProcessingQueue saved = queueRepository.save(verifQueue);
+        log.info("[AI-QUEUE] Article={} -> spawned VERIFICATION queue entry id={}", articleId, saved.getId());
     }
 
     @Transactional

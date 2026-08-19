@@ -50,6 +50,8 @@ The source Project Statement left many implementation details unspecified or mar
 | A-39 | JSON-structured logging in `prod` profile for log-aggregation compatibility.                                                                                                                                                                                                                                | `CODING_RULES.md`                                                  |
 | A-40 | Flyway chosen over Liquibase for migrations.                                                                                                                                                                                                                                                                | `CODING_RULES.md`, `DATABASE_SCHEMA.md`                            |
 | A-41 | Conventional Commits format for all commit messages.                                                                                                                                                                                                                                                        | `CONTRIBUTING.md`                                                  |
+| A-42 | Weather widget proxy added to category-service using OpenWeatherMap's free tier. Proxies requests to keep API key secure, utilizing existing Redis cache and avoiding routing-only gateway-service. Rate limiting is deferred to gateway-service per A-30, no service-level throttling exists here. | `category-service/src/main/java/com/newsplatform/category/controller/WeatherController.java` |
+| A-43 | WeatherSportsWidget implemented on the frontend. Uses SportScore public API for live sports with a mandatory attribution link. Weather falls back to "Islamabad" by default if geolocation fails or is denied. | `frontend/src/components/WeatherSportsWidget.tsx` |
 
 
 ## 3. Architecture Decision Records
@@ -77,6 +79,10 @@ The source Project Statement left many implementation details unspecified or mar
 ### ADR-006: Docker Compose, Not Kubernetes, for Phase 1 (A-10)
 
 **Decision:** Single-host Docker Compose orchestration. **Rationale:** Matches source spec's explicit Docker/Docker Compose technology stack listing; Kubernetes was not mentioned and introduces significant operational overhead not justified at this phase. **Status:** Accepted. Architecture deliberately avoids decisions that would block a future Kubernetes migration (stateless services, externalized config).
+
+### ADR-007: Regional RSS News Provider and Rome Dependency
+
+**Decision:** Add an `RssNewsProvider` implementing the existing `NewsProvider` Strategy interface to support fetching regional outlet coverage (e.g., Dawn, Express Tribune, ARY News) via their RSS feeds, and add the `com.rometools:rome` dependency for RSS/Atom parsing. **Rationale:** Expanding coverage to regional outlets is not explicitly out-of-scope, and the Strategy pattern naturally accommodates new providers. Using a standard Apache-2.0 library (`rome`) for parsing avoids the complexity and bugs of hand-rolling XML parsing. This provider will be used strictly for search/verification, not scheduled category ingestion. **Status:** Proposed.
 
 ## 4. Open Items Requiring Human Confirmation Before Full Production Launch
 

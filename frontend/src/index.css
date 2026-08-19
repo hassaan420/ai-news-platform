@@ -237,6 +237,91 @@
   box-shadow: 0 6px 24px rgba(0,0,0,0.35), 0 12px 40px rgba(0,0,0,0.2);
 }
 
+/* === Live News Ticker === */
+@keyframes live-ticker-marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes live-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(0.7);
+  }
+}
+
+.live-ticker-viewport {
+  overflow: hidden;
+  position: relative;
+  /* Fade the left and right edges for a polished marquee look. */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 20px,
+    black calc(100% - 20px),
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 20px,
+    black calc(100% - 20px),
+    transparent
+  );
+}
+
+.live-ticker-track {
+  display: inline-flex;
+  height: 100%;
+  will-change: transform;
+  animation: live-ticker-marquee 45s linear infinite;
+}
+
+.live-ticker-group {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  height: 100%;
+}
+
+/* Pause the marquee on hover and on keyboard focus within */
+.live-ticker-viewport:hover .live-ticker-track,
+.live-ticker-viewport:focus-within .live-ticker-track {
+  animation-play-state: paused;
+}
+
+.live-dot {
+  animation: live-pulse 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-ticker-track {
+    animation: none !important;
+    transform: none !important;
+  }
+  .live-ticker-viewport {
+    overflow-x: auto !important;
+    -webkit-mask-image: none !important;
+    mask-image: none !important;
+    scrollbar-width: none;
+  }
+  .live-ticker-viewport::-webkit-scrollbar {
+    display: none;
+  }
+  .live-dot {
+    animation: none !important;
+  }
+}
+
 /* === Recharts dark mode tooltip fix === */
 .dark .recharts-default-tooltip {
   background-color: hsl(228 14% 13%) !important;

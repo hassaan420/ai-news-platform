@@ -1,0 +1,26 @@
+{
+  "status": "ok",
+  "totalResults": 2,
+  "articles": [
+    {
+      "source": { "id": "bbc-news", "name": "BBC News" },
+      "author": "BBC Reporter",
+      "title": "Test Article One",
+      "description": "Description of test article one.",
+      "url": "https://www.bbc.com/news/test-article-one",
+      "urlToImage": "https://www.bbc.com/images/test1.jpg",
+      "publishedAt": "2026-08-18T10:00:00Z",
+      "content": "Full content of test article one."
+    },
+    {
+      "source": { "id": "reuters", "name": "Reuters" },
+      "author": "Reuters Reporter",
+      "title": "Test Article Two",
+      "description": "Description of test article two.",
+      "url": "https://www.reuters.com/news/test-article-two",
+      "urlToImage": "https://www.reuters.com/images/test2.jpg",
+      "publishedAt": "2026-08-18T09:00:00Z",
+      "content": "Full content of test article two."
+    }
+  ]
+}

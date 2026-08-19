@@ -6,6 +6,7 @@ import com.newsplatform.news.repository.ArticleRepository;
 import com.newsplatform.news.repository.ArticleStatsRepository;
 import com.newsplatform.news.service.PersonalizedFeedService;
 import com.newsplatform.news.service.TfIdfRecommendationService;
+import com.newsplatform.news.service.GeminiSearchService;
 import org.springframework.data.domain.PageRequest;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,23 +26,38 @@ public class AiNewsController {
     private final ArticleStatsRepository statsRepository;
     private final ArticleRepository articleRepository;
     private final com.newsplatform.news.mapper.NewsMapper newsMapper;
+    private final GeminiSearchService geminiSearchService;
 
     public AiNewsController(TfIdfRecommendationService recommendationService,
                             PersonalizedFeedService personalizedFeedService,
                             ArticleStatsRepository statsRepository,
                             ArticleRepository articleRepository,
-                            com.newsplatform.news.mapper.NewsMapper newsMapper) {
+                            com.newsplatform.news.mapper.NewsMapper newsMapper,
+                            GeminiSearchService geminiSearchService) {
         this.recommendationService = recommendationService;
         this.personalizedFeedService = personalizedFeedService;
         this.statsRepository = statsRepository;
         this.articleRepository = articleRepository;
         this.newsMapper = newsMapper;
+        this.geminiSearchService = geminiSearchService;
     }
 
     // Part 5: Related Articles
     @GetMapping("/{articleId}/related")
     public ResponseEntity<List<com.newsplatform.news.dto.NewsSummaryResponse>> getRelatedArticles(@PathVariable("articleId") Long articleId) {
-        return ResponseEntity.ok(recommendationService.getRelatedArticles(articleId).stream().map(newsMapper::toNewsSummaryResponse).collect(Collectors.toList()));
+        try {
+            List<Article> related = recommendationService.getRelatedArticles(articleId);
+            if (related.isEmpty()) {
+                Article article = articleRepository.findById(articleId).orElse(null);
+                if (article != null) {
+                    related = geminiSearchService.searchWebForRelatedArticles(article.getTitle());
+                }
+            }
+            return ResponseEntity.ok(related.stream().map(newsMapper::toNewsSummaryResponse).collect(Collectors.toList()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     @GetMapping("/personalized")

@@ -133,6 +133,64 @@ public class GeminiAiProvider implements AiProvider {
             List<String> keywords) {
     }
 
+    public record ConflictResult(String claim, String sourceUrl) {}
+
+    public record CorroborationAnalysis(
+            int score,
+            int independentSources,
+            String status,
+            List<ConflictResult> conflicts) {}
+
+    public CorroborationAnalysis verifyCorroboration(String originalContent, List<com.newsplatform.news.dto.NormalizedArticle> externalArticles) {
+        if (externalArticles == null || externalArticles.isEmpty()) {
+             return new CorroborationAnalysis(0, 0, "SINGLE_SOURCE", Collections.emptyList());
+        }
+
+        StringBuilder sourcesText = new StringBuilder();
+        for (int i = 0; i < externalArticles.size(); i++) {
+            sourcesText.append(String.format("[Source %d URL: %s]\nTitle: %s\nContent: %s\n\n", 
+                i, externalArticles.get(i).getUrl(), externalArticles.get(i).getTitle(), truncate(externalArticles.get(i).getContent(), 1000)));
+        }
+
+        String prompt = """
+            You are a rigorous journalistic fact-checker. Compare the PRIMARY ARTICLE to the EXTERNAL SOURCES.
+            Determine if the external sources independently corroborate the claims in the primary article, or if there are conflicts.
+            Respond with ONLY a single JSON object. The JSON must have exactly these fields:
+              "score": integer 0-100 (100 = full agreement, 0 = complete conflict)
+              "independentSources": integer (number of sources that actually agree)
+              "status": string ("STRONGLY_CORROBORATED", "PARTIALLY_CORROBORATED", "CONFLICTING_REPORTS", "INSUFFICIENT_EVIDENCE")
+              "conflicts": array of objects { "claim": "description of conflict", "sourceUrl": "URL of conflicting source" }
+
+            PRIMARY ARTICLE:
+            %s
+
+            EXTERNAL SOURCES:
+            %s
+            """.formatted(truncate(originalContent, 3000), truncate(sourcesText.toString(), 8000));
+
+        String raw = callOrThrow(prompt);
+        String json = extractJsonObject(raw);
+
+        try {
+            JsonNode node = mapper.readTree(json);
+            int score = node.path("score").asInt(0);
+            int independentSources = node.path("independentSources").asInt(0);
+            String status = node.path("status").asText("INSUFFICIENT_EVIDENCE");
+            
+            List<ConflictResult> conflicts = new ArrayList<>();
+            JsonNode conflictsNode = node.path("conflicts");
+            if (conflictsNode.isArray()) {
+                for (JsonNode c : conflictsNode) {
+                    conflicts.add(new ConflictResult(c.path("claim").asText(""), c.path("sourceUrl").asText("")));
+                }
+            }
+            return new CorroborationAnalysis(score, independentSources, status, conflicts);
+        } catch (Exception ex) {
+            log.error("Corroboration analysis JSON parse failed: " + ex.getMessage());
+            return new CorroborationAnalysis(0, 0, "INSUFFICIENT_EVIDENCE", Collections.emptyList());
+        }
+    }
+
     // ─── Legacy single-operation methods (preserved for API compatibility) ───
 
     @Override

@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
 import Footer from '../components/Footer';
+import LiveTickerBar from '../components/LiveTickerBar';
 
 export default function MainLayout() {
   return (
@@ -14,7 +15,10 @@ export default function MainLayout() {
       {/* Main Content Wrapper */}
       <div className="flex-1 flex flex-col md:ml-[280px] min-w-0 z-10 relative">
         <Navbar />
-        
+
+        {/* Live News Ticker — placed directly below the header */}
+        <LiveTickerBar />
+
         {/* Main Canvas */}
         <main className="flex-1 p-margin_mobile md:p-margin_desktop max-w-[1200px] mx-auto w-full">
           <Outlet />

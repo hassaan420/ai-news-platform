@@ -33,4 +33,6 @@ public interface ArticleService {
     int deduplicateNews();
     
     void deleteInternalNews(Long id);
+    
+    com.newsplatform.news.dto.ArticleVerificationDto getVerification(Long articleId);
 }

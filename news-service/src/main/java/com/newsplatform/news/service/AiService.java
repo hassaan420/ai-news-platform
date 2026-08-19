@@ -126,6 +126,24 @@ public class AiService {
         return heuristic.tags(title, content);
     }
 
+    public GeminiAiProvider.CorroborationAnalysis verifyCorroboration(String content, List<com.newsplatform.news.dto.NormalizedArticle> externalArticles) {
+        if (gemini != null && gemini.isEnabled()) {
+            if (rateLimiter.isOnCooldown()) {
+                throw new RuntimeException("GEMINI_RATE_LIMITED");
+            }
+            try {
+                return gemini.verifyCorroboration(content, externalArticles);
+            } catch (RuntimeException ex) {
+                if (rateLimiter.isOnCooldown() || (ex.getMessage() != null && (ex.getMessage().contains("429") || ex.getMessage().contains("503")))) {
+                    throw new RuntimeException("GEMINI_RATE_LIMITED", ex);
+                } else {
+                    log.warn("[AiService] Gemini VERIFICATION failed ({}), falling back to heuristic", ex.getMessage());
+                }
+            }
+        }
+        return new GeminiAiProvider.CorroborationAnalysis(0, 0, "INSUFFICIENT_EVIDENCE", Collections.emptyList());
+    }
+
     /** True when the primary (Gemini) provider is wired up and able to serve. */
     public boolean isGeminiEnabled() {
         return gemini != null && gemini.isEnabled();

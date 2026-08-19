@@ -7,6 +7,7 @@ public class NormalizedArticle {
     private String url;
     private String image;
     private String author;
+    private String publisher;
     private Long sourceId;
     private Long categoryId;
     private String language;
@@ -33,6 +34,9 @@ public class NormalizedArticle {
 
     public String getAuthor() { return author; }
     public void setAuthor(String author) { this.author = author; }
+
+    public String getPublisher() { return publisher; }
+    public void setPublisher(String publisher) { this.publisher = publisher; }
 
     public Long getSourceId() { return sourceId; }
     public void setSourceId(Long sourceId) { this.sourceId = sourceId; }

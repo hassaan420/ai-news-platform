@@ -21,7 +21,7 @@ public class TfIdfRecommendationService {
         this.keywordRepository = keywordRepository;
     }
 
-    @Cacheable(value = "related_articles", key = "#articleId")
+    @Cacheable(value = "related_articles", key = "#p0")
     public List<Article> getRelatedArticles(Long articleId) {
         if (articleId == null) return Collections.emptyList();
         Article target = articleRepository.findById(articleId).orElse(null);

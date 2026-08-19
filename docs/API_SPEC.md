@@ -136,6 +136,11 @@ These are not exposed through the Gateway and must reject requests without a val
 
 `GET /internal/articles/search` (news-service) — used by search-service, per `ARCHITECTURE.md` §6. `GET /internal/fetch-logs` (news-service) — used by admin-service. `POST /internal/articles/ingest` (news-service) — used by scheduler-service to submit a batch of validated articles. `GET /internal/categories/valid-ids` (category-service) — used by news-service to validate `category_id` (`DATABASE_SCHEMA.md` §7).
 
+`GET /api/scheduler/search` (scheduler-service) — used by news-service verification layer. Requires `Internal-Api-Key` header.
+Query parameters:
+- `q` *(required)* — keyword search query, URL-encoded.
+- `domains` *(optional)* — comma-separated list of bare domain names (no protocol, no path) to restrict results to specific outlets, e.g. `domains=bbc.com,reuters.com`. **Provider support:** NewsAPI honours this parameter (maps to `/v2/everything?domains=`). GNews and Mediastack do not support domain filtering on their search APIs (as of this implementation) and return unfiltered results for those parameters without error. GuardianProvider is self-scoped and ignores this parameter. Callers should not assume all providers honour `domains`; it is a best-effort restriction.
+
 ## 7. OpenAPI/Swagger
 
 Every service exposes its own OpenAPI spec at `/v3/api-docs` and Swagger UI at `/swagger-ui.html`. The Gateway aggregates these under `/api-docs/{service}` for a unified developer portal (see `SERVICES.md` §Gateway). This document is the human-readable source of truth; the generated OpenAPI spec must not diverge from it — if implementation requires a divergence, update this file first.

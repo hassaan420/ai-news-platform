@@ -116,7 +116,8 @@ public class GuardianProvider implements NewsProvider {
             }
             article.setUrl(articleUrl != null ? articleUrl : "https://theguardian.com/" + uuid);
             article.setImage(image);
-            article.setAuthor("The Guardian");
+            article.setAuthor("");
+            article.setPublisher("The Guardian");
             
             article.setSourceId(getSourceId());
             article.setCategoryId(categoryId);
@@ -133,5 +134,73 @@ public class GuardianProvider implements NewsProvider {
     @Override
     public List<NormalizedArticle> fetchNews(String categorySlug, Long categoryId) {
         return fetchNews(categorySlug, categoryId, null);
+    }
+
+    @Override
+    public List<NormalizedArticle> searchNews(String query) {
+        if (apiKey == null || apiKey.isBlank()) return List.of();
+        
+        try {
+            String encodedQuery = java.net.URLEncoder.encode(query, java.nio.charset.StandardCharsets.UTF_8.toString());
+            String url = String.format("https://content.guardianapis.com/search?q=%s&show-fields=headline,thumbnail,bodyText&page-size=10&api-key=%s", encodedQuery, apiKey);
+            log.info("Searching Guardian for query: {}", query);
+            
+            GuardianResponse rootResponse = restTemplate.getForObject(url, GuardianResponse.class);
+            if (rootResponse == null || rootResponse.getResponse() == null || !"ok".equalsIgnoreCase(rootResponse.getResponse().getStatus()) || rootResponse.getResponse().getResults() == null) {
+                return List.of();
+            }
+            
+            List<NormalizedArticle> mappedArticles = new ArrayList<>();
+            for (GuardianResponse.Result item : rootResponse.getResponse().getResults()) {
+                String title = item.getWebTitle();
+                if (title == null || title.isBlank()) continue;
+                
+                NormalizedArticle article = new NormalizedArticle();
+                article.setTitle(title);
+                
+                String content = "";
+                String image = "";
+                if (item.getFields() != null) {
+                    content = item.getFields().getBodyText() != null ? item.getFields().getBodyText() : "";
+                    image = item.getFields().getThumbnail() != null ? item.getFields().getThumbnail() : "";
+                }
+                
+                String description = content;
+                if (content.length() > 200) {
+                    description = content.substring(0, 200) + "...";
+                }
+                
+                article.setDescription(description);
+                article.setContent(content);
+                
+                String articleUrl = item.getWebUrl();
+                String uuid = UUID.randomUUID().toString();
+                if (articleUrl != null) {
+                    try {
+                        java.security.MessageDigest md = java.security.MessageDigest.getInstance("SHA-256");
+                        byte[] hashBytes = md.digest(articleUrl.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                        StringBuilder sb = new StringBuilder();
+                        for (byte b : hashBytes) sb.append(String.format("%02x", b));
+                        uuid = sb.toString();
+                    } catch (Exception e) {}
+                }
+                article.setUrl(articleUrl != null ? articleUrl : "https://theguardian.com/" + uuid);
+                article.setImage(image);
+                article.setAuthor("");
+                article.setPublisher("The Guardian");
+                
+                article.setSourceId(getSourceId());
+                article.setCategoryId(null);
+                article.setLanguage("en");
+                article.setPublishedAt(item.getWebPublicationDate() != null ? item.getWebPublicationDate() : Instant.now().toString());
+                article.setHash(uuid);
+                
+                mappedArticles.add(article);
+            }
+            return mappedArticles;
+        } catch (Exception e) {
+            log.error("Failed to search Guardian", e);
+            return List.of();
+        }
     }
 }

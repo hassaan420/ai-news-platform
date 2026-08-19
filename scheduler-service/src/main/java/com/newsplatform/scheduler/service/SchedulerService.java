@@ -225,4 +225,8 @@ public class SchedulerService {
         }
         return 1L; // fallback
     }
+
+    public List<NewsProvider> getProviders() {
+        return providers;
+    }
 }

@@ -167,6 +167,9 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       INTERNAL_API_KEY: ${INTERNAL_API_KEY}
       GOOGLE_API_KEY: ${GOOGLE_API_KEY}
+      # Accepts a comma-separated list of keys for multi-key rotation on 429 errors.
+      # Falls back to the singular GOOGLE_API_KEY if unset.
+      GOOGLE_API_KEYS: ${GOOGLE_API_KEYS:-}
       JAVA_OPTS: ${JAVA_OPTS:-}
       # ── AI worker concurrency (keep small to protect Gemini free-tier quota) ──
       AI_PROCESSING_WORKER_COUNT: ${AI_PROCESSING_WORKER_COUNT:-2}
@@ -214,6 +217,7 @@ services:
       SPRING_DATA_REDIS_PASSWORD: ${REDIS_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
       INTERNAL_API_KEY: ${INTERNAL_API_KEY}
+      OPENWEATHERMAP_API_KEY: ${OPENWEATHERMAP_API_KEY}
       JAVA_OPTS: ${JAVA_OPTS:-}
     networks:
       - news-platform-net

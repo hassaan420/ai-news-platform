@@ -9,10 +9,11 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import java.time.Instant;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "sources")
-public class Source {
+public class Source implements Serializable {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

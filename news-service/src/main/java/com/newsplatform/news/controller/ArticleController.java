@@ -71,4 +71,10 @@ public class ArticleController {
             @RequestParam("keyword") String keyword, @PageableDefault(size = 20) Pageable pageable) {
         return ResponseEntity.ok(articleService.searchArticles(keyword, pageable));
     }
+
+    @GetMapping("/{id}/verification")
+    @Operation(summary = "Get verification details for an article")
+    public ResponseEntity<com.newsplatform.news.dto.ArticleVerificationDto> getVerification(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(articleService.getVerification(id));
+    }
 }

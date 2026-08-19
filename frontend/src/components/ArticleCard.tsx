@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Article } from '@/types/news';
 import { motion } from 'framer-motion';
+import { newsApi } from '@/api/newsApi';
 
 interface ArticleCardProps {
   article: Article;
@@ -8,6 +10,22 @@ interface ArticleCardProps {
 }
 
 export default function ArticleCard({ article, index = 0 }: ArticleCardProps) {
+  const [isSaved, setIsSaved] = useState(false);
+
+  const handleSave = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    try {
+      if (isSaved) {
+        await newsApi.unsaveArticle(Number(article.id));
+      } else {
+        await newsApi.saveArticle(Number(article.id));
+      }
+      setIsSaved(!isSaved);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const formatDate = (dateStr: string) => {
     if (!dateStr) return '';
     const date = new Date(dateStr);
@@ -45,9 +63,9 @@ export default function ArticleCard({ article, index = 0 }: ArticleCardProps) {
       initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.4, delay: index * 0.06, ease: [0.23, 1, 0.32, 1] }}
-      whileHover={{ y: -3 }}
-      whileTap={{ scale: 0.99 }}
+      transition={{ type: "spring", stiffness: 400, damping: 25, delay: index * 0.06 }}
+      whileHover={{ y: -2 }}
+      whileTap={{ scale: 0.98 }}
       className="bg-card rounded-xl overflow-hidden flex flex-col group shadow-premium hover:shadow-premium-hover transition-shadow duration-300"
     >
       <Link to={`/news/${article.id}`} className="block relative h-48 overflow-hidden">
@@ -73,17 +91,34 @@ export default function ArticleCard({ article, index = 0 }: ArticleCardProps) {
       <div className="p-5 flex flex-col flex-1">
         <div className="flex justify-between items-start mb-3">
           {article.sentiment ? (
-            <div className={`flex items-center text-[11px] font-semibold px-2 py-0.5 rounded-md ${getSentimentStyle(article.sentiment)}`}>
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: index * 0.05 + 0.1, duration: 0.3 }}
+              className={`flex items-center text-[11px] font-semibold px-2 py-0.5 rounded-md ${getSentimentStyle(article.sentiment)}`}
+            >
               {article.sentiment}
-            </div>
+            </motion.div>
           ) : (
-            <div className="flex items-center text-[11px] font-semibold text-muted-foreground bg-muted px-2 py-0.5 rounded-md">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: index * 0.05 + 0.1, duration: 0.3 }}
+              className="flex items-center text-[11px] font-semibold text-muted-foreground bg-muted px-2 py-0.5 rounded-md"
+            >
               Neutral
-            </div>
+            </motion.div>
           )}
-          <button className="text-muted-foreground hover:text-primary transition-colors" onClick={(e) => e.preventDefault()} aria-label="Save article">
-            <span className="material-symbols-outlined text-[20px]">bookmark_add</span>
-          </button>
+          <motion.button 
+            whileTap={{ scale: 0.9 }}
+            animate={isSaved ? { scale: [1, 1.3, 1] } : {}}
+            transition={{ duration: 0.3 }}
+            className={`transition-colors ${isSaved ? 'text-primary' : 'text-muted-foreground hover:text-primary'}`} 
+            onClick={handleSave} 
+            aria-label={isSaved ? "Unsave article" : "Save article"}
+          >
+            <span className="material-symbols-outlined text-[20px] block">{isSaved ? 'bookmark_added' : 'bookmark_add'}</span>
+          </motion.button>
         </div>
         
         <Link to={`/news/${article.id}`} className="block mb-2">

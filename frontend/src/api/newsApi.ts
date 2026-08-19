@@ -58,5 +58,10 @@ export const newsApi = {
   getTrendingAiNews: async (): Promise<Article[]> => {
     const response = await axiosClient.get<Article[]>(`/news/ai/trending`);
     return response.data;
+  },
+
+  getArticleVerification: async (id: number): Promise<import('../types/news').ArticleVerificationDto> => {
+    const response = await axiosClient.get<import('../types/news').ArticleVerificationDto>(`/news/${id}/verification`);
+    return response.data;
   }
 };
