@@ -22,6 +22,16 @@ export const newsApi = {
     return response.data;
   },
 
+  getCategoryMetrics: async (category: string): Promise<any> => {
+    const response = await axiosClient.get<any>(`/news/category/${category}/metrics`);
+    return response.data;
+  },
+
+  getTrendingNewsByCategory: async (category: string, page = 0, size = 10): Promise<PagedResponse<Article>> => {
+    const response = await axiosClient.get<PagedResponse<Article>>(`/news/category/${category}/trending?page=${page}&size=${size}`);
+    return response.data;
+  },
+
   getNewsById: async (id: number): Promise<Article> => {
     const response = await axiosClient.get<Article>(`/news/${id}`);
     return response.data;
@@ -35,6 +45,15 @@ export const newsApi = {
   getSavedArticles: async (page = 0, size = 10): Promise<PagedResponse<Article>> => {
     const response = await axiosClient.get<PagedResponse<Article>>(`/news/saved?page=${page}&size=${size}`);
     return response.data;
+  },
+
+  getReadingCount: async (): Promise<{ articlesRead: number }> => {
+    const response = await axiosClient.get<{ articlesRead: number }>('/news/me/reading-count');
+    return response.data;
+  },
+
+  recordArticleRead: async (id: number): Promise<void> => {
+    await axiosClient.post(`/news/me/history/${id}`);
   },
 
   saveArticle: async (id: number): Promise<void> => {

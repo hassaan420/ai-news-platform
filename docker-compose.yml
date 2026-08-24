@@ -71,6 +71,7 @@ services:
     image: openzipkin/zipkin:latest
     container_name: news-platform-zipkin
     restart: unless-stopped
+    profiles: ["full"]
     ports:
       - "9411:9411"
     networks:
@@ -86,33 +87,25 @@ services:
   gateway-service:
     build:
       context: .
-      dockerfile: gateway-service/Dockerfile
+      dockerfile: Dockerfile
+      target: gateway-service
     container_name: news-platform-gateway
     restart: unless-stopped
     environment:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
+      JWT_SECRET: ${JWT_SECRET}
       JAVA_OPTS: ${JAVA_OPTS:-}
     networks:
       - news-platform-net
     depends_on:
       auth-service:
         condition: service_healthy
-      news-service:
-        condition: service_healthy
-      category-service:
-        condition: service_healthy
-      search-service:
-        condition: service_healthy
-      scheduler-service:
-        condition: service_healthy
-      admin-service:
-        condition: service_healthy
     healthcheck:
       test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://gateway-service:8080/actuator/health" ]
-      interval: 15s
+      interval: 30s
       timeout: 5s
       retries: 5
-      start_period: 120s
+      start_period: 60s
     logging:
       driver: json-file
       options:
@@ -122,7 +115,8 @@ services:
   auth-service:
     build:
       context: .
-      dockerfile: auth-service/Dockerfile
+      dockerfile: Dockerfile
+      target: auth-service
     container_name: news-platform-auth
     restart: unless-stopped
     environment:
@@ -140,10 +134,10 @@ services:
         condition: service_healthy
     healthcheck:
       test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://auth-service:8081/actuator/health" ]
-      interval: 15s
+      interval: 30s
       timeout: 5s
       retries: 5
-      start_period: 120s
+      start_period: 60s
     logging:
       driver: json-file
       options:
@@ -153,7 +147,8 @@ services:
   news-service:
     build:
       context: .
-      dockerfile: news-service/Dockerfile
+      dockerfile: Dockerfile
+      target: news-service
     container_name: news-platform-news
     restart: unless-stopped
     environment:
@@ -191,10 +186,10 @@ services:
         condition: service_healthy
     healthcheck:
       test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://news-service:8082/actuator/health" ]
-      interval: 15s
+      interval: 30s
       timeout: 5s
       retries: 5
-      start_period: 120s
+      start_period: 60s
     logging:
       driver: json-file
       options:
@@ -204,9 +199,11 @@ services:
   category-service:
     build:
       context: .
-      dockerfile: category-service/Dockerfile
+      dockerfile: Dockerfile
+      target: category-service
     container_name: news-platform-category
     restart: unless-stopped
+    profiles: ["demo", "full"]
     environment:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/category_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
@@ -228,10 +225,10 @@ services:
         condition: service_healthy
     healthcheck:
       test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://category-service:8083/actuator/health" ]
-      interval: 15s
+      interval: 30s
       timeout: 5s
       retries: 5
-      start_period: 120s
+      start_period: 60s
     logging:
       driver: json-file
       options:
@@ -241,9 +238,11 @@ services:
   search-service:
     build:
       context: .
-      dockerfile: search-service/Dockerfile
+      dockerfile: Dockerfile
+      target: search-service
     container_name: news-platform-search
     restart: unless-stopped
+    profiles: ["demo", "full"]
     environment:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
       SPRING_DATA_REDIS_HOST: redis
@@ -262,10 +261,10 @@ services:
         condition: service_healthy
     healthcheck:
       test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://search-service:8084/actuator/health" ]
-      interval: 15s
+      interval: 30s
       timeout: 5s
       retries: 5
-      start_period: 120s
+      start_period: 60s
     logging:
       driver: json-file
       options:
@@ -275,14 +274,19 @@ services:
   scheduler-service:
     build:
       context: .
-      dockerfile: scheduler-service/Dockerfile
+      dockerfile: Dockerfile
+      target: scheduler-service
     container_name: news-platform-scheduler
     restart: unless-stopped
+    profiles: ["demo", "full"]
     environment:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/news_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: ${MYSQL_USER:-newsplatform}
       SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_DATA_REDIS_PASSWORD: ${REDIS_PASSWORD}
       NEWS_SERVICE_BASE_URL: http://news-service:8082
       INTERNAL_API_KEY: ${INTERNAL_API_KEY}
       NEWSAPI_KEY: ${NEWSAPI_KEY}
@@ -291,17 +295,20 @@ services:
       GUARDIAN_KEY: ${GUARDIAN_KEY}
       JWT_SECRET: ${JWT_SECRET}
       JAVA_OPTS: ${JAVA_OPTS:-}
+      SCHEDULER_ENABLED: ${SCHEDULER_ENABLED:-true}
     networks:
       - news-platform-net
     depends_on:
       news-service:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     healthcheck:
       test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://scheduler-service:8085/actuator/health" ]
-      interval: 15s
+      interval: 30s
       timeout: 5s
       retries: 5
-      start_period: 120s
+      start_period: 60s
     logging:
       driver: json-file
       options:
@@ -311,9 +318,11 @@ services:
   admin-service:
     build:
       context: .
-      dockerfile: admin-service/Dockerfile
+      dockerfile: Dockerfile
+      target: admin-service
     container_name: news-platform-admin
     restart: unless-stopped
+    profiles: ["full"]
     environment:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/admin_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
@@ -338,16 +347,14 @@ services:
         condition: service_healthy
       category-service:
         condition: service_healthy
-      scheduler-service:
-        condition: service_healthy
       redis:
         condition: service_healthy
     healthcheck:
       test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://admin-service:8086/actuator/health" ]
-      interval: 15s
+      interval: 30s
       timeout: 10s
-      retries: 20
-      start_period: 300s
+      retries: 10
+      start_period: 60s
     logging:
       driver: json-file
       options:
@@ -360,6 +367,7 @@ services:
       dockerfile: Dockerfile
     container_name: news-platform-frontend
     restart: unless-stopped
+    profiles: ["demo", "full"]
     networks:
       - news-platform-net
     depends_on:
@@ -377,6 +385,7 @@ services:
     image: nginx:alpine
     container_name: news-platform-nginx
     restart: unless-stopped
+    profiles: ["demo", "full"]
     ports:
       - "80:80"
     volumes:

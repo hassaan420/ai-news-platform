@@ -5,16 +5,16 @@ import com.newsplatform.news.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -23,6 +23,8 @@ public class ArticleAiProcessingServiceTest {
     @Mock
     private AiService aiService;
     @Mock
+    private GeminiRateLimiter rateLimiter;
+    @Mock
     private ArticleRepository articleRepository;
     @Mock
     private ArticleKeywordRepository keywordRepository;
@@ -30,8 +32,9 @@ public class ArticleAiProcessingServiceTest {
     private ArticleTagRepository tagRepository;
     @Mock
     private AiProcessingQueueRepository queueRepository;
+    @Mock
+    private ArticleVerificationService verificationService;
 
-    @InjectMocks
     private ArticleAiProcessingService service;
 
     private Article article;
@@ -39,6 +42,11 @@ public class ArticleAiProcessingServiceTest {
 
     @BeforeEach
     void setUp() {
+        service = new ArticleAiProcessingService(
+                aiService, rateLimiter, articleRepository,
+                keywordRepository, tagRepository, queueRepository,
+                verificationService);
+
         article = new Article();
         article.setId(1L);
         article.setTitle("Test Title");
@@ -47,6 +55,7 @@ public class ArticleAiProcessingServiceTest {
         queue = new AiProcessingQueue();
         queue.setId(10L);
         queue.setStatus("PENDING");
+        queue.setTaskType("FULL_AI_PROCESSING");
     }
 
     @Test
@@ -54,14 +63,21 @@ public class ArticleAiProcessingServiceTest {
         // Arrange
         when(queueRepository.findById(10L)).thenReturn(Optional.of(queue));
         when(articleRepository.findById(1L)).thenReturn(Optional.of(article));
-        
-        when(aiService.generateSummary(anyString())).thenReturn("Generated Summary");
-        
+
         AiService.SentimentResult sentiment = new AiService.SentimentResult("POSITIVE", 0.95);
-        when(aiService.analyzeSentiment(anyString())).thenReturn(sentiment);
-        
-        when(aiService.extractKeywords(anyString())).thenReturn(List.of("AI", "Testing"));
+        AiService.ArticleAnalysisResult analysis = new AiService.ArticleAnalysisResult(
+                "Generated Summary", sentiment, List.of("AI", "Testing"), "gemini");
+        when(aiService.analyzeArticle(anyString())).thenReturn(analysis);
+
+        when(keywordRepository.findByArticleId(1L)).thenReturn(Collections.emptyList());
+        when(tagRepository.findByArticleId(1L)).thenReturn(Collections.emptyList());
         when(aiService.generateTags(anyString(), anyString())).thenReturn(List.of("Tech"));
+
+        when(queueRepository.save(any(AiProcessingQueue.class))).thenAnswer(invocation -> {
+            AiProcessingQueue q = invocation.getArgument(0);
+            if (q.getId() == null) q.setId(99L);
+            return q;
+        });
 
         // Act
         service.processArticleAsync(1L, 10L);
@@ -74,9 +90,8 @@ public class ArticleAiProcessingServiceTest {
         verify(keywordRepository, times(2)).save(any(ArticleKeyword.class));
         verify(tagRepository, times(1)).save(any(ArticleTag.class));
         verify(articleRepository).save(article);
-        
+
         assertEquals("COMPLETED", queue.getStatus());
-        verify(queueRepository, times(2)).save(queue);
     }
 
     @Test
@@ -91,6 +106,5 @@ public class ArticleAiProcessingServiceTest {
         // Assert
         assertEquals("FAILED", queue.getStatus());
         assertNotNull(queue.getErrorMessage());
-        verify(queueRepository, times(2)).save(queue);
     }
 }

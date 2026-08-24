@@ -85,7 +85,7 @@ public class WeatherService {
             log.error("[WeatherService] Network/Timeout error calling OpenWeatherMap: {}", e.getMessage());
             throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Timeout connecting to weather service");
         } catch (Exception e) {
-            log.error("[WeatherService] Unexpected error processing weather data: {}", e.getMessage());
+            log.error("[WeatherService] Unexpected error processing weather data: {}", e.getMessage(), e);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error processing weather");
         }
     }

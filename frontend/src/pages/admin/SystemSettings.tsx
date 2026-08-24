@@ -72,6 +72,53 @@ export default function SystemSettings() {
           </table>
         </div>
       </div>
+
+      <div className="bg-card rounded-xl shadow-premium overflow-hidden mt-6">
+        <div className="p-6 border-b border-border/30">
+          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+            <span className="material-symbols-outlined text-[20px]">cleaning_services</span>
+            Cache Management
+          </h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            Manually evict items from the Redis cache to ensure data freshness.
+          </p>
+        </div>
+        <div className="p-6">
+          <div className="flex gap-4 items-end">
+            <div className="flex-1 max-w-xs">
+              <label className="text-sm font-medium mb-1 block">Cache Scope</label>
+              <select 
+                className="w-full bg-background border border-border rounded-lg p-2"
+                id="cache-scope"
+              >
+                <option value="ALL">Entire Cache (ALL)</option>
+                <option value="HOMEPAGE">Homepage (Trending/Latest)</option>
+                <option value="CATEGORY">Category Articles</option>
+                <option value="SEARCH">Search Results</option>
+              </select>
+            </div>
+            <button 
+              onClick={async () => {
+                const select = document.getElementById('cache-scope') as HTMLSelectElement;
+                if (!select) return;
+                const scope = select.value;
+                if (!window.confirm(`Are you sure you want to clear the ${scope} cache?`)) return;
+                
+                try {
+                  await adminApi.clearCache(scope);
+                  alert('Cache cleared successfully!');
+                } catch (e) {
+                  alert('Failed to clear cache');
+                }
+              }}
+              className="bg-destructive text-destructive-foreground px-4 py-2 rounded-lg text-sm font-medium hover:bg-destructive/90 transition-colors flex items-center gap-2"
+            >
+              <span className="material-symbols-outlined text-[18px]">delete</span>
+              Clear Cache
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

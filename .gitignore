@@ -32,3 +32,6 @@ Thumbs.db
 # Credentials (outside .env.example)
 *secret*
 *credentials*
+
+# Dependencies
+node_modules/

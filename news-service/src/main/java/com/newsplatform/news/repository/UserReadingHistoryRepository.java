@@ -8,4 +8,6 @@ import java.util.List;
 @Repository
 public interface UserReadingHistoryRepository extends JpaRepository<UserReadingHistory, Long> {
     List<UserReadingHistory> findByUserIdOrderByReadAtDesc(String userId);
+
+    long countByUserId(String userId);
 }

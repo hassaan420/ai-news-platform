@@ -29,6 +29,14 @@ public class ArticleController {
         return ResponseEntity.ok(articleService.getArticles(pageable));
     }
 
+    @GetMapping("/recommendations")
+    @Operation(summary = "Legacy recommendations endpoint (redirects to AI personalized feed)")
+    public ResponseEntity<Void> getRecommendations() {
+        return ResponseEntity.status(org.springframework.http.HttpStatus.MOVED_PERMANENTLY)
+                .header(org.springframework.http.HttpHeaders.LOCATION, "/api/news/ai/personalized")
+                .build();
+    }
+
     @GetMapping("/{id}")
     @Operation(summary = "Get a news article by ID")
     public ResponseEntity<NewsResponse> getArticleById(@PathVariable("id") Long id) {
@@ -58,6 +66,13 @@ public class ArticleController {
         return ResponseEntity.ok(articleService.getArticlesByCategorySlug(slug, pageable));
     }
 
+    @GetMapping("/category/{slug}/trending")
+    @Operation(summary = "Get trending news articles by category slug")
+    public ResponseEntity<PagedResponse<NewsSummaryResponse>> getTrendingArticlesByCategorySlug(
+            @PathVariable("slug") String slug, @PageableDefault(size = 20) Pageable pageable) {
+        return ResponseEntity.ok(articleService.getTrendingArticlesByCategorySlug(slug, pageable));
+    }
+
     @GetMapping("/source/{sourceId}")
     @Operation(summary = "Get news articles by source")
     public ResponseEntity<PagedResponse<NewsSummaryResponse>> getArticlesBySource(
@@ -69,12 +84,18 @@ public class ArticleController {
     @Operation(summary = "Search news articles by keyword")
     public ResponseEntity<PagedResponse<NewsSearchResponse>> searchArticles(
             @RequestParam("keyword") String keyword, @PageableDefault(size = 20) Pageable pageable) {
-        return ResponseEntity.ok(articleService.searchArticles(keyword, pageable));
+        return ResponseEntity.ok(articleService.searchArticles(keyword, null, null, null, null, null, pageable));
     }
 
     @GetMapping("/{id}/verification")
     @Operation(summary = "Get verification details for an article")
     public ResponseEntity<com.newsplatform.news.dto.ArticleVerificationDto> getVerification(@PathVariable("id") Long id) {
         return ResponseEntity.ok(articleService.getVerification(id));
+    }
+
+    @GetMapping("/category/{slug}/metrics")
+    @Operation(summary = "Get aggregated metrics and chart data for a category")
+    public ResponseEntity<com.newsplatform.news.dto.CategoryMetricsResponse> getCategoryMetrics(@PathVariable("slug") String slug) {
+        return ResponseEntity.ok(articleService.getCategoryMetrics(slug));
     }
 }

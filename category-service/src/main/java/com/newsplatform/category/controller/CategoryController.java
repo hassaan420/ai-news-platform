@@ -7,8 +7,6 @@ import com.newsplatform.category.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,18 +25,18 @@ public class CategoryController {
     }
 
     @GetMapping
-    @Operation(summary = "Get all categories paginated")
-    public ResponseEntity<PagedResponse<CategoryDto>> getAllCategories(@PageableDefault(size = 20) Pageable pageable) {
-        return ResponseEntity.ok(categoryService.getAllCategories(pageable));
+    @Operation(summary = "Get all active categories")
+    public ResponseEntity<List<CategoryDto>> getAllCategories() {
+        return ResponseEntity.ok(categoryService.getAllActiveCategories());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id:\\d+}")
     @Operation(summary = "Get category by ID")
     public ResponseEntity<CategoryDto> getCategoryById(@PathVariable("id") Long id) {
         return ResponseEntity.ok(categoryService.getCategoryById(id));
     }
 
-    @GetMapping("/slug/{slug}")
+    @GetMapping("/{slug:[a-zA-Z0-9-]+}")
     @Operation(summary = "Get category by slug")
     public ResponseEntity<CategoryDto> getCategoryBySlug(@PathVariable("slug") String slug) {
         return ResponseEntity.ok(categoryService.getCategoryBySlug(slug));

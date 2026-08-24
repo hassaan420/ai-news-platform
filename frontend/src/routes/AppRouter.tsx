@@ -18,6 +18,9 @@ import SystemHealth from '../pages/admin/SystemHealth';
 import AuditLogs from '../pages/admin/AuditLogs';
 import ErrorMonitoring from '../pages/admin/ErrorMonitoring';
 import SystemSettings from '../pages/admin/SystemSettings';
+import SourceManagement from '../pages/admin/SourceManagement';
+import CategoryManagement from '../pages/admin/CategoryManagement';
+import FetchLogs from '../pages/admin/FetchLogs';
 
 export default function AppRouter() {
   return (
@@ -45,6 +48,9 @@ export default function AppRouter() {
         <Route element={<ProtectedRoute requiredRole="ROLE_ADMIN" />}>
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/users" element={<UserManagement />} />
+          <Route path="/admin/sources" element={<SourceManagement />} />
+          <Route path="/admin/categories" element={<CategoryManagement />} />
+          <Route path="/admin/logs" element={<FetchLogs />} />
           <Route path="/admin/articles" element={<ArticleManagement />} />
           <Route path="/admin/health" element={<SystemHealth />} />
           <Route path="/admin/audit" element={<AuditLogs />} />

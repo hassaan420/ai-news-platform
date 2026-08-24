@@ -13,6 +13,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
@@ -22,6 +23,9 @@ public class TrendingEngineServiceTest {
 
     @Mock
     private ArticleStatsRepository statsRepository;
+
+    @Mock
+    private com.newsplatform.news.repository.ArticleRepository articleRepository;
 
     @InjectMocks
     private TrendingEngineService trendingService;
@@ -37,6 +41,8 @@ public class TrendingEngineServiceTest {
         stats.setViews(100);
         stats.setBookmarks(10);
         
+        when(articleRepository.findAll()).thenReturn(List.of(article));
+        when(statsRepository.findByArticleId(1L)).thenReturn(Optional.of(stats));
         when(statsRepository.findAll()).thenReturn(List.of(stats));
 
         trendingService.calculateTrendingScores();

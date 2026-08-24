@@ -5,8 +5,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.newsplatform.news.config.SecurityConfig;
 import com.newsplatform.news.dto.NewsRequest;
 import com.newsplatform.news.dto.NewsResponse;
-import com.newsplatform.common.security.JwtAuthenticationFilter;
-import com.newsplatform.common.security.InternalApiKeyFilter;
+import com.newsplatform.common.security.SecurityFilterConfig;
 import com.newsplatform.news.service.ArticleService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,10 +16,10 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.Instant;
-import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -28,7 +27,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(InternalArticleController.class)
-@Import({SecurityConfig.class, JwtAuthenticationFilter.class, InternalApiKeyFilter.class})
+@Import({SecurityConfig.class, SecurityFilterConfig.class})
+@TestPropertySource(properties = {
+    "internal.api.key=test-internal-key",
+    "jwt.secret=very_long_test_secret_for_jwt_validation_must_be_256_bits"
+})
+@SuppressWarnings("deprecation")
 public class InternalArticleControllerTest {
 
     @Autowired
@@ -36,6 +40,9 @@ public class InternalArticleControllerTest {
 
     @MockitoBean
     private ArticleService articleService;
+    
+    @MockitoBean
+    private com.newsplatform.news.service.IngestionPipelineService ingestionPipelineService;
 
     private ObjectMapper objectMapper;
 

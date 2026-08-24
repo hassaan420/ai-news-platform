@@ -30,6 +30,9 @@ public class User {
   @Column(nullable = false, unique = true, length = 190)
   private String email;
 
+  @Column(length = 280)
+  private String bio;
+
   @Column(nullable = false, length = 255)
   private String password;
 
@@ -94,6 +97,14 @@ public class User {
 
   public void setEmail(String email) {
     this.email = email;
+  }
+
+  public String getBio() {
+    return bio;
+  }
+
+  public void setBio(String bio) {
+    this.bio = bio;
   }
 
   public String getPassword() {

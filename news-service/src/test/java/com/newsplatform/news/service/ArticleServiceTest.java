@@ -39,6 +39,9 @@ public class ArticleServiceTest {
     private com.newsplatform.news.repository.AiProcessingQueueRepository aiProcessingQueueRepository;
 
     @Mock
+    private com.newsplatform.news.repository.ArticleStatsRepository articleStatsRepository;
+
+    @Mock
     private com.newsplatform.news.service.ArticleAiProcessingService aiProcessingService;
 
     @InjectMocks

@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: search-service
+  main:
+    allow-bean-definition-overriding: true
+
+eureka:
+  client:
+    enabled: false
+
+server:
+  port: 8088

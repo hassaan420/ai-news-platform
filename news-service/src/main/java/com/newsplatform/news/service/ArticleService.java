@@ -22,9 +22,11 @@ public interface ArticleService {
     
     PagedResponse<NewsSummaryResponse> getArticlesByCategorySlug(String slug, Pageable pageable);
     
+    PagedResponse<NewsSummaryResponse> getTrendingArticlesByCategorySlug(String slug, Pageable pageable);
+    
     PagedResponse<NewsSummaryResponse> getArticlesBySource(Long sourceId, Pageable pageable);
     
-    PagedResponse<NewsSearchResponse> searchArticles(String keyword, Pageable pageable);
+    PagedResponse<NewsSearchResponse> searchArticles(String keyword, String categorySlug, String sourceName, String author, String dateFrom, String dateTo, Pageable pageable);
     
     NewsResponse createInternalNews(NewsRequest request);
     
@@ -35,4 +37,6 @@ public interface ArticleService {
     void deleteInternalNews(Long id);
     
     com.newsplatform.news.dto.ArticleVerificationDto getVerification(Long articleId);
+    
+    com.newsplatform.news.dto.CategoryMetricsResponse getCategoryMetrics(String slug);
 }

@@ -2,7 +2,10 @@ package com.newsplatform.news.controller;
 
 import com.newsplatform.news.dto.NewsRequest;
 import com.newsplatform.news.dto.NewsResponse;
+import com.newsplatform.news.dto.ArticleIngestDto;
+import com.newsplatform.news.dto.IngestionResultDto;
 import com.newsplatform.news.service.ArticleService;
+import com.newsplatform.news.service.IngestionPipelineService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -18,9 +21,17 @@ import java.util.List;
 public class InternalArticleController {
 
     private final ArticleService articleService;
+    private final IngestionPipelineService ingestionPipelineService;
 
-    public InternalArticleController(ArticleService articleService) {
+    public InternalArticleController(ArticleService articleService, IngestionPipelineService ingestionPipelineService) {
         this.articleService = articleService;
+        this.ingestionPipelineService = ingestionPipelineService;
+    }
+
+    @PostMapping("/ingest")
+    @Operation(summary = "Ingest articles from scheduler")
+    public ResponseEntity<IngestionResultDto> ingestArticles(@Valid @RequestBody List<ArticleIngestDto> requests) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(ingestionPipelineService.ingestArticles(requests));
     }
 
     @PostMapping

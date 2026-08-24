@@ -28,4 +28,29 @@ public interface NewsServiceClient {
 
     @DeleteMapping("/internal/admin/articles/{id}")
     void deleteArticle(@PathVariable("id") Long id);
+
+    @GetMapping("/internal/admin/sources")
+    PagedResponse<com.newsplatform.admin.dto.SourceDto> getSources(
+            @RequestParam("page") int page,
+            @RequestParam("size") int size,
+            @RequestParam("sortBy") String sortBy,
+            @RequestParam("direction") String direction,
+            @RequestParam(value = "status", required = false) String status);
+
+    @PostMapping("/internal/admin/sources")
+    com.newsplatform.admin.dto.SourceDto createSource(@RequestBody com.newsplatform.admin.dto.SourceRequest request);
+
+    @PutMapping("/internal/admin/sources/{id}")
+    com.newsplatform.admin.dto.SourceDto updateSource(@PathVariable("id") Long id, @RequestBody com.newsplatform.admin.dto.SourceRequest request);
+
+    @DeleteMapping("/internal/admin/sources/{id}")
+    void deleteSource(@PathVariable("id") Long id);
+
+    @GetMapping("/internal/fetch-logs")
+    PagedResponse<com.newsplatform.admin.dto.FetchLogDto> getFetchLogs(
+            @RequestParam("page") int page,
+            @RequestParam("size") int size,
+            @RequestParam("sortBy") String sortBy,
+            @RequestParam("direction") String direction,
+            @RequestParam(value = "status", required = false) String status);
 }

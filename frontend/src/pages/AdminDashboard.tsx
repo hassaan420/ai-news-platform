@@ -92,16 +92,19 @@ export default function AdminDashboard() {
       </section>
 
       {/* Admin Tools Grid */}
-      <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-gutter">
+      <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-gutter mb-8">
         {[
           { title: 'User Management', path: '/admin/users', icon: 'group', desc: 'Manage roles and status' },
+          { title: 'Source Management', path: '/admin/sources', icon: 'rss_feed', desc: 'Manage news sources' },
+          { title: 'Category Management', path: '/admin/categories', icon: 'category', desc: 'Manage article categories' },
+          { title: 'Fetch Logs', path: '/admin/logs', icon: 'history', desc: 'Monitor ingestion jobs' },
           { title: 'Article Control', path: '/admin/articles', icon: 'article', desc: 'Feature and hide articles' },
           { title: 'System Health', path: '/admin/health', icon: 'monitoring', desc: 'Service status checks' },
           { title: 'Audit Logs', path: '/admin/audit', icon: 'list_alt', desc: 'View admin actions' },
           { title: 'Error Monitor', path: '/admin/errors', icon: 'error', desc: 'System error reports' },
-          { title: 'Settings', path: '/admin/settings', icon: 'settings', desc: 'Global configurations' }
+          { title: 'Settings', path: '/admin/settings', icon: 'settings', desc: 'Global configs & Cache' }
         ].map((link, idx) => (
-          <Link key={idx} to={link.path} className="bg-card rounded-xl p-4 flex flex-col shadow-subtle hover:shadow-premium transition-shadow">
+          <Link key={idx} to={link.path} className="bg-card rounded-xl p-4 flex flex-col shadow-subtle hover:shadow-premium transition-shadow border border-border">
             <span className="material-symbols-outlined text-muted-foreground mb-3">{link.icon}</span>
             <span className="text-sm font-semibold text-foreground mb-1">{link.title}</span>
             <span className="text-[12px] text-muted-foreground">{link.desc}</span>

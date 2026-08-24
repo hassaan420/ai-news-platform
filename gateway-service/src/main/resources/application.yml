@@ -19,9 +19,9 @@ spring:
 
         # 2. News Service (handles /api/news/** and /api/articles/**)
         - id: news-service
-          uri: ${NEWS_SERVICE_URL:http://news-service:8082}
+          uri: http://news-service:8082
           predicates:
-            - Path=/api/news/**
+            - Path=/api/news/**, /api/articles/**
           filters:
             - StripPrefix=0
 
@@ -48,6 +48,7 @@ spring:
             - Path=/api/admin/**
           filters:
             - StripPrefix=0
+
 
         # 6. Scheduler Service (admin trigger route)
         - id: scheduler-service
@@ -84,3 +85,5 @@ spring:
 server:
   port: 8080
 
+jwt:
+  secret: "${JWT_SECRET:default-secret-key-for-development-only-change-me-in-production}"

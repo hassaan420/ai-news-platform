@@ -22,6 +22,7 @@ const FILTER_LABELS: Record<DateFilterType, string> = {
 
 export default function DateFilterDropdown({ value, onChange, from, to }: DateFilterDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isCustomExpanded, setIsCustomExpanded] = useState(false);
   const [customFrom, setCustomFrom] = useState(from || '');
   const [customTo, setCustomTo] = useState(to || '');
   const [error, setError] = useState('');
@@ -41,6 +42,9 @@ export default function DateFilterDropdown({ value, onChange, from, to }: DateFi
     if (filter !== 'CUSTOM') {
       onChange(filter);
       setIsOpen(false);
+      setIsCustomExpanded(false);
+    } else {
+      setIsCustomExpanded(!isCustomExpanded);
     }
   };
 
@@ -91,7 +95,7 @@ export default function DateFilterDropdown({ value, onChange, from, to }: DateFi
                     {value === filterKey && <span className="material-symbols-outlined text-[16px]">check</span>}
                   </button>
                   
-                  {filterKey === 'CUSTOM' && value === 'CUSTOM' && (
+                  {filterKey === 'CUSTOM' && isCustomExpanded && (
                     <div className="px-3 py-3 mt-1 mb-1 border-t border-b border-border/50 space-y-3 bg-muted/20 rounded-md">
                       <div className="space-y-1">
                         <label className="text-xs font-medium text-muted-foreground">From</label>

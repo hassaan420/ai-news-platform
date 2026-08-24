@@ -40,39 +40,39 @@ Derived from the source spec's "Fast Execution Plan" and expanded to be actionab
 
 - [x] Design and migrate schema for all 4 databases via Flyway (`DATABASE_SCHEMA.md`, `CODING_RULES.md` §8)
 - [x] Implement `auth-service`: register, login, refresh, logout, JWT issuance (`API_SPEC.md` §4.4, `SECURITY.md` §1)
-- [ ] Implement `category-service`: CRUD + slug generation + seed 13 categories (`DATABASE_SCHEMA.md` §3.1, `API_SPEC.md` §4.3)
-- [ ] Implement `news-service`: entities, repositories, `IngestionPipelineService`, duplicate detection, `/internal/articles/ingest` (`SERVICES.md` §3, `QUEUE_WORKFLOW.md` §2)
-- [ ] Implement `news-service` public read endpoints: latest, trending (placeholder per `DECISIONS.md` A-12), category, article detail + related (`API_SPEC.md` §4.1)
-- [ ] Implement `scheduler-service`: `NewsProvider` implementations for all 5 providers, `NewsProviderFactory`, `IngestionOrchestrator`, scheduled job, manual trigger endpoint (`SERVICES.md` §6, `QUEUE_WORKFLOW.md`)
-- [ ] Implement `search-service`: query builder, Feign client to news-service internal search, caching (`SERVICES.md` §5, `ARCHITECTURE.md` §6)
-- [ ] Wire Gateway JWT verification + route table for all above (`ARCHITECTURE.md` §8, `SECURITY.md` §2)
+- [x] Implement `category-service`: CRUD + slug generation + seed 13 categories (`DATABASE_SCHEMA.md` §3.1, `API_SPEC.md` §4.3)
+- [x] Implement `news-service`: entities, repositories, `IngestionPipelineService`, duplicate detection, `/internal/articles/ingest` (`SERVICES.md` §3, `QUEUE_WORKFLOW.md` §2)
+- [x] Implement `news-service` public read endpoints: latest, trending (placeholder per `DECISIONS.md` A-12), category, article detail + related (`API_SPEC.md` §4.1)
+- [x] Implement `scheduler-service`: `NewsProvider` implementations for all 5 providers, `NewsProviderFactory`, `IngestionOrchestrator`, scheduled job, manual trigger endpoint (`SERVICES.md` §6, `QUEUE_WORKFLOW.md`)
+- [x] Implement `search-service`: query builder, Feign client to news-service internal search, caching (`SERVICES.md` §5, `ARCHITECTURE.md` §6)
+- [x] Wire Gateway JWT verification + route table for all above (`ARCHITECTURE.md` §8, `SECURITY.md` §2)
 
 ## Phase 3 — Frontend
 
-- [ ] Scaffold React SPA project
-- [ ] Homepage (latest, trending, featured sections) (`PROJECT_REQUIREMENTS.md` FR-10)
-- [ ] Category pages (`PROJECT_REQUIREMENTS.md` FR-11)
-- [ ] Search page with filters (`PROJECT_REQUIREMENTS.md` FR-12)
-- [ ] Article detail page with related articles (`PROJECT_REQUIREMENTS.md` FR-14)
-- [ ] Finalize SEO rendering approach per `DECISIONS.md` A-4 and implement
-- [ ] Nginx config: reverse proxy to Gateway + static asset serving (`DOCKER.md` §3)
+- [x] Scaffold React SPA project
+- [x] Homepage (latest, trending, featured sections) (`PROJECT_REQUIREMENTS.md` FR-10)
+- [x] Category pages (`PROJECT_REQUIREMENTS.md` FR-11)
+- [x] Search page with filters (`PROJECT_REQUIREMENTS.md` FR-12)
+- [x] Article detail page with related articles (`PROJECT_REQUIREMENTS.md` FR-14)
+- [x] Finalize SEO rendering approach per `DECISIONS.md` A-4 and implement
+- [x] Nginx config: reverse proxy to Gateway + static asset serving (`DOCKER.md` §3)
 
 ## Phase 4 — Performance
 
-- [ ] Implement Redis caching per `CACHE_STRATEGY.md` §2–§4 across news-service, category-service, search-service
-- [ ] Add MySQL indexes per `DATABASE_SCHEMA.md` (verify FULLTEXT index on `articles`)
-- [ ] Load-test homepage/latest/search endpoints; tune cache TTLs if needed
-- [ ] Centralized structured logging with correlation IDs (`CODING_RULES.md` §6)
-- [ ] Actuator health/metrics on every service (`SERVICES.md` §9)
+- [x] Implement Redis caching per `CACHE_STRATEGY.md` §2–§4 across news-service, category-service, search-service
+- [x] Add MySQL indexes per `DATABASE_SCHEMA.md` (verify FULLTEXT index on `articles`)
+- [x] Load-test homepage/latest/search endpoints; tune cache TTLs if needed
+- [x] Centralized structured logging with correlation IDs (`CODING_RULES.md` §6)
+- [x] Actuator health/metrics on every service (`SERVICES.md` §9)
 
 ## Phase 5 — Administration
 
-- [ ] Finalize JWT role enforcement on all `/api/admin/**` routes (`SECURITY.md` §2)
-- [ ] Implement `admin-service`: source, category, user proxy endpoints (`SERVICES.md` §7)
-- [ ] Implement manual fetch trigger + concurrency lock (`QUEUE_WORKFLOW.md` §5–§6)
-- [ ] Implement cache-clear endpoint with scope support (`CACHE_STRATEGY.md` §4)
-- [ ] Implement fetch logs read + health aggregation endpoints (`API_SPEC.md` §5)
-- [ ] Admin dashboard frontend views
+- [x] Finalize JWT role enforcement on all `/api/admin/**` routes (`SECURITY.md` §2)
+- [x] Implement `admin-service`: source, category, user proxy endpoints (`SERVICES.md` §7)
+- [x] Implement manual fetch trigger + concurrency lock (`QUEUE_WORKFLOW.md` §5–§6)
+- [x] Implement cache-clear endpoint with scope support (`CACHE_STRATEGY.md` §4)
+- [x] Implement fetch logs read + health aggregation endpoints (`API_SPEC.md` §5)
+- [x] Admin dashboard frontend views
 
 ## Phase 6 — Testing & Documentation
 

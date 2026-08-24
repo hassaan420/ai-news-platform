@@ -19,12 +19,20 @@ public class SearchController {
 
     @GetMapping
     public ResponseEntity<Object> search(
-        @RequestParam(value = "keyword", required = false) String keyword,
+        @RequestParam(value = "q") String q,
+        @RequestParam(value = "category", required = false) String category,
+        @RequestParam(value = "source", required = false) String source,
+        @RequestParam(value = "author", required = false) String author,
+        @RequestParam(value = "dateFrom", required = false) String dateFrom,
+        @RequestParam(value = "dateTo", required = false) String dateTo,
         @RequestParam(value = "page", defaultValue = "0") int page,
         @RequestParam(value = "size", defaultValue = "20") int size,
         @RequestParam(value = "sortBy", defaultValue = "publishedAt") String sortBy,
         @RequestParam(value = "direction", defaultValue = "DESC") String direction
     ) {
-        return ResponseEntity.ok(searchService.search(keyword, page, size, sortBy, direction));
+        if (q == null || q.trim().isEmpty()) {
+            throw new com.newsplatform.common.exception.BadRequestException("Query parameter 'q' is required and cannot be blank");
+        }
+        return ResponseEntity.ok(searchService.search(q, category, source, author, dateFrom, dateTo, page, size, sortBy, direction));
     }
 }

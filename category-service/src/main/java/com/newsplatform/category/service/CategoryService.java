@@ -11,6 +11,8 @@ public interface CategoryService {
     CategoryDto getCategoryById(Long id);
     CategoryDto getCategoryBySlug(String slug);
     PagedResponse<CategoryDto> getAllCategories(Pageable pageable);
+    List<CategoryDto> getAllActiveCategories();
+    List<Long> getValidCategoryIds();
     CategoryDto createCategory(CategoryRequest request);
     CategoryDto updateCategory(Long id, CategoryRequest request);
     void deleteCategory(Long id);

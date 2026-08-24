@@ -15,5 +15,10 @@ export const authApi = {
   getMe: async (): Promise<AuthResponse['user']> => {
     const response = await axiosClient.get<AuthResponse['user']>('/auth/me');
     return response.data;
+  },
+
+  updateProfile: async (data: { name: string; bio?: string }): Promise<AuthResponse['user']> => {
+    const response = await axiosClient.put<AuthResponse['user']>('/auth/me', data);
+    return response.data;
   }
 };

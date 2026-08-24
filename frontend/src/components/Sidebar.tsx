@@ -11,11 +11,11 @@ export default function Sidebar() {
   };
 
   const linkClass = (path: string) => {
-    const base = "flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-colors duration-200";
+    const base = "flex items-center gap-3 px-4 py-2.5 rounded-xl text-[14px] font-medium transition-all duration-200";
     if (isActive(path)) {
-      return `${base} bg-primary/10 text-primary font-semibold`;
+      return `${base} bg-foreground/[0.05] text-foreground`;
     }
-    return `${base} text-muted-foreground hover:text-foreground hover:bg-muted/60`;
+    return `${base} text-muted-foreground hover:text-foreground hover:bg-foreground/[0.03]`;
   };
 
   const categoryIconMap: Record<string, string> = {
@@ -32,14 +32,17 @@ export default function Sidebar() {
       initial={{ x: -280, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-      className="hidden md:flex bg-background/80 backdrop-blur-xl fixed left-0 top-0 h-screen w-sidebar_width flex-col py-6 px-4 z-40 transition-colors duration-300 border-r border-border/30"
+      className="hidden md:flex bg-transparent fixed left-0 top-0 h-screen w-sidebar_width flex-col py-8 px-4 z-40 transition-colors duration-300"
       aria-label="Main navigation"
     >
-      <div className="mb-8 px-4">
-        <Link to="/" className="block">
-          <span className="font-display-lg text-[28px] leading-tight text-primary tracking-tight">Clarion</span>
+      <div className="mb-10 px-4">
+        <Link to="/" className="flex items-center gap-3">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0">
+            <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-muted-foreground opacity-50" strokeDasharray="2 4" />
+            <path d="M12 6C8.69 6 6 8.69 6 12C6 15.31 8.69 18 12 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-foreground" />
+          </svg>
+          <span className="font-sans text-[20px] font-bold text-foreground tracking-[0.15em] uppercase mt-0.5">Clarion</span>
         </Link>
-        <p className="font-metadata text-[12px] text-muted-foreground mt-1 tracking-wide uppercase">AI-Curated News</p>
       </div>
       <div className="flex-1 overflow-y-auto hide-scrollbar space-y-1">
         <Link className={linkClass('/')} to="/">
@@ -75,9 +78,9 @@ export default function Sidebar() {
       
       {!isAuthenticated && (
         <div className="mt-auto px-2 pt-4">
-          <Link to="/register" className="w-full bg-primary text-primary-foreground font-label-sm text-label-sm py-2.5 rounded-lg transition-colors hover:bg-primary/90 flex items-center justify-center gap-2">
-            <span className="material-symbols-outlined text-[18px]">star</span>
-            Get Started
+          <Link to="/register" className="w-full bg-foreground/[0.06] text-foreground font-label-sm text-[13px] py-2.5 rounded-xl transition-all hover:bg-foreground/[0.1] flex items-center justify-center gap-2 border border-border">
+            <span className="material-symbols-outlined text-[16px]">login</span>
+            Sign In
           </Link>
         </div>
       )}

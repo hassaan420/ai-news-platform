@@ -29,6 +29,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <spring-boot.version>3.4.5</spring-boot.version>
     <spring-cloud.version>2024.0.1</spring-cloud.version>
+    <testcontainers.version>1.21.4</testcontainers.version>
   </properties>
 
   <dependencyManagement>
@@ -55,7 +56,7 @@
       <dependency>
         <groupId>org.testcontainers</groupId>
         <artifactId>testcontainers-bom</artifactId>
-        <version>1.20.1</version>
+        <version>1.21.4</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -89,6 +90,7 @@
           <version>3.13.0</version>
           <configuration>
             <release>${java.version}</release>
+            <parameters>true</parameters>
             <annotationProcessorPaths>
               <path>
                 <groupId>org.mapstruct</groupId>

@@ -4,6 +4,7 @@ import { Article } from '@/types/news';
 import { newsApi } from '@/api/newsApi';
 import ArticleCard from '@/components/ArticleCard';
 import { Skeleton } from '@/components/ui/skeleton';
+import { motion } from 'framer-motion';
 
 export default function SavedArticles() {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -26,7 +27,12 @@ export default function SavedArticles() {
   }, []);
 
   return (
-    <div className="pb-12 max-w-max_content_width mx-auto">
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+      className="pb-12 max-w-max_content_width mx-auto"
+    >
       <div className="mb-stack_lg flex justify-between items-end border-b border-border/30 pb-8 mt-8 md:mt-0">
         <div>
           <h2 className="font-display-lg text-[40px] leading-[48px] text-foreground tracking-tight mb-2">Saved Articles</h2>
@@ -67,10 +73,18 @@ export default function SavedArticles() {
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {articles.map((article, i) => (
-            <ArticleCard key={article.id} article={article} index={i} />
+            <motion.div
+              key={article.id}
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-20px" }}
+              transition={{ duration: 0.35, delay: i * 0.04, ease: [0.23, 1, 0.32, 1] }}
+            >
+              <ArticleCard article={article} index={i} />
+            </motion.div>
           ))}
         </div>
       )}
-    </div>
+    </motion.div>
   );
 }

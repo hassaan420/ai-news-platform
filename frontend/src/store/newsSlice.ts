@@ -8,6 +8,7 @@ interface NewsState {
   categoryNews: Record<string, PagedResponse<Article>>;
   searchResults: PagedResponse<Article> | null;
   currentArticle: Article | null;
+  categoryMetrics: Record<string, any>;
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
 }
@@ -18,6 +19,7 @@ const initialState: NewsState = {
   categoryNews: {},
   searchResults: null,
   currentArticle: null,
+  categoryMetrics: {},
   status: 'idle',
   error: null,
 };
@@ -32,6 +34,16 @@ export const fetchTrendingNews = createAsyncThunk('news/fetchTrending', async ({
 
 export const fetchCategoryNews = createAsyncThunk('news/fetchCategory', async ({ category, page = 0, size = 10 }: { category: string; page?: number; size?: number }) => {
   const response = await newsApi.getNewsByCategory(category, page, size);
+  return { category, data: response };
+});
+
+export const fetchCategoryTrendingNews = createAsyncThunk('news/fetchCategoryTrending', async ({ category, page = 0, size = 10 }: { category: string; page?: number; size?: number }) => {
+  const response = await newsApi.getTrendingNewsByCategory(category, page, size);
+  return { category, data: response };
+});
+
+export const fetchCategoryMetrics = createAsyncThunk('news/fetchCategoryMetrics', async (category: string) => {
+  const response = await newsApi.getCategoryMetrics(category);
   return { category, data: response };
 });
 
@@ -73,6 +85,14 @@ const newsSlice = createSlice({
     // Category News
     builder.addCase(fetchCategoryNews.fulfilled, (state, action) => {
       state.categoryNews[action.payload.category] = action.payload.data;
+    });
+
+    builder.addCase(fetchCategoryTrendingNews.fulfilled, (state, action) => {
+      state.categoryNews[action.payload.category] = action.payload.data;
+    });
+
+    builder.addCase(fetchCategoryMetrics.fulfilled, (state, action) => {
+      state.categoryMetrics[action.payload.category] = action.payload.data;
     });
 
     // Search

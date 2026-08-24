@@ -3,6 +3,7 @@ package com.newsplatform.auth.controller;
 import com.newsplatform.auth.dto.request.LoginRequestDto;
 import com.newsplatform.auth.dto.request.RefreshTokenRequestDto;
 import com.newsplatform.auth.dto.request.RegisterRequestDto;
+import com.newsplatform.auth.dto.request.UpdateProfileRequestDto;
 import com.newsplatform.auth.dto.response.LoginResponseDto;
 import com.newsplatform.auth.dto.response.TokenResponseDto;
 import com.newsplatform.auth.dto.response.UserResponseDto;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -72,6 +74,21 @@ public class AuthController {
     try {
       Long userId = Long.parseLong(auth.getName());
       return ResponseEntity.ok(authService.getCurrentUser(userId));
+    } catch (NumberFormatException e) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+  }
+
+  @PutMapping("/me")
+  @Operation(summary = "Update current user profile")
+  public ResponseEntity<UserResponseDto> updateProfile(@Valid @RequestBody UpdateProfileRequestDto request) {
+    org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+    if (auth == null || !auth.isAuthenticated() || auth.getName().equals("anonymousUser") || auth.getName().equals("internal-service")) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+    try {
+      Long userId = Long.parseLong(auth.getName());
+      return ResponseEntity.ok(authService.updateProfile(userId, request));
     } catch (NumberFormatException e) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }

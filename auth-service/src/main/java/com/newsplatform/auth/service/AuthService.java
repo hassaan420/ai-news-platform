@@ -6,6 +6,7 @@ import com.newsplatform.auth.dto.request.RegisterRequestDto;
 import com.newsplatform.auth.dto.response.LoginResponseDto;
 import com.newsplatform.auth.dto.response.TokenResponseDto;
 import com.newsplatform.auth.dto.response.UserResponseDto;
+import com.newsplatform.auth.dto.request.UpdateProfileRequestDto;
 
 /**
  * Service interface for authentication operations.
@@ -19,6 +20,8 @@ public interface AuthService {
   LoginResponseDto refreshToken(RefreshTokenRequestDto request);
 
   UserResponseDto getCurrentUser(Long userId);
+
+  UserResponseDto updateProfile(Long userId, UpdateProfileRequestDto request);
 
   void logout(RefreshTokenRequestDto request);
 }

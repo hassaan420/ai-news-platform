@@ -67,7 +67,7 @@ public class AiSearchController {
         Pageable pageable = PageRequest.of(page, size);
         org.springframework.data.domain.Page<com.newsplatform.news.entity.Article> resultPage;
         try {
-            resultPage = articleRepository.searchArticles(cleanQuery, pageable);
+            resultPage = articleRepository.searchArticles(cleanQuery, null, null, null, null, null, pageable);
         } catch (Exception ex) {
             log.warn("Fulltext search failed for '{}', falling back to empty page: {}", cleanQuery, ex.getMessage());
             return ResponseEntity.ok(new PagedResponse<>(List.of(), page, size, 0, 0, true));

@@ -11,12 +11,12 @@ export interface Category {
 export const categoryApi = {
   getAllCategories: async (): Promise<Category[]> => {
     // Note: Gateway maps /api/categories directly to category-service
-    // but the backend returns a PagedResponse, so we return the content array.
-    const response = await axiosClient.get<{ content: Category[] }>('/categories?size=100');
-    return response.data.content;
+    // The backend returns a List, so we just return response.data
+    const response = await axiosClient.get<Category[]>('/categories');
+    return response.data;
   },
   getCategoryBySlug: async (slug: string): Promise<Category> => {
-    const response = await axiosClient.get<Category>(`/categories/slug/${slug}`);
+    const response = await axiosClient.get<Category>(`/categories/${slug}`);
     return response.data;
   }
 };

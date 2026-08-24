@@ -17,18 +17,17 @@ import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.springframework.boot.autoconfigure.domain.EntityScan;
+import com.newsplatform.news.BaseIntegrationTest;
+import org.springframework.transaction.annotation.Transactional;
 
-@DataJpaTest
-@ActiveProfiles("test")
-@EntityScan("com.newsplatform.news.entity")
-public class ArticleRepositoryTest {
-
-    @Autowired
-    private TestEntityManager entityManager;
+@Transactional
+public class ArticleRepositoryTest extends BaseIntegrationTest {
 
     @Autowired
     private ArticleRepository articleRepository;
+
+    @Autowired
+    private SourceRepository sourceRepository;
 
     private Source source;
     private Article article;
@@ -40,7 +39,7 @@ public class ArticleRepositoryTest {
         source.setName("Test Source");
         source.setEndpoint("http://test.com");
         source.setStatus("ACTIVE");
-        entityManager.persist(source);
+        source = sourceRepository.save(source);
 
         article = new Article();
         article.setSource(source);
@@ -52,9 +51,7 @@ public class ArticleRepositoryTest {
         article.setLanguage("en");
         article.setPublishedAt(Instant.now());
         article.setHash("test_hash_123");
-        entityManager.persist(article);
-        
-        entityManager.flush();
+        article = articleRepository.save(article);
     }
 
     @Test

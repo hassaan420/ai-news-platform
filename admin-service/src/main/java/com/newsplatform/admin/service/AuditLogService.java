@@ -27,4 +27,8 @@ public class AuditLogService {
         }
         return "system";
     }
+
+    public java.util.List<AuditLog> getRecentLogs(int limit) {
+        return auditLogRepository.findAll(org.springframework.data.domain.PageRequest.of(0, limit, org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "timestamp"))).getContent();
+    }
 }

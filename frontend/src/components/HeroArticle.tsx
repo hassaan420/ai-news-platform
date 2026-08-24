@@ -12,76 +12,70 @@ export default function HeroArticle({ article }: HeroArticleProps) {
     year: 'numeric',
   });
 
-  const getSentimentStyle = (sentiment: string) => {
-    switch(sentiment?.toLowerCase()) {
-      case 'positive':
-      case 'bullish': return 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20';
-      case 'negative':
-      case 'bearish': return 'bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/20';
-      default: return 'bg-muted text-muted-foreground border-border';
-    }
-  };
-
-  const getAuthorInitials = (name?: string) => {
-    if (!name) return 'AI';
-    const parts = name.split(' ');
-    if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-    return name.substring(0, 2).toUpperCase();
-  };
-
   return (
-    <section className="mb-12">
-      <Link to={`/news/${article.id}`} className="group relative flex flex-col lg:flex-row bg-card rounded-xl overflow-hidden shadow-premium hover:shadow-premium-hover transition-shadow duration-300">
-        <div className="lg:w-7/12 relative min-h-[300px] lg:min-h-[400px]">
+    <section className="mb-8">
+      <Link to={`/news/${article.id}`} className="group relative flex flex-col lg:flex-row bg-card border border-border rounded-[24px] overflow-hidden shadow-subtle hover:shadow-premium transition-all duration-300">
+        
+        {/* Left Side: Image */}
+        <div className="lg:w-[55%] relative min-h-[300px] lg:min-h-[440px] overflow-hidden">
           {article.image ? (
             <img
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:scale-[1.03]"
               src={`https://wsrv.nl/?url=${encodeURIComponent(article.image)}`}
               alt={article.title}
               referrerPolicy="no-referrer"
               onError={(e) => { e.currentTarget.src = '/placeholder.png'; e.currentTarget.onerror = null; }}
             />
           ) : (
-            <div className="absolute inset-0 w-full h-full bg-muted" />
+            <div className="absolute inset-0 w-full h-full bg-surface-variant" />
           )}
           
-          <div className="absolute top-4 left-4 flex gap-2">
-            <span className="bg-primary text-primary-foreground font-label-sm text-[11px] px-3 py-1 rounded-md uppercase tracking-wider">
-              {article.category}
-            </span>
-            {article.sentiment && (
-              <span className={`${getSentimentStyle(article.sentiment)} font-label-sm text-[11px] px-3 py-1 rounded-md flex items-center border`}>
-                <span className="material-symbols-outlined text-[14px] mr-1">trending_up</span> {article.sentiment}
-              </span>
-            )}
-          </div>
+          {/* Subtle gradient overlay to ensure text contrast if we place text on it, though text is on right here */}
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-card/20 lg:to-card/80 opacity-0 lg:opacity-100" />
         </div>
         
-        <div className="lg:w-5/12 p-8 flex flex-col justify-center">
-          <div className="flex items-center justify-between mb-4">
-            <span className="font-metadata text-[13px] text-muted-foreground flex items-center">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary mr-2"></span>
-              {article.source.name} · {formattedDate}
+        {/* Right Side: Content */}
+        <div className="lg:w-[45%] p-8 lg:p-12 flex flex-col justify-center relative">
+          
+          {/* Top: Category & Sentiment */}
+          <div className="flex items-center gap-3 mb-6 transition-transform duration-500 ease-out group-hover:-translate-y-1">
+            <span className="bg-foreground/[0.04] text-foreground border border-foreground/[0.08] font-sans text-[10px] font-semibold px-3 py-1.5 rounded-full uppercase tracking-widest shadow-subtle">
+              {article.category}
             </span>
-            <button className="text-muted-foreground hover:text-primary transition-colors" onClick={(e) => e.preventDefault()} aria-label="Save article">
-              <span className="material-symbols-outlined">bookmark_add</span>
-            </button>
           </div>
           
-          <h1 className="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-[36px] md:leading-[44px] text-foreground mb-4 leading-tight group-hover:text-primary transition-colors">
-            {article.title}
-          </h1>
+          {/* Middle: Title & Description */}
+          <div className="transition-transform duration-500 delay-75 ease-out group-hover:-translate-y-1">
+            <h1 className="font-serif text-[28px] md:text-[38px] leading-[1.15] text-foreground mb-4 font-semibold tracking-tight">
+              {article.title}
+            </h1>
+            
+            <p className="font-sans text-[16px] leading-[1.6] text-muted-foreground mb-8 clamp-3">
+              {article.description}
+            </p>
+          </div>
           
-          <p className="font-body-lg text-body-lg text-muted-foreground mb-6 clamp-3">
-            {article.description}
-          </p>
-          
-          <div className="flex items-center mt-auto pt-4 border-t border-border/30">
-            <div className="w-8 h-8 rounded-full bg-muted mr-3 flex items-center justify-center text-muted-foreground font-semibold text-[12px]">
-              {getAuthorInitials(article.author)}
+          {/* Bottom: Metadata & AI Indicator */}
+          <div className="mt-auto flex items-center justify-between transition-all duration-500 delay-150 ease-out group-hover:-translate-y-1 opacity-90 group-hover:opacity-100">
+            <div className="flex items-center gap-3">
+              <div className="w-6 h-6 rounded-full bg-foreground/10 flex items-center justify-center overflow-hidden">
+                <img src={`https://www.google.com/s2/favicons?domain=${article.url ? new URL(article.url).hostname : 'news.google.com'}&sz=32`} alt="" className="w-4 h-4 object-contain" onError={(e) => e.currentTarget.style.display = 'none'} />
+              </div>
+              <span className="font-sans text-[12px] font-medium text-foreground tracking-wide uppercase">
+                {article.source.name}
+              </span>
+              <span className="text-muted-foreground/40 text-[10px]">•</span>
+              <span className="font-sans text-[13px] text-muted-foreground">
+                {formattedDate}
+              </span>
             </div>
-            <span className="font-metadata text-[13px] text-foreground">By {article.author || 'AI Curated'}</span>
+            
+            <div className="flex items-center gap-1.5 text-muted-foreground">
+              <span className="material-symbols-outlined text-[14px]">psychology</span>
+              <span className="font-sans text-[10px] font-semibold tracking-widest uppercase">AI Analyzed</span>
+            </div>
           </div>
+
         </div>
       </Link>
     </section>

@@ -3,6 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { searchArticles } from '@/store/newsSlice';
 import { Skeleton } from '@/components/ui/skeleton';
+import { motion } from 'framer-motion';
 
 export default function Search() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -56,7 +57,12 @@ export default function Search() {
   };
 
   return (
-    <div className="pb-12 max-w-5xl mx-auto">
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+      className="pb-12 max-w-5xl mx-auto"
+    >
       <div className="mb-stack_lg flex flex-col justify-between border-b border-border/30 pb-8 mt-8 md:mt-0">
         <h1 className="font-display-lg text-[40px] leading-[48px] text-foreground tracking-tight mb-6">Search</h1>
         
@@ -136,8 +142,15 @@ export default function Search() {
                 </div>
               ) : (
                 <>
-                  {searchResults?.content.map((article) => (
-                    <Link key={article.id} to={`/news/${article.id}`} className="group flex flex-col sm:flex-row gap-6 bg-card p-4 rounded-xl shadow-subtle hover:shadow-premium transition-shadow duration-200">
+                  {searchResults?.content.map((article, i) => (
+                    <motion.div
+                      key={article.id}
+                      initial={{ opacity: 0, y: 12 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true, margin: "-20px" }}
+                      transition={{ duration: 0.35, delay: i * 0.04, ease: [0.23, 1, 0.32, 1] }}
+                    >
+                    <Link to={`/news/${article.id}`} className="group flex flex-col sm:flex-row gap-6 bg-card p-4 rounded-xl shadow-subtle hover:shadow-premium transition-shadow duration-200">
                       <div className="sm:w-1/3 aspect-[4/3] rounded-lg overflow-hidden shrink-0">
                         {article.image ? (
                           <img
@@ -184,6 +197,7 @@ export default function Search() {
                         </div>
                       </div>
                     </Link>
+                    </motion.div>
                   ))}
                   
                   {/* Pagination */}
@@ -214,6 +228,6 @@ export default function Search() {
           </div>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 }

@@ -3,14 +3,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { logout } from '@/store/authSlice';
 import { fetchAllCategories } from '@/store/categorySlice';
-import { useTheme } from './ThemeProvider';
 import { motion } from 'framer-motion';
 
 export default function Navbar() {
   const { isAuthenticated, user } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     dispatch(fetchAllCategories());
@@ -33,31 +31,24 @@ export default function Navbar() {
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-      className="bg-background/80 backdrop-blur-xl sticky top-0 z-30 flex justify-between items-center h-16 px-margin_mobile md:px-margin_desktop w-full transition-colors duration-300 border-b border-border/40"
+      className="bg-background/70 backdrop-blur-xl sticky top-0 z-30 flex justify-between items-center h-20 px-margin_mobile md:px-margin_desktop w-full transition-colors duration-300"
     >
       <div className="flex items-center flex-1">
         {/* Mobile Menu Button */}
         <button className="md:hidden mr-4 text-muted-foreground hover:text-foreground transition-colors" aria-label="Open menu">
           <span className="material-symbols-outlined">menu</span>
         </button>
-        <form onSubmit={handleSearch} className="relative w-full max-w-md hidden md:block group">
-          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors text-[18px]">search</span>
+        <form onSubmit={handleSearch} className="relative w-full max-w-lg hidden md:block group">
+          <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-foreground transition-colors text-[18px]">search</span>
           <input
             name="search"
-            className="w-full bg-muted/50 border border-transparent rounded-lg py-2 pl-10 pr-4 font-sans text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary/40 focus:bg-background focus:outline-none transition-all text-foreground placeholder:text-muted-foreground"
-            placeholder="Search curated news..."
+            className="w-full bg-foreground/[0.03] border border-border rounded-full py-2.5 pl-12 pr-4 font-sans text-[14px] focus:ring-1 focus:ring-foreground/20 focus:border-border focus:bg-foreground/[0.05] focus:outline-none transition-all text-foreground placeholder:text-muted-foreground shadow-subtle"
+            placeholder="Search Clarion Intelligence..."
             type="text"
           />
         </form>
       </div>
       <div className="flex items-center space-x-2">
-        <button
-          onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-          className="text-muted-foreground hover:text-foreground transition-colors flex items-center justify-center w-9 h-9 rounded-lg hover:bg-muted focus:ring-2 focus:ring-primary outline-none"
-          aria-label="Toggle theme"
-        >
-          <span className="material-symbols-outlined text-[20px]">{theme === 'light' ? 'dark_mode' : 'light_mode'}</span>
-        </button>
         
         {isAuthenticated ? (
           <div className="flex items-center space-x-1">
@@ -74,11 +65,11 @@ export default function Navbar() {
             </button>
           </div>
         ) : (
-          <div className="flex items-center space-x-2">
-            <Link to="/login" className="font-label-sm text-label-sm text-muted-foreground hover:text-foreground transition-colors focus:ring-2 focus:ring-primary outline-none px-3 py-2 rounded-lg hover:bg-muted">
+          <div className="flex items-center space-x-3">
+            <Link to="/login" className="font-label-sm text-[13px] text-muted-foreground hover:text-foreground transition-colors outline-none px-2 rounded-lg">
               Log In
             </Link>
-            <Link to="/register" className="font-label-sm text-label-sm bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors focus:ring-2 focus:ring-primary outline-none">
+            <Link to="/register" className="font-label-sm text-[13px] bg-foreground text-background px-4 py-2 rounded-full hover:opacity-90 transition-all shadow-subtle outline-none font-semibold tracking-wide">
               Sign Up
             </Link>
           </div>

@@ -72,6 +72,57 @@ export const adminApi = {
     return response.data;
   },
 
+  // Sources
+  getSources: async (page = 0, size = 20, status?: string) => {
+    const query = status ? `&status=${status}` : '';
+    const response = await axiosClient.get(`/admin/sources?page=${page}&size=${size}${query}`);
+    return response.data;
+  },
+  createSource: async (data: any) => {
+    const response = await axiosClient.post('/admin/sources', data);
+    return response.data;
+  },
+  updateSource: async (id: number, data: any) => {
+    const response = await axiosClient.put(`/admin/sources/${id}`, data);
+    return response.data;
+  },
+  deleteSource: async (id: number) => {
+    const response = await axiosClient.delete(`/admin/sources/${id}`);
+    return response.data;
+  },
+
+  // Categories
+  getCategories: async () => {
+    const response = await axiosClient.get('/admin/categories');
+    return response.data;
+  },
+  createCategory: async (data: any) => {
+    const response = await axiosClient.post('/admin/categories', data);
+    return response.data;
+  },
+  updateCategory: async (id: number, data: any) => {
+    const response = await axiosClient.put(`/admin/categories/${id}`, data);
+    return response.data;
+  },
+  deleteCategory: async (id: number) => {
+    const response = await axiosClient.delete(`/admin/categories/${id}`);
+    return response.data;
+  },
+
+  // Fetch Logs
+  getFetchLogs: async (page = 0, size = 20, status?: string) => {
+    const query = status ? `&status=${status}` : '';
+    const response = await axiosClient.get(`/admin/logs?page=${page}&size=${size}${query}`);
+    return response.data;
+  },
+
+  // Cache
+  clearCache: async (scope = 'ALL', slug?: string) => {
+    const query = slug ? `&slug=${slug}` : '';
+    const response = await axiosClient.post(`/admin/cache/clear?scope=${scope}${query}`);
+    return response.data;
+  },
+  
   // System
   getHealth: async () => {
     const response = await axiosClient.get('/admin/system/health');

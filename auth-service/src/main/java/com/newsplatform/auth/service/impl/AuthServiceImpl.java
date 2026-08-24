@@ -3,6 +3,7 @@ package com.newsplatform.auth.service.impl;
 import com.newsplatform.auth.dto.request.LoginRequestDto;
 import com.newsplatform.auth.dto.request.RefreshTokenRequestDto;
 import com.newsplatform.auth.dto.request.RegisterRequestDto;
+import com.newsplatform.auth.dto.request.UpdateProfileRequestDto;
 import com.newsplatform.auth.dto.response.LoginResponseDto;
 import com.newsplatform.auth.dto.response.TokenResponseDto;
 import com.newsplatform.auth.dto.response.UserResponseDto;
@@ -63,7 +64,8 @@ public class AuthServiceImpl implements AuthService {
         savedUser.getId(),
         savedUser.getName(),
         savedUser.getEmail(),
-        savedUser.getRole()
+        savedUser.getRole(),
+        savedUser.getBio()
     );
   }
 
@@ -112,6 +114,25 @@ public class AuthServiceImpl implements AuthService {
   }
 
   @Override
+  @Transactional
+  public UserResponseDto updateProfile(Long userId, UpdateProfileRequestDto request) {
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new UnauthorizedException("User not found"));
+        
+    user.setName(request.name());
+    user.setBio(request.bio());
+    User updatedUser = userRepository.save(user);
+    
+    return new UserResponseDto(
+        updatedUser.getId(),
+        updatedUser.getName(),
+        updatedUser.getEmail(),
+        updatedUser.getRole(),
+        updatedUser.getBio()
+    );
+  }
+
+  @Override
   @Transactional(readOnly = true)
   public UserResponseDto getCurrentUser(Long userId) {
     User user = userRepository.findById(userId)
@@ -120,7 +141,8 @@ public class AuthServiceImpl implements AuthService {
         user.getId(),
         user.getName(),
         user.getEmail(),
-        user.getRole()
+        user.getRole(),
+        user.getBio()
     );
   }
 
@@ -137,7 +159,8 @@ public class AuthServiceImpl implements AuthService {
         user.getId(),
         user.getName(),
         user.getEmail(),
-        user.getRole()
+        user.getRole(),
+        user.getBio()
     );
 
     return new LoginResponseDto(accessToken, refreshTokenString, expiresInSeconds, userDto);

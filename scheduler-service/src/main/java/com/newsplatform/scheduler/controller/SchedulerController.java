@@ -14,17 +14,27 @@ import org.springframework.web.bind.annotation.RestController;
 public class SchedulerController {
 
     private final SchedulerService schedulerService;
+    private final com.newsplatform.scheduler.provider.NewsProviderFactory newsProviderFactory;
 
-    public SchedulerController(SchedulerService schedulerService) {
+    public SchedulerController(SchedulerService schedulerService, com.newsplatform.scheduler.provider.NewsProviderFactory newsProviderFactory) {
         this.schedulerService = schedulerService;
+        this.newsProviderFactory = newsProviderFactory;
     }
 
     @PostMapping("/trigger")
     @Operation(summary = "Manually trigger the news fetch job")
-    public ResponseEntity<String> triggerFetch() {
-        // Run asynchronously to avoid blocking the HTTP request
-        new Thread(schedulerService::triggerFetch).start();
-        return ResponseEntity.ok("Fetch job triggered successfully");
+    public ResponseEntity<java.util.Map<String, Object>> triggerFetch() {
+        boolean triggered = schedulerService.triggerFetch();
+        java.util.Map<String, Object> response = new java.util.HashMap<>();
+        if (triggered) {
+            response.put("triggered", true);
+            response.put("jobId", java.util.UUID.randomUUID().toString());
+            return ResponseEntity.status(org.springframework.http.HttpStatus.ACCEPTED).body(response);
+        } else {
+            response.put("triggered", false);
+            response.put("message", "Job already running");
+            return ResponseEntity.status(org.springframework.http.HttpStatus.CONFLICT).body(response);
+        }
     }
 
     @org.springframework.web.bind.annotation.GetMapping("/search")
@@ -41,7 +51,7 @@ public class SchedulerController {
         java.util.List<com.newsplatform.scheduler.provider.dto.NormalizedArticle> results = new java.util.ArrayList<>();
         // Note: Ideally, this should search across multiple providers and aggregate/deduplicate.
         // For simplicity and speed in the corroboration layer, we iterate until we get results or return all.
-        java.util.List<com.newsplatform.scheduler.provider.NewsProvider> providers = schedulerService.getProviders();
+        java.util.List<com.newsplatform.scheduler.provider.NewsProvider> providers = newsProviderFactory.getAllProviders();
         for (com.newsplatform.scheduler.provider.NewsProvider provider : providers) {
             try {
                 java.util.List<com.newsplatform.scheduler.provider.dto.NormalizedArticle> articles =

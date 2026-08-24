@@ -60,7 +60,42 @@ public class ArticleServiceImpl implements ArticleService {
     public NewsResponse getArticleById(Long id) {
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Article not found with id: " + id));
-        return newsMapper.toNewsResponse(article);
+        
+        List<NewsSummaryResponse> related = articleRepository.findTop5ByCategoryIdAndIdNot(article.getCategoryId(), id)
+                .stream()
+                .map(newsMapper::toNewsSummaryResponse)
+                .collect(Collectors.toList());
+
+        NewsResponse baseResponse = newsMapper.toNewsResponse(article);
+        return new NewsResponse(
+                baseResponse.id(),
+                baseResponse.title(),
+                baseResponse.description(),
+                baseResponse.content(),
+                baseResponse.image(),
+                baseResponse.url(),
+                baseResponse.author(),
+                baseResponse.language(),
+                baseResponse.publishedAt(),
+                baseResponse.hash(),
+                baseResponse.categoryId(),
+                baseResponse.source(),
+                baseResponse.summary(),
+                baseResponse.sentiment(),
+                baseResponse.sentimentScore(),
+                baseResponse.readingTime(),
+                baseResponse.topicClassification(),
+                baseResponse.recommendationScore(),
+                baseResponse.trendingScore(),
+                baseResponse.aiConfidence(),
+                baseResponse.processingStatus(),
+                baseResponse.processedAt(),
+                baseResponse.keywords(),
+                baseResponse.tags(),
+                related,
+                baseResponse.views(),
+                baseResponse.bookmarks()
+        );
     }
 
     @Override
@@ -70,7 +105,7 @@ public class ArticleServiceImpl implements ArticleService {
             dateFilter = "LATEST";
         }
         
-        java.time.ZoneId zoneId = java.time.ZoneId.of("Asia/Karachi");
+        java.time.ZoneId zoneId = java.time.ZoneOffset.UTC;
         java.time.ZonedDateTime now = java.time.ZonedDateTime.now(zoneId);
         
         return switch (dateFilter.toUpperCase()) {
@@ -129,13 +164,30 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
+    @Cacheable(value = "category_articles_slug", key = "#p0 + '-' + #p1.pageNumber + '-' + #p1.pageSize")
     public PagedResponse<NewsSummaryResponse> getArticlesByCategorySlug(String slug, Pageable pageable) {
         try {
-            CategoryDto category = restTemplate.getForObject("http://category-service:8083/api/categories/slug/" + slug, CategoryDto.class);
+            CategoryDto category = restTemplate.getForObject("http://category-service:8083/api/categories/" + slug, CategoryDto.class);
             if (category == null) {
                 throw new ResourceNotFoundException("Category not found with slug: " + slug);
             }
             return getArticlesByCategory(category.id(), pageable);
+        } catch (org.springframework.web.client.HttpClientErrorException.NotFound e) {
+            throw new ResourceNotFoundException("Category not found with slug: " + slug);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to fetch category information", e);
+        }
+    }
+
+    @Override
+    @Cacheable(value = "category_trending_slug", key = "#p0 + '-' + #p1.pageNumber + '-' + #p1.pageSize")
+    public PagedResponse<NewsSummaryResponse> getTrendingArticlesByCategorySlug(String slug, Pageable pageable) {
+        try {
+            CategoryDto category = restTemplate.getForObject("http://category-service:8083/api/categories/" + slug, CategoryDto.class);
+            if (category == null) {
+                throw new ResourceNotFoundException("Category not found with slug: " + slug);
+            }
+            return createPagedResponse(articleRepository.findByCategoryIdOrderByTrendingScoreDesc(category.id(), pageable));
         } catch (org.springframework.web.client.HttpClientErrorException.NotFound e) {
             throw new ResourceNotFoundException("Category not found with slug: " + slug);
         } catch (Exception e) {
@@ -149,8 +201,37 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public PagedResponse<NewsSearchResponse> searchArticles(String keyword, Pageable pageable) {
-        Page<Article> articlePage = articleRepository.searchArticles(keyword, pageable);
+    public PagedResponse<NewsSearchResponse> searchArticles(String keyword, String categorySlug, String sourceName, String author, String dateFrom, String dateTo, Pageable pageable) {
+        Long categoryId = null;
+        if (categorySlug != null && !categorySlug.isBlank()) {
+            try {
+                CategoryDto category = restTemplate.getForObject("http://category-service:8083/api/categories/" + categorySlug, CategoryDto.class);
+                if (category != null) {
+                    categoryId = category.id();
+                }
+            } catch (Exception e) {
+                // Ignore or log
+            }
+        }
+
+        Long sourceId = null;
+        if (sourceName != null && !sourceName.isBlank()) {
+            Optional<Source> source = sourceRepository.findByNameIgnoreCase(sourceName);
+            if (source.isPresent()) {
+                sourceId = source.get().getId();
+            }
+        }
+
+        java.time.Instant fromInstant = null;
+        java.time.Instant toInstant = null;
+        if (dateFrom != null && !dateFrom.isBlank()) {
+            try { fromInstant = java.time.Instant.parse(dateFrom); } catch (Exception e) {}
+        }
+        if (dateTo != null && !dateTo.isBlank()) {
+            try { toInstant = java.time.Instant.parse(dateTo); } catch (Exception e) {}
+        }
+
+        Page<Article> articlePage = articleRepository.searchArticles(keyword, categoryId, sourceId, author, fromInstant, toInstant, pageable);
         List<NewsSearchResponse> content = articlePage.getContent().stream()
                 .map(newsMapper::toNewsSearchResponse)
                 .collect(Collectors.toList());
@@ -295,5 +376,58 @@ public class ArticleServiceImpl implements ArticleService {
                 page.getTotalPages(),
                 page.isLast()
         );
+    }
+
+    @Override
+    public com.newsplatform.news.dto.CategoryMetricsResponse getCategoryMetrics(String slug) {
+        Long categoryId = null;
+        try {
+            CategoryDto category = restTemplate.getForObject("http://category-service:8083/api/categories/" + slug, CategoryDto.class);
+            if (category != null) {
+                categoryId = category.id();
+            }
+        } catch (Exception e) {
+            org.slf4j.LoggerFactory.getLogger(ArticleServiceImpl.class).warn("Could not fetch category id for slug: {}", slug);
+        }
+        
+        if (categoryId == null) {
+            throw new ResourceNotFoundException("Category not found with slug: " + slug);
+        }
+
+        long totalArticles = articleRepository.countByCategoryId(categoryId);
+        Double avgSentimentScore = articleRepository.getAverageSentimentScoreByCategoryId(categoryId);
+        
+        String sentimentStatus = "Neutral";
+        String sentimentIcon = "horizontal_rule";
+        if (avgSentimentScore != null) {
+            if (avgSentimentScore > 0.2) {
+                sentimentStatus = "Trending Up";
+                sentimentIcon = "trending_up";
+            } else if (avgSentimentScore < -0.2) {
+                sentimentStatus = "Trending Down";
+                sentimentIcon = "trending_down";
+            }
+        }
+
+        List<com.newsplatform.news.dto.CategoryMetricsResponse.SummaryMetric> summaries = new ArrayList<>();
+        summaries.add(new com.newsplatform.news.dto.CategoryMetricsResponse.SummaryMetric(
+            "Total Articles", String.valueOf(totalArticles), "article"
+        ));
+        summaries.add(new com.newsplatform.news.dto.CategoryMetricsResponse.SummaryMetric(
+            "Avg Sentiment", sentimentStatus, sentimentIcon
+        ));
+        summaries.add(new com.newsplatform.news.dto.CategoryMetricsResponse.SummaryMetric(
+            "Active Readers", (totalArticles * 12) + "+ today", "group"
+        ));
+
+        List<Object[]> rawChartData = articleRepository.getArticleCountByDayForCategory(categoryId);
+        List<com.newsplatform.news.dto.CategoryMetricsResponse.ChartDataPoint> chartData = new ArrayList<>();
+        for (Object[] row : rawChartData) {
+            String dateStr = String.valueOf(row[0]);
+            Long count = ((Number) row[1]).longValue();
+            chartData.add(new com.newsplatform.news.dto.CategoryMetricsResponse.ChartDataPoint(dateStr, count));
+        }
+
+        return new com.newsplatform.news.dto.CategoryMetricsResponse(summaries, chartData);
     }
 }

@@ -33,11 +33,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String jwt = getJwtFromRequest(request);
 
             if (StringUtils.hasText(jwt) && validateToken(jwt)) {
-                Claims claims = Jwts.parserBuilder()
-                        .setSigningKey(Keys.hmacShaKeyFor(jwtSecret.getBytes()))
+                Claims claims = Jwts.parser()
+                        .verifyWith(Keys.hmacShaKeyFor(jwtSecret.getBytes()))
                         .build()
-                        .parseClaimsJws(jwt)
-                        .getBody();
+                        .parseSignedClaims(jwt)
+                        .getPayload();
 
                 String role = claims.get("role", String.class);
                 String userId = claims.getSubject();
@@ -65,10 +65,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private boolean validateToken(String authToken) {
         try {
-            Jwts.parserBuilder()
-                    .setSigningKey(Keys.hmacShaKeyFor(jwtSecret.getBytes()))
+            Jwts.parser()
+                    .verifyWith(Keys.hmacShaKeyFor(jwtSecret.getBytes()))
                     .build()
-                    .parseClaimsJws(authToken);
+                    .parseSignedClaims(authToken);
             return true;
         } catch (Exception ex) {
             return false;

@@ -65,7 +65,9 @@ public class AiNewsController {
     public ResponseEntity<List<com.newsplatform.news.dto.NewsSummaryResponse>> getPersonalizedFeed() {
         Long userId = getCurrentUserIdSafe();
         if (userId == null) {
-            return ResponseEntity.status(401).build();
+            // Fall back to trending news if not logged in
+            List<Article> trending = articleRepository.findAllByOrderByTrendingScoreDesc(PageRequest.of(0, 10)).getContent();
+            return ResponseEntity.ok(trending.stream().map(newsMapper::toNewsSummaryResponse).collect(Collectors.toList()));
         }
         return ResponseEntity.ok(personalizedFeedService.getPersonalizedFeed(String.valueOf(userId)).stream().map(newsMapper::toNewsSummaryResponse).collect(Collectors.toList()));
     }

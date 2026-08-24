@@ -89,78 +89,78 @@
 
   .dark {
     /* === Core Shadcn Tokens (Dark) === */
-    --background: 228 15% 7%;
-    --foreground: 220 14% 92%;
+    --background: 216 33% 3%; /* #05070A */
+    --foreground: 210 20% 88%;
 
-    --card: 228 14% 10%;
-    --card-foreground: 220 14% 92%;
+    --card: 215 30% 8%; /* #0E131A */
+    --card-foreground: 210 20% 92%;
 
-    --popover: 228 14% 10%;
-    --popover-foreground: 220 14% 92%;
+    --popover: 214 26% 11%; /* #141A22 */
+    --popover-foreground: 210 20% 92%;
 
-    --primary: 243 80% 72%;
-    --primary-foreground: 243 47% 15%;
+    --primary: 215 80% 65%; /* Soft blue */
+    --primary-foreground: 216 33% 3%;
 
-    --secondary: 225 12% 15%;
-    --secondary-foreground: 220 14% 85%;
+    --secondary: 214 26% 11%; /* #141A22 */
+    --secondary-foreground: 210 20% 88%;
 
-    --muted: 225 12% 15%;
-    --muted-foreground: 220 9% 55%;
+    --muted: 214 26% 11%;
+    --muted-foreground: 215 15% 55%;
 
-    --accent: 225 12% 15%;
-    --accent-foreground: 220 14% 92%;
+    --accent: 215 24% 15%; /* #1E2631 */
+    --accent-foreground: 210 20% 95%;
 
     --destructive: 0 62% 40%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 225 10% 16%;
-    --input: 225 10% 16%;
-    --ring: 243 80% 72%;
+    --border: 215 24% 12%; /* Very subtle borders */
+    --input: 215 24% 15%;
+    --ring: 215 80% 65%;
 
     /* === Material / Surface Tokens (Dark) === */
-    --outline: 220 8% 30%;
-    --surface-container-lowest: 228 15% 4%;
+    --outline: 215 24% 20%;
+    --surface-container-lowest: 216 33% 3%; /* #05070A */
     --inverse-surface: 0 0% 95%;
-    --on-secondary-fixed: 220 14% 92%;
-    --surface: 228 14% 10%;
-    --surface-container: 228 13% 13%;
+    --on-secondary-fixed: 210 20% 92%;
+    --surface: 213 33% 6%; /* #090D12 */
+    --surface-container: 215 30% 8%; /* #0E131A */
     --tertiary-fixed: 18 80% 45%;
-    --primary-fixed-dim: 243 80% 68%;
+    --primary-fixed-dim: 215 80% 60%;
     --on-primary: 0 0% 100%;
-    --surface-container-high: 228 12% 16%;
-    --secondary-fixed-dim: 220 8% 38%;
+    --surface-container-high: 214 26% 11%; /* #141A22 */
+    --secondary-fixed-dim: 215 15% 45%;
     --on-error-container: 0 90% 85%;
-    --surface-variant: 228 11% 18%;
-    --outline-variant: 225 8% 20%;
-    --secondary-container: 228 12% 14%;
-    --on-secondary-fixed-variant: 220 10% 85%;
+    --surface-variant: 215 24% 15%;
+    --outline-variant: 215 24% 15%;
+    --secondary-container: 214 26% 11%;
+    --on-secondary-fixed-variant: 210 20% 85%;
     --on-tertiary-fixed-variant: 23 90% 75%;
-    --on-background: 220 14% 92%;
-    --surface-container-highest: 228 10% 20%;
+    --on-background: 210 20% 92%;
+    --surface-container-highest: 215 24% 15%;
     --tertiary: 21 90% 52%;
-    --surface-dim: 228 15% 7%;
+    --surface-dim: 216 33% 3%;
     --error-container: 0 55% 25%;
-    --on-surface-variant: 220 9% 62%;
+    --on-surface-variant: 215 15% 62%;
     --tertiary-fixed-dim: 19 80% 58%;
-    --on-primary-fixed: 243 80% 88%;
+    --on-primary-fixed: 215 80% 88%;
     --tertiary-container: 23 80% 28%;
     --on-secondary: 0 0% 100%;
-    --primary-fixed: 243 70% 78%;
-    --surface-bright: 228 10% 22%;
-    --on-secondary-container: 220 10% 75%;
-    --secondary-fixed: 220 8% 28%;
-    --on-surface: 220 14% 92%;
-    --primary-container: 243 55% 28%;
-    --on-primary-container: 243 90% 85%;
+    --primary-fixed: 215 70% 78%;
+    --surface-bright: 214 26% 11%;
+    --on-secondary-container: 210 15% 75%;
+    --secondary-fixed: 215 15% 35%;
+    --on-surface: 210 20% 92%;
+    --primary-container: 215 55% 28%;
+    --on-primary-container: 215 90% 85%;
     --on-tertiary: 0 0% 100%;
-    --inverse-primary: 243 80% 68%;
-    --surface-container-low: 228 15% 7%;
+    --inverse-primary: 215 80% 68%;
+    --surface-container-low: 213 33% 6%;
     --error: 0 70% 50%;
     --on-error: 0 0% 100%;
     --on-tertiary-container: 20 90% 82%;
-    --surface-tint: 243 60% 58%;
-    --on-primary-fixed-variant: 243 60% 76%;
-    --inverse-on-surface: 228 14% 10%;
+    --surface-tint: 215 60% 58%;
+    --on-primary-fixed-variant: 215 60% 76%;
+    --inverse-on-surface: 216 33% 3%;
     --on-tertiary-fixed: 18 80% 85%;
   }
 }
@@ -173,6 +173,12 @@
     @apply bg-background text-foreground;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+  .dark body {
+    background-image: 
+      radial-gradient(circle at 15% 50%, rgba(255, 255, 255, 0.02), transparent 30%),
+      radial-gradient(circle at 85% 20%, rgba(255, 255, 255, 0.02), transparent 30%);
+    background-attachment: fixed;
   }
 }
 

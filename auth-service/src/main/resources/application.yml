@@ -28,7 +28,7 @@ spring:
     locations: classpath:db/migration
 
 jwt:
-  secret: ${JWT_SECRET:changeme_jwt_secret_min_32_chars_long}
+  secret: "${JWT_SECRET:changeme_jwt_secret_min_32_chars_long}"
   expiration-ms: 900000 # 15 minutes (900 seconds)
   refresh-expiration-ms: 604800000 # 7 days (604,800 seconds)
 

@@ -59,7 +59,7 @@ class ArticleIntegrationTest extends BaseIntegrationTest {
         given()
             .contentType(ContentType.JSON)
         .when()
-            .get("/api/articles")
+            .get("/api/news")
         .then()
             .statusCode(HttpStatus.OK.value())
             .body("content", hasSize(greaterThanOrEqualTo(1)))
@@ -71,7 +71,7 @@ class ArticleIntegrationTest extends BaseIntegrationTest {
         given()
             .contentType(ContentType.JSON)
         .when()
-            .get("/api/articles/999999")
+            .get("/api/news/999999")
         .then()
             .statusCode(HttpStatus.NOT_FOUND.value());
     }

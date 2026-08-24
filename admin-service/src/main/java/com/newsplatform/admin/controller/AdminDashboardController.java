@@ -8,9 +8,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.newsplatform.admin.service.AuditLogService;
 
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -19,10 +23,12 @@ public class AdminDashboardController {
 
     private final AuthServiceClient authServiceClient;
     private final NewsServiceClient newsServiceClient;
+    private final AuditLogService auditLogService;
 
-    public AdminDashboardController(AuthServiceClient authServiceClient, NewsServiceClient newsServiceClient) {
+    public AdminDashboardController(AuthServiceClient authServiceClient, NewsServiceClient newsServiceClient, AuditLogService auditLogService) {
         this.authServiceClient = authServiceClient;
         this.newsServiceClient = newsServiceClient;
+        this.auditLogService = auditLogService;
     }
 
     @GetMapping("/dashboard/stats")
@@ -58,9 +64,21 @@ public class AdminDashboardController {
                 Map.of("name", "Sun", "users", 349, "articles", 430)
             ));
             
-            stats.put("recentActivity", java.util.List.of(
-                Map.of("title", "Database Verified", "desc", "System started and schemas verified.", "time", "Just now")
-            ));
+            java.util.List<Map<String, String>> activities = auditLogService.getRecentLogs(5).stream().map(log -> {
+                String timeStr = log.getTimestamp() != null 
+                    ? DateTimeFormatter.ofPattern("MMM dd, HH:mm").withZone(ZoneId.systemDefault()).format(log.getTimestamp())
+                    : "Unknown";
+                return Map.of(
+                    "title", log.getActionType() + " " + log.getEntityType(),
+                    "desc", log.getActor() + " - " + log.getDescription(),
+                    "time", timeStr
+                );
+            }).collect(Collectors.toList());
+            
+            stats.put("recentActivity", activities.isEmpty() ? 
+                java.util.List.of(Map.of("title", "Database Verified", "desc", "System started and schemas verified.", "time", "Just now")) : 
+                activities
+            );
         } catch (Exception e) {
             stats.put("error", "Failed to aggregate statistics: " + e.getMessage());
         }

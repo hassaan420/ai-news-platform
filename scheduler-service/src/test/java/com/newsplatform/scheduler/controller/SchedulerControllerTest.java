@@ -1,11 +1,11 @@
 package com.newsplatform.scheduler.controller;
 
 import com.newsplatform.scheduler.provider.NewsProvider;
+import com.newsplatform.scheduler.provider.NewsProviderFactory;
 import com.newsplatform.scheduler.provider.dto.NormalizedArticle;
 import com.newsplatform.scheduler.service.SchedulerService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -29,6 +29,9 @@ class SchedulerControllerTest {
 
     @Mock
     private SchedulerService schedulerService;
+
+    @Mock
+    private NewsProviderFactory newsProviderFactory;
 
     @InjectMocks
     private SchedulerController controller;
@@ -54,7 +57,7 @@ class SchedulerControllerTest {
         NewsProvider providerB = mock(NewsProvider.class);
         when(providerA.searchNews(eq("ukraine"), eq(domains))).thenReturn(List.of(article("A1")));
         when(providerB.searchNews(eq("ukraine"), eq(domains))).thenReturn(List.of(article("B1")));
-        when(schedulerService.getProviders()).thenReturn(List.of(providerA, providerB));
+        when(newsProviderFactory.getAllProviders()).thenReturn(List.of(providerA, providerB));
 
         ResponseEntity<List<NormalizedArticle>> response = controller.searchNews("ukraine", domains);
 
@@ -76,7 +79,7 @@ class SchedulerControllerTest {
         NewsProvider provider = mock(NewsProvider.class);
         when(provider.searchNews(eq("ukraine"), isNull()))
                 .thenReturn(List.of(article("Article1")));
-        when(schedulerService.getProviders()).thenReturn(List.of(provider));
+        when(newsProviderFactory.getAllProviders()).thenReturn(List.of(provider));
 
         ResponseEntity<List<NormalizedArticle>> response = controller.searchNews("ukraine", null);
 
@@ -98,7 +101,7 @@ class SchedulerControllerTest {
                 .thenThrow(new RuntimeException("Provider timeout"));
         when(goodProvider.searchNews(eq("ukraine"), eq(domains)))
                 .thenReturn(List.of(article("GoodResult")));
-        when(schedulerService.getProviders()).thenReturn(List.of(failingProvider, goodProvider));
+        when(newsProviderFactory.getAllProviders()).thenReturn(List.of(failingProvider, goodProvider));
 
         ResponseEntity<List<NormalizedArticle>> response = controller.searchNews("ukraine", domains);
 
@@ -119,7 +122,7 @@ class SchedulerControllerTest {
         when(p1.searchNews(anyString(), any())).thenReturn(List.of(article("P1-A"), article("P1-B")));
         when(p2.searchNews(anyString(), any())).thenReturn(List.of(article("P2-A")));
         when(p3.searchNews(anyString(), any())).thenReturn(List.of());
-        when(schedulerService.getProviders()).thenReturn(List.of(p1, p2, p3));
+        when(newsProviderFactory.getAllProviders()).thenReturn(List.of(p1, p2, p3));
 
         ResponseEntity<List<NormalizedArticle>> response = controller.searchNews("test", null);
 
@@ -136,7 +139,7 @@ class SchedulerControllerTest {
     void searchNews_whenProviderReturnsNull_doesNotThrow() {
         NewsProvider p = mock(NewsProvider.class);
         when(p.searchNews(anyString(), any())).thenReturn(null);
-        when(schedulerService.getProviders()).thenReturn(List.of(p));
+        when(newsProviderFactory.getAllProviders()).thenReturn(List.of(p));
 
         ResponseEntity<List<NormalizedArticle>> response = controller.searchNews("test", null);
 

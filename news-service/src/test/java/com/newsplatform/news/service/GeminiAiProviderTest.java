@@ -33,7 +33,7 @@ public class GeminiAiProviderTest {
 
     @Test
     void summarize_withValidResponse_returnsStrippedSummary() {
-        when(client.generate(anyString())).thenReturn("```json\nHere is a summary.\n```");
+        when(client.generate(anyString())).thenReturn("```json\n{\"summary\": \"Here is a summary.\", \"sentiment\": {\"label\": \"Neutral\", \"score\": 0.1}, \"keywords\": [\"test\"]}\n```");
         String result = provider.summarize("Some article text...");
         assertEquals("Here is a summary.", result);
     }
@@ -49,7 +49,7 @@ public class GeminiAiProviderTest {
 
     @Test
     void sentiment_withValidJson_returnsSentimentResult() {
-        when(client.generate(anyString())).thenReturn("```json\n{\"label\":\"Positive\",\"score\":0.8}\n```");
+        when(client.generate(anyString())).thenReturn("```json\n{\"summary\": \"...\", \"sentiment\": {\"label\":\"Positive\",\"score\":0.8}, \"keywords\": []}\n```");
         
         AiProvider.SentimentResult result = provider.sentiment("Good news today!");
         
@@ -68,7 +68,7 @@ public class GeminiAiProviderTest {
 
     @Test
     void keywords_withValidJsonArray_returnsKeywordsList() {
-        when(client.generate(anyString())).thenReturn("```json\n[\"tech\", \"ai\"]\n```");
+        when(client.generate(anyString())).thenReturn("```json\n{\"summary\": \"...\", \"sentiment\": {\"label\": \"Neutral\", \"score\": 0.0}, \"keywords\": [\"tech\", \"ai\"]}\n```");
         
         List<String> result = provider.keywords("Tech and AI are cool.", 2);
         

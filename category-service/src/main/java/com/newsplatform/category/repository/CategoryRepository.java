@@ -11,4 +11,9 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     Optional<Category> findBySlug(String slug);
     Optional<Category> findByTitle(String title);
     boolean existsBySlug(String slug);
+    
+    java.util.List<Category> findAllByActiveTrue();
+    
+    @org.springframework.data.jpa.repository.Query("SELECT c.id FROM Category c WHERE c.active = true")
+    java.util.List<Long> findAllActiveIds();
 }
