@@ -35,3 +35,6 @@ Thumbs.db
 
 # Dependencies
 node_modules/
+
+# Git backups
+*.git.backup/
