@@ -1,0 +1,3 @@
+ALTER TABLE categories
+ADD COLUMN keywords VARCHAR(500) NULL,
+ADD COLUMN display_order INT NOT NULL DEFAULT 0;

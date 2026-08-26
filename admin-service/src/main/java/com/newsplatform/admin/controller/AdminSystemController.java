@@ -124,7 +124,7 @@ public class AdminSystemController {
     @Operation(summary = "Aggregate health status")
     public ResponseEntity<Map<String, Object>> getSystemHealth() {
         Map<String, Object> health = new HashMap<>();
-        String[] services = {"gateway", "auth-service", "news-service", "category-service", "search-service", "scheduler-service", "admin-service"};
+        String[] services = {"gateway-service", "auth-service", "news-service", "category-service", "search-service", "scheduler-service", "admin-service"};
         
         // This is a simplified fan-out. In production we'd use WebClient asynchronously.
         for (String service : services) {

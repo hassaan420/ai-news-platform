@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { newsApi } from '../api/newsApi';
 import { Article } from '../types/news';
 import { createPortal } from 'react-dom';
+import { Zap } from 'lucide-react';
 
 function getTimeAgo(dateString: string): string {
   const date = new Date(dateString);
@@ -24,7 +25,7 @@ const HoverCardPortal = ({ children, position, visible }: { children: React.Reac
   return createPortal(
     <div 
       style={{ left: position.x, top: position.y + 20 }}
-      className="fixed z-[100] w-80 bg-card border border-border shadow-premium rounded-xl p-4 animate-in fade-in zoom-in-95 duration-200 pointer-events-none"
+      className="fixed z-[100] w-80 bg-white/[0.2] backdrop-blur-2xl border border-white/[0.1] shadow-2xl rounded-xl p-4 animate-in fade-in zoom-in-95 duration-200 pointer-events-none text-white/90"
     >
       {children}
     </div>,
@@ -83,11 +84,11 @@ export default function LiveTickerBar() {
   if (loading || articles.length === 0) {
     return (
       <div className="w-full flex justify-center py-2 relative z-20">
-         <div className="bg-surface-container-lowest border border-border/60 rounded-full h-11 w-[96%] flex items-center shadow-subtle overflow-hidden">
-            <div className="flex-shrink-0 flex items-center gap-2 pl-4 pr-4 h-full border-r border-border/60 bg-muted/30">
-               <span className="text-red-600 dark:text-red-400 text-[11px] font-bold tracking-widest uppercase">LIVE FEED</span>
+         <div className="bg-white/[0.12] backdrop-blur-xl border border-white/[0.2] rounded-full h-11 w-[96%] flex items-center shadow-2xl overflow-hidden">
+            <div className="flex-shrink-0 flex items-center gap-2 pl-4 pr-4 h-full border-r border-white/[0.2] bg-white/[0.1]">
+               <span className="text-red-500 text-[11px] font-bold tracking-widest uppercase">LIVE FEED</span>
             </div>
-            <span className="px-4 text-xs text-muted-foreground">{loading ? 'Loading live stream...' : 'No live updates.'}</span>
+            <span className="px-4 text-xs text-white/90">{loading ? 'Loading live stream...' : 'No live updates.'}</span>
          </div>
       </div>
     );
@@ -98,15 +99,15 @@ export default function LiveTickerBar() {
 
   return (
     <div className="w-full flex justify-center py-2 relative z-20">
-      <div className="bg-surface-container-lowest border border-border/60 rounded-full h-11 w-[98%] max-w-[1400px] flex items-center shadow-subtle overflow-visible relative">
+      <div className="bg-white/[0.12] backdrop-blur-xl border border-white/[0.2] rounded-full h-11 w-[98%] max-w-[1400px] flex items-center shadow-2xl overflow-visible relative">
         
         {/* Left Badge - LIVE FEED */}
-        <div className="flex-shrink-0 flex items-center gap-2 pl-4 pr-4 h-full border-r border-border/60 bg-card rounded-l-full relative z-10 shadow-[4px_0_12px_rgba(0,0,0,0.03)]">
+        <div className="flex-shrink-0 flex items-center gap-2 pl-4 pr-4 h-full border-r border-white/[0.2] bg-white/[0.15] rounded-l-full relative z-10 shadow-[4px_0_12px_rgba(0,0,0,0.03)]">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600"></span>
           </span>
-          <span className="text-red-600 dark:text-red-500 text-[11px] font-bold tracking-widest uppercase">
+          <span className="text-red-500 text-[11px] font-bold tracking-widest uppercase">
             LIVE FEED
           </span>
         </div>
@@ -151,16 +152,16 @@ function TickerItem({ article }: { article: Article }) {
         onMouseEnter={handleMouseEnter}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <Link to={`/news/${article.id}`} className="flex items-center gap-3 text-[13.5px] whitespace-nowrap hover:text-primary transition-colors">
-          <div className="flex items-center gap-2 border-r border-border/50 pr-3">
+        <Link to={`/news/${article.id}`} className="flex items-center gap-3 text-[13.5px] whitespace-nowrap text-white/90 hover:text-primary transition-colors">
+          <div className="flex items-center gap-2 border-r border-white/[0.2] pr-3">
             <img src={favicon} alt={article.source?.name} className="w-4 h-4 rounded-full bg-white object-contain shadow-sm" />
-            <span className="font-semibold text-foreground">{article.source?.name || 'News'}</span>
+            <span className="font-semibold text-white/90">{article.source?.name || 'News'}</span>
           </div>
-          <span className="text-muted-foreground text-[12px] font-medium">{timeAgo}</span>
-          <span className="w-1 h-1 rounded-full bg-border"></span>
-          <span className="text-foreground font-medium tracking-tight">{article.title}</span>
-          <span className="ml-2 flex items-center gap-1 text-[11px] font-semibold text-amber-600 dark:text-amber-500 bg-amber-50 dark:bg-amber-950/50 px-1.5 py-0.5 rounded shadow-sm border border-amber-200 dark:border-amber-900/50">
-            <span className="material-symbols-outlined text-[12px]">bolt</span>
+          <span className="text-white/90 text-[12px] font-medium">{timeAgo}</span>
+          <span className="w-1 h-1 rounded-full bg-white/[0.2]"></span>
+          <span className="text-white/90 font-medium tracking-tight">{article.title}</span>
+          <span className="ml-2 flex items-center gap-1 text-[11px] font-semibold text-amber-500 bg-amber-950/30 px-1.5 py-0.5 rounded shadow-sm border border-amber-900/50">
+            <Zap className="w-3 h-3" />
             {velocity} readers
           </span>
         </Link>
@@ -168,14 +169,14 @@ function TickerItem({ article }: { article: Article }) {
 
       <HoverCardPortal position={hoverPos} visible={isHovered}>
         <div className="flex items-start gap-3 mb-3">
-           <img src={favicon} alt="" className="w-6 h-6 rounded-full border border-border" />
+           <img src={favicon} alt="" className="w-6 h-6 rounded-full border border-white/[0.2]" />
            <div>
-             <div className="font-bold text-sm text-foreground">{article.source?.name}</div>
-             <div className="text-xs text-muted-foreground">{timeAgo}</div>
+             <div className="font-bold text-sm text-white/90">{article.source?.name}</div>
+             <div className="text-xs text-white/90">{timeAgo}</div>
            </div>
         </div>
-        <h4 className="font-bold text-sm mb-2 line-clamp-2 leading-snug text-foreground">{article.title}</h4>
-        <p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed">{article.description}</p>
+        <h4 className="font-bold text-sm mb-2 line-clamp-2 leading-snug text-white/90">{article.title}</h4>
+        <p className="text-xs text-white/90 line-clamp-3 leading-relaxed">{article.description}</p>
       </HoverCardPortal>
     </>
   );

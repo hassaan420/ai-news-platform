@@ -29,7 +29,7 @@ export default function ReadingProgress({ targetRef }: ReadingProgressProps) {
 
   return (
     <div
-      className="fixed top-0 left-0 right-0 z-50 h-[5px] pointer-events-none bg-muted/50 backdrop-blur-sm"
+      className="fixed top-0 left-0 right-0 z-50 h-[5px] pointer-events-none bg-white/[0.15] backdrop-blur-sm"
       aria-hidden="true"
     >
       <motion.div

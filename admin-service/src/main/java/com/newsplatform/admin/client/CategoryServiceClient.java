@@ -5,7 +5,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@FeignClient(name = "category-service", url = "${feign.client.category-service.url:http://category-service:8083}")
+import com.newsplatform.admin.config.FeignConfig;
+
+@FeignClient(name = "category-service", url = "${feign.client.category-service.url:http://category-service:8083}", configuration = FeignConfig.class)
 public interface CategoryServiceClient {
 
     @GetMapping("/internal/admin/categories")

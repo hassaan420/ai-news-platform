@@ -52,4 +52,12 @@ public class AdminUserController {
         auditLogService.logAction("DELETE", "User", String.valueOf(id), "Soft deleted user");
         return ResponseEntity.ok(user);
     }
+
+    @PostMapping("/{id}/impersonate")
+    @Operation(summary = "Impersonate user")
+    public ResponseEntity<java.util.Map<String, Object>> impersonateUser(@PathVariable Long id) {
+        java.util.Map<String, Object> tokenResponse = authServiceClient.impersonateUser(id);
+        auditLogService.logAction("IMPERSONATE", "User", String.valueOf(id), "Impersonated user");
+        return ResponseEntity.ok(tokenResponse);
+    }
 }

@@ -8,10 +8,9 @@ import {
   Sun, 
   Cloud, 
   CloudRain, 
-  CloudSnow, 
   CloudLightning, 
-  CloudDrizzle, 
-  Thermometer, 
+  CloudSnow, 
+  CloudDrizzle,
   Wind,
   Droplets,
   Edit2,
@@ -19,40 +18,35 @@ import {
   X
 } from 'lucide-react';
 
-const DEFAULT_CITY = "Islamabad";
 const GEOLOCATION_TIMEOUT_MS = 5000;
-const SPORTS_POLL_INTERVAL_MS = 60000;
 const SPORTS_TABS = ['football', 'cricket', 'tennis'] as const;
 
 type SportType = typeof SPORTS_TABS[number];
 
-// Simple icon lookup for OpenWeatherMap codes
 const getWeatherIcon = (iconCode: string) => {
   const code = iconCode.substring(0, 2);
   switch (code) {
-    case '01': return <Sun className="w-10 h-10 text-amber-500" aria-label="Clear sky" />;
-    case '02': 
-    case '03': 
-    case '04': return <Cloud className="w-10 h-10 text-slate-400" aria-label="Clouds" />;
-    case '09': return <CloudDrizzle className="w-10 h-10 text-blue-400" aria-label="Drizzle" />;
-    case '10': return <CloudRain className="w-10 h-10 text-blue-500" aria-label="Rain" />;
-    case '11': return <CloudLightning className="w-10 h-10 text-indigo-500" aria-label="Thunderstorm" />;
-    case '13': return <CloudSnow className="w-10 h-10 text-sky-200" aria-label="Snow" />;
-    case '50': return <Wind className="w-10 h-10 text-slate-300" aria-label="Mist" />;
-    default: return <Thermometer className="w-10 h-10 text-muted-foreground" aria-label="Weather" />;
+    case '01': return <Sun className="w-10 h-10 text-amber-400 drop-shadow-[0_0_15px_rgba(251,191,36,0.4)]" />;
+    case '02':
+    case '03':
+    case '04': return <Cloud className="w-10 h-10 text-slate-300 drop-shadow-[0_0_15px_rgba(203,213,225,0.4)]" />;
+    case '09': return <CloudDrizzle className="w-10 h-10 text-blue-300 drop-shadow-[0_0_15px_rgba(147,197,253,0.4)]" />;
+    case '10': return <CloudRain className="w-10 h-10 text-blue-400 drop-shadow-[0_0_15px_rgba(96,165,250,0.4)]" />;
+    case '11': return <CloudLightning className="w-10 h-10 text-amber-500 drop-shadow-[0_0_15px_rgba(245,158,11,0.4)]" />;
+    case '13': return <CloudSnow className="w-10 h-10 text-blue-100 drop-shadow-[0_0_15px_rgba(219,234,254,0.4)]" />;
+    case '50': return <Wind className="w-10 h-10 text-slate-400 drop-shadow-[0_0_15px_rgba(148,163,184,0.4)]" />;
+    default: return <Sun className="w-10 h-10 text-amber-400 drop-shadow-[0_0_15px_rgba(251,191,36,0.4)]" />;
   }
 };
 
 export default function WeatherSportsWidget() {
-  // Weather State
   const [weather, setWeather] = useState<WeatherResponse | null>(null);
   const [weatherLoading, setWeatherLoading] = useState(true);
   const [weatherError, setWeatherError] = useState(false);
-  const [customCity, setCustomCity] = useState(DEFAULT_CITY);
+  const [customCity, setCustomCity] = useState<string | null>(null);
   const [isEditingCity, setIsEditingCity] = useState(false);
-  const [cityInput, setCityInput] = useState("");
+  const [cityInput, setCityInput] = useState('');
 
-  // Sports State
   const [sportsData, setSportsData] = useState<Record<SportType, SportMatch[] | null>>({
     football: null,
     cricket: null,
@@ -64,38 +58,42 @@ export default function WeatherSportsWidget() {
   useEffect(() => {
     let isMounted = true;
 
-    // --- Weather Fetch ---
-    const fetchWeather = async (lat?: number, lon?: number, cityStr?: string) => {
+    const fetchWeather = async (lat?: number, lon?: number) => {
       try {
         setWeatherLoading(true);
         let data;
-        if (lat !== undefined && lon !== undefined) {
+        if (customCity) {
+          data = await weatherApi.getCurrentWeatherByCity(customCity);
+        } else if (lat && lon) {
           data = await weatherApi.getCurrentWeatherByCoordinates(lat, lon);
         } else {
-          data = await weatherApi.getCurrentWeatherByCity(cityStr || customCity);
+          data = await weatherApi.getCurrentWeatherByCity('London');
         }
+        
         if (isMounted) {
           setWeather(data);
           setWeatherError(false);
           if (data && data.city) {
-            setCustomCity(data.city);
+            setCityInput(data.city);
           }
         }
-      } catch (error) {
-        console.debug("Failed to fetch weather data:", error);
+      } catch (err) {
+        console.debug('Failed to fetch weather data:', err);
         if (isMounted) setWeatherError(true);
       } finally {
         if (isMounted) setWeatherLoading(false);
       }
     };
 
-    if ('geolocation' in navigator) {
+    if (customCity) {
+      fetchWeather();
+    } else if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           fetchWeather(position.coords.latitude, position.coords.longitude);
         },
         (error) => {
-          console.debug("Geolocation error/denied:", error);
+          console.debug('Geolocation permission denied or failed:', error);
           fetchWeather();
         },
         { timeout: GEOLOCATION_TIMEOUT_MS }
@@ -104,11 +102,10 @@ export default function WeatherSportsWidget() {
       fetchWeather();
     }
 
-    // --- Sports Fetch ---
-    const fetchSports = async () => {
+    const fetchInitialSports = async () => {
       try {
         const results = await Promise.allSettled(
-          SPORTS_TABS.map(sport => sportsApi.getLiveMatches(sport))
+          SPORTS_TABS.map(sport => sportsApi.getLiveMatches(sport, 1))
         );
 
         if (!isMounted) return;
@@ -119,80 +116,52 @@ export default function WeatherSportsWidget() {
         results.forEach((result, index) => {
           const sport = SPORTS_TABS[index];
           if (result.status === 'fulfilled' && result.value?.matches) {
-            newSportsData[sport] = result.value.matches;
+            newSportsData[sport] = result.value.matches.slice(0, 10);
             if (!firstSuccessfulTab) firstSuccessfulTab = sport;
           } else {
-            console.debug(`Failed to fetch sports data for ${sport}:`, result);
+            console.debug(`Failed to fetch initial sports data for ${sport}:`, result);
             newSportsData[sport] = null;
           }
         });
 
         setSportsData(newSportsData);
-        setActiveSportTab(prev => {
-          // If current tab is null or its data failed, switch to the first successful one
-          if (!prev || newSportsData[prev] === null) {
-            return firstSuccessfulTab;
-          }
-          return prev;
-        });
-
-      } catch (error) {
-        console.debug("Unexpected error during sports fetch:", error);
+        if (firstSuccessfulTab && !activeSportTab) {
+          setActiveSportTab(firstSuccessfulTab);
+        }
       } finally {
         if (isMounted) setSportsLoading(false);
       }
     };
 
-    fetchSports();
-    const intervalId = setInterval(fetchSports, SPORTS_POLL_INTERVAL_MS);
+    fetchInitialSports();
 
     return () => {
       isMounted = false;
-      clearInterval(intervalId);
     };
-  }, []);
+  }, [customCity]);
 
   const handleCitySubmit = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (cityInput.trim()) {
       setCustomCity(cityInput.trim());
       setIsEditingCity(false);
-      
-      const doFetch = async () => {
-        try {
-          setWeatherLoading(true);
-          const data = await weatherApi.getCurrentWeatherByCity(cityInput.trim());
-          setWeather(data);
-          setWeatherError(false);
-          if (data && data.city) {
-            setCustomCity(data.city);
-          }
-        } catch (error) {
-          console.debug("Failed to fetch custom city weather:", error);
-          setWeatherError(true);
-        } finally {
-          setWeatherLoading(false);
-        }
-      };
-      doFetch();
     }
   };
 
-  const hasAnySports = Object.values(sportsData).some(data => data !== null);
+  const hasAnySports = SPORTS_TABS.some(sport => sportsData[sport] !== null);
   const showWeather = weatherLoading || (!weatherError && weather !== null);
   const showSports = sportsLoading || hasAnySports;
 
-  // If both failed/empty, render nothing
   if (!showWeather && !showSports) {
     return null;
   }
 
   return (
-    <div className="bg-card border border-border shadow-subtle rounded-xl overflow-hidden flex flex-col w-full mb-8">
+    <div className="bg-white/[0.2] backdrop-blur-xl border border-white/[0.15] shadow-2xl rounded-2xl overflow-hidden flex flex-col w-full mb-8 transition-all hover:bg-white/[0.12]">
       {/* Weather Section */}
       {showWeather && (
-        <div className={`p-5 flex flex-col justify-center ${showSports ? 'border-b border-border' : ''}`}>
-          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4">Local Weather</h3>
+        <div className={`p-5 flex flex-col justify-center ${showSports ? 'border-b border-white/[0.15]' : ''}`}>
+          <h3 className="text-xs font-semibold text-white/90 uppercase tracking-wider mb-4">Local Weather</h3>
           
           {weatherLoading ? (
             <div className="space-y-3">
@@ -205,10 +174,10 @@ export default function WeatherSportsWidget() {
               <div className="flex items-center gap-4 mb-2">
                 {getWeatherIcon(weather.iconCode)}
                 <div>
-                  <div className="text-3xl font-bold text-foreground">
+                  <div className="font-serif text-3xl font-bold text-white/95">
                     {Math.round(weather.temperatureCelsius)}°
                   </div>
-                  <div className="text-sm font-medium text-foreground capitalize">
+                  <div className="text-sm font-medium text-white capitalize tracking-wide">
                     {weather.description || weather.condition}
                   </div>
                 </div>
@@ -233,7 +202,7 @@ export default function WeatherSportsWidget() {
                   </form>
                 ) : (
                   <div className="flex items-center gap-2 group">
-                    <div className="text-lg font-semibold text-foreground">
+                    <div className="text-lg font-serif font-semibold text-white/80">
                       {weather.city}
                     </div>
                     <button 
@@ -246,7 +215,7 @@ export default function WeatherSportsWidget() {
                   </div>
                 )}
               </div>
-              <div className="flex items-center gap-3 mt-3 text-xs text-muted-foreground font-medium">
+              <div className="flex items-center gap-3 mt-3 text-xs text-white/90 font-medium">
                 <span className="flex items-center gap-1">
                   <Droplets className="w-3.5 h-3.5" /> {weather.humidity}%
                 </span>
@@ -263,7 +232,7 @@ export default function WeatherSportsWidget() {
       {showSports && (
         <div className="p-5 flex flex-col w-full">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Live Sports</h3>
+            <h3 className="text-xs font-semibold text-white/90 uppercase tracking-wider">Live Sports</h3>
             
             {!sportsLoading && hasAnySports && (
               <div className="flex gap-2">
@@ -273,10 +242,10 @@ export default function WeatherSportsWidget() {
                     <button
                       key={sport}
                       onClick={() => setActiveSportTab(sport)}
-                      className={`text-xs font-semibold px-3 py-1.5 rounded-full transition-colors capitalize ${
+                      className={`text-[11px] font-semibold px-3 py-1.5 rounded-full transition-colors capitalize ${
                         activeSportTab === sport 
-                          ? 'bg-primary text-primary-foreground' 
-                          : 'bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80'
+                          ? 'bg-white/[0.1] text-white border border-white/[0.15]' 
+                          : 'bg-white/[0.2] text-white/90 border border-transparent hover:text-white/80 hover:bg-white/[0.15]'
                       }`}
                     >
                       {sport}
@@ -296,16 +265,16 @@ export default function WeatherSportsWidget() {
           ) : activeSportTab && sportsData[activeSportTab] ? (
             <div className="flex-1 space-y-2">
               {sportsData[activeSportTab]!.length > 0 ? (
-                sportsData[activeSportTab]!.slice(0, 5).map((match, i) => (
-                  <div key={match.id || i} className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-border/50 text-sm">
-                    <div className="flex-1 font-medium text-foreground truncate pr-2">
+                sportsData[activeSportTab]!.map((match, i) => (
+                  <div key={match.id || i} className="flex items-center justify-between p-3 rounded-xl bg-white/[0.15] border border-white/[0.1] text-sm hover:bg-white/[0.1] transition-colors">
+                    <div className="flex-1 font-medium text-white/80 truncate pr-2">
                       {match.home || 'TBA'}
                     </div>
                     
                     <div className="flex flex-col items-center justify-center px-4 min-w-[80px]">
-                      <div className="font-bold text-foreground text-base tracking-tight whitespace-nowrap">
+                      <div className="font-serif font-bold text-white/95 text-lg tracking-tight whitespace-nowrap">
                         {match.home_score !== null && match.home_score !== undefined ? match.home_score : '-'} 
-                        <span className="mx-1 text-muted-foreground font-normal">:</span> 
+                        <span className="mx-1 text-white font-normal">:</span> 
                         {match.away_score !== null && match.away_score !== undefined ? match.away_score : '-'}
                       </div>
                       <div className={`text-[10px] font-bold uppercase tracking-wider ${
@@ -317,7 +286,7 @@ export default function WeatherSportsWidget() {
                       </div>
                     </div>
 
-                    <div className="flex-1 font-medium text-foreground text-right truncate pl-2">
+                    <div className="flex-1 font-medium text-white/80 text-right truncate pl-2">
                       {match.away || 'TBA'}
                     </div>
                   </div>
@@ -331,8 +300,8 @@ export default function WeatherSportsWidget() {
           ) : null}
 
           <div className="mt-4 text-right">
-            <span className="text-muted-foreground text-xs">
-              Powered by <a href="https://sportscore.com/" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors underline decoration-border underline-offset-2">SportScore</a>
+            <span className="text-white text-[11px]">
+              Powered by <a href="https://sportscore.com/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors underline decoration-white/20 underline-offset-2">SportScore</a>
             </span>
           </div>
         </div>

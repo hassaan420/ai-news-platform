@@ -130,11 +130,40 @@ export default function Home() {
       transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
       className="max-w-7xl mx-auto block"
     >
-      {isAuthenticated && user?.name && (
-        <div className="mb-8 block">
-          <h1 className="text-3xl font-headline-md text-foreground">Welcome back, {user.name}</h1>
+      {/* GLOBAL CINEMATIC HERO */}
+      <div className="text-center py-16 md:py-24 max-w-3xl mx-auto">
+        <div className="inline-flex items-center gap-2 px-3 py-1 mb-6 rounded-full glass-1 border border-border/50 text-xs font-bold tracking-widest text-primary uppercase">
+          <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+          Live Global Intelligence
         </div>
-      )}
+        <h1 className="font-serif text-[42px] md:text-[56px] leading-[1.1] font-bold text-heading-theme mb-6 tracking-tight">
+          {isAuthenticated && user?.name ? `Welcome back, ${user.name.split(' ')[0]}.` : 'Your window into the world.'}
+          <br/>
+          <span className="text-muted-theme">Understand what matters.</span>
+        </h1>
+        <p className="font-sans text-[16px] md:text-[18px] leading-relaxed text-secondary-theme mb-10 max-w-2xl mx-auto">
+          Clarion AI analyzes millions of global data points in real-time to bring you unparalleled intelligence, removing the noise so you can focus on the signal.
+        </p>
+        <div className="flex items-center justify-center gap-4">
+          <button onClick={() => {
+              document.getElementById('latest-analysis-section')?.scrollIntoView({ behavior: 'smooth' });
+            }} 
+            className="px-6 py-3 rounded-lg bg-primary text-white font-bold tracking-wide hover:bg-primary/90 transition-all shadow-premium"
+          >
+            Explore Latest Stories
+          </button>
+          {isAuthenticated && (
+            <button onClick={() => {
+                setActiveTab('foryou');
+                document.getElementById('latest-analysis-section')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="px-6 py-3 rounded-lg glass-2 text-primary-theme font-bold tracking-wide hover:bg-white/10 transition-all"
+            >
+              Your Personalized Brief
+            </button>
+          )}
+        </div>
+      </div>
 
       {error && (
         <div className="bg-destructive/10 text-destructive p-4 rounded-lg mb-8 text-sm font-medium block">
@@ -150,15 +179,14 @@ export default function Home() {
 
           {/* Trending Vertical List */}
           {trendingNews && trendingNews.content.length > 0 && (
-            <section className="bg-card rounded-[20px] p-6 border border-border shadow-subtle relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full -z-10" />
-              <div className="flex items-center justify-between mb-6 pb-4 border-b border-border/50">
-                <h2 className="font-serif text-[22px] font-bold text-foreground flex items-center gap-2">
-                  <span className="material-symbols-outlined text-primary text-[24px]">local_fire_department</span>
+            <section className="glass-1 rounded-[20px] p-5 border border-border/50 relative overflow-hidden">
+              <div className="flex items-center justify-between mb-4 pb-3 border-b border-border/30">
+                <h2 className="font-serif text-[18px] font-bold text-heading-theme flex items-center gap-2">
+                  <span className="material-symbols-outlined text-primary text-[20px]">local_fire_department</span>
                   Trending Now
                 </h2>
               </div>
-              <div className="space-y-1">
+              <div className="space-y-4">
                 {trendingNews.content.slice(0, 5).map((article, i) => (
                   <TrendingCard key={article.id} article={article} index={i} />
                 ))}

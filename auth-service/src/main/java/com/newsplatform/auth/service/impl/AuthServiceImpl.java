@@ -146,6 +146,19 @@ public class AuthServiceImpl implements AuthService {
     );
   }
 
+  @Override
+  @Transactional
+  public LoginResponseDto impersonate(Long userId) {
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new UnauthorizedException("User not found"));
+
+    if (!user.isEnabled()) {
+      throw new UnauthorizedException("User account is disabled");
+    }
+
+    return createTokenPair(user);
+  }
+
   private LoginResponseDto createTokenPair(User user) {
     String accessToken = jwtTokenProvider.generateAccessToken(user);
     long expiresInSeconds = jwtTokenProvider.getExpirationMs() / 1000;

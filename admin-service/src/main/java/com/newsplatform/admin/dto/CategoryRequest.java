@@ -15,5 +15,10 @@ public record CategoryRequest(
         @Size(max = 100, message = "Icon cannot exceed 100 characters")
         String icon,
 
-        Boolean active
+        Boolean active,
+
+        @Size(max = 500, message = "Keywords cannot exceed 500 characters")
+        String keywords,
+        
+        Integer displayOrder
 ) {}

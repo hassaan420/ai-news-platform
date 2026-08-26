@@ -20,6 +20,11 @@ export interface AiStats {
   avgProcessingTimeMs?: number;
 }
 
+export interface PrometheusStats {
+  totalHttpRequests?: string;
+  jvmMemoryUsedBytes?: string;
+}
+
 export interface AdminStats {
   totalUsers: number;
   totalArticles: number;
@@ -28,6 +33,7 @@ export interface AdminStats {
   chartData: ChartDataPoint[];
   recentActivity: ActivityItem[];
   aiStats?: AiStats;
+  prometheus?: PrometheusStats;
 }
 
 export const adminApi = {
@@ -51,6 +57,10 @@ export const adminApi = {
   },
   deleteUser: async (id: number) => {
     const response = await axiosClient.delete(`/admin/users/${id}`);
+    return response.data;
+  },
+  impersonateUser: async (id: number) => {
+    const response = await axiosClient.post(`/admin/users/${id}/impersonate`);
     return response.data;
   },
 

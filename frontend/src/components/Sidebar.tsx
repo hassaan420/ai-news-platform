@@ -1,89 +1,102 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAppSelector } from '@/store/hooks';
 import { motion } from 'framer-motion';
+import { Home, TrendingUp, Bookmark, Cpu, FlaskConical, HeartPulse, Trophy, Landmark, Grid3X3, LogIn, Shield } from 'lucide-react';
 
 export default function Sidebar() {
-  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const { isAuthenticated, user } = useAppSelector((state) => state.auth);
   const location = useLocation();
 
-  const isActive = (path: string) => {
-    return location.pathname === path;
-  };
+  const isActive = (path: string) => location.pathname === path;
 
   const linkClass = (path: string) => {
-    const base = "flex items-center gap-3 px-4 py-2.5 rounded-xl text-[14px] font-medium transition-all duration-200";
+    const base = "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 group relative";
     if (isActive(path)) {
-      return `${base} bg-foreground/[0.05] text-foreground`;
+      return `${base} glass-2 text-primary-theme shadow-sm`;
     }
-    return `${base} text-muted-foreground hover:text-foreground hover:bg-foreground/[0.03]`;
+    return `${base} text-secondary-theme hover:text-primary-theme hover:bg-black/5 dark:hover:bg-white/5 border border-transparent`;
   };
 
-  const categoryIconMap: Record<string, string> = {
-    Politics: 'account_balance',
-    Technology: 'memory',
-    Business: 'trending_up',
-    Science: 'science',
-    Health: 'health_and_safety',
-    Sports: 'sports_basketball',
+  const getCategoryIcon = (cat: string) => {
+    switch (cat) {
+      case 'Politics': return <Landmark className="w-[18px] h-[18px] opacity-70 group-hover:opacity-100 transition-opacity" />;
+      case 'Technology': return <Cpu className="w-[18px] h-[18px] opacity-70 group-hover:opacity-100 transition-opacity" />;
+      case 'Science': return <FlaskConical className="w-[18px] h-[18px] opacity-70 group-hover:opacity-100 transition-opacity" />;
+      case 'Health': return <HeartPulse className="w-[18px] h-[18px] opacity-70 group-hover:opacity-100 transition-opacity" />;
+      case 'Sports': return <Trophy className="w-[18px] h-[18px] opacity-70 group-hover:opacity-100 transition-opacity" />;
+      case 'Business': return <TrendingUp className="w-[18px] h-[18px] opacity-70 group-hover:opacity-100 transition-opacity" />;
+      default: return <Grid3X3 className="w-[18px] h-[18px] opacity-70 group-hover:opacity-100 transition-opacity" />;
+    }
   };
 
   return (
-    <motion.nav 
-      initial={{ x: -280, opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-      className="hidden md:flex bg-transparent fixed left-0 top-0 h-screen w-sidebar_width flex-col py-8 px-4 z-40 transition-colors duration-300"
-      aria-label="Main navigation"
-    >
-      <div className="mb-10 px-4">
-        <Link to="/" className="flex items-center gap-3">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0">
-            <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-muted-foreground opacity-50" strokeDasharray="2 4" />
-            <path d="M12 6C8.69 6 6 8.69 6 12C6 15.31 8.69 18 12 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-foreground" />
-          </svg>
-          <span className="font-sans text-[20px] font-bold text-foreground tracking-[0.15em] uppercase mt-0.5">Clarion</span>
-        </Link>
-      </div>
-      <div className="flex-1 overflow-y-auto hide-scrollbar space-y-1">
-        <Link className={linkClass('/')} to="/">
-          <span className="material-symbols-outlined text-[20px]">home</span>
+    <nav aria-label="Main navigation" className="py-2 flex flex-col gap-6 h-full min-h-[500px]">
+
+      {/* Main Section */}
+      <div className="space-y-1.5">
+        <Link to="/home" className={linkClass('/home')}>
+          {isActive('/home') && <div className="absolute left-0 w-1 h-5 bg-primary rounded-r-full" />}
+          <Home className="w-[18px] h-[18px] transition-colors ml-1 opacity-70 group-hover:opacity-100" />
           <span>Home</span>
         </Link>
-        <Link className={linkClass('/trending')} to="/trending">
-          <span className="material-symbols-outlined text-[20px]">trending_up</span>
+        <Link to="/trending" className={linkClass('/trending')}>
+          {isActive('/trending') && <div className="absolute left-0 w-1 h-5 bg-primary rounded-r-full" />}
+          <TrendingUp className="w-[18px] h-[18px] transition-colors ml-1 opacity-70 group-hover:opacity-100" />
           <span>Trending</span>
         </Link>
-        {isAuthenticated && (
-          <Link className={linkClass('/saved')} to="/saved">
-            <span className="material-symbols-outlined text-[20px]">bookmark</span>
-            <span>Saved</span>
-          </Link>
-        )}
-        
-        <div className="mt-6 mb-3 px-4">
-          <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest">Categories</span>
-        </div>
-        
-        {['Politics', 'Technology', 'Business', 'Science', 'Health', 'Sports'].map((cat) => (
-          <Link
-            key={cat}
-            className={linkClass(`/category/${cat.toLowerCase()}`)}
-            to={`/category/${cat.toLowerCase()}`}
-          >
-            <span className="material-symbols-outlined text-[18px]">{categoryIconMap[cat] || 'category'}</span>
-            <span>{cat}</span>
-          </Link>
-        ))}
+        <Link to="/saved" className={linkClass('/saved')}>
+          {isActive('/saved') && <div className="absolute left-0 w-1 h-5 bg-primary rounded-r-full" />}
+          <Bookmark className="w-[18px] h-[18px] transition-colors ml-1 opacity-70 group-hover:opacity-100" />
+          <span>Saved Articles</span>
+        </Link>
       </div>
-      
+
+      {/* Categories Section */}
+      <div>
+        <h3 className="px-3 label-section mb-3">Categories</h3>
+        <div className="space-y-1.5">
+          {['Technology', 'Business', 'Science', 'Health', 'Sports', 'Politics'].map((cat) => {
+            const path = `/category/${cat.toLowerCase()}`;
+            return (
+              <Link key={cat} to={path} className={linkClass(path)}>
+                {isActive(path) && <div className="absolute left-0 w-1 h-5 bg-primary rounded-r-full" />}
+                <div className="ml-1">{getCategoryIcon(cat)}</div>
+                <span>{cat}</span>
+              </Link>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* Explore Section */}
+      <div>
+        <h3 className="px-3 label-section mb-3">Explore</h3>
+        <div className="space-y-1.5">
+          <Link to="/search" className={linkClass('/search')}>
+            {isActive('/search') && <div className="absolute left-0 w-1 h-5 bg-primary rounded-r-full" />}
+            <Grid3X3 className="w-[18px] h-[18px] transition-colors ml-1 opacity-70 group-hover:opacity-100" />
+            <span>Discover</span>
+          </Link>
+
+          {user?.role === 'ROLE_ADMIN' && (
+            <Link to="/admin" className={linkClass('/admin')}>
+              {isActive('/admin') && <div className="absolute left-0 w-1 h-5 bg-primary rounded-r-full" />}
+              <Shield className="w-[18px] h-[18px] transition-colors ml-1 opacity-70 group-hover:opacity-100" />
+              <span>Admin Control Center</span>
+            </Link>
+          )}
+        </div>
+      </div>
+
+      {/* Auth State */}
       {!isAuthenticated && (
-        <div className="mt-auto px-2 pt-4">
-          <Link to="/register" className="w-full bg-foreground/[0.06] text-foreground font-label-sm text-[13px] py-2.5 rounded-xl transition-all hover:bg-foreground/[0.1] flex items-center justify-center gap-2 border border-border">
-            <span className="material-symbols-outlined text-[16px]">login</span>
-            Sign In
+        <div className="mt-4 pt-4 border-t border-white/[0.05]">
+          <Link to="/login" className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-white/[0.12] backdrop-blur-xl border border-white/[0.2] text-sm font-medium text-white hover:bg-white/[0.2] hover:text-white transition-all duration-300">
+            <LogIn className="w-4 h-4" />
+            <span>Sign In</span>
           </Link>
         </div>
       )}
-    </motion.nav>
+    </nav>
   );
 }

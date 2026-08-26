@@ -183,7 +183,7 @@ public class GeminiClient {
             Map<String, Object> reqBody;
             if (isGroq) {
                 reqBody = Map.of(
-                    "model", "llama-3.1-70b-versatile",
+                    "model", "llama3-70b-8192",
                     "messages", List.of(Map.of("role", "user", "content", prompt)),
                     "temperature", 0.2,
                     "max_tokens", 1024

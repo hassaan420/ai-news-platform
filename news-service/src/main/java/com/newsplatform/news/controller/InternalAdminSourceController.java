@@ -65,7 +65,10 @@ public class InternalAdminSourceController {
                 request.name(),
                 request.apiKey(),
                 request.endpoint(),
-                "ACTIVE"
+                "ACTIVE",
+                request.url(),
+                request.scrapingFrequency() != null ? request.scrapingFrequency() : 60,
+                request.parserType() != null ? request.parserType() : "RSS"
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(toDto(sourceRepository.save(source)));
     }
@@ -85,6 +88,15 @@ public class InternalAdminSourceController {
         if (request.status() != null) {
             source.setStatus(request.status());
         }
+        if (request.url() != null) {
+            source.setUrl(request.url());
+        }
+        if (request.scrapingFrequency() != null) {
+            source.setScrapingFrequency(request.scrapingFrequency());
+        }
+        if (request.parserType() != null) {
+            source.setParserType(request.parserType());
+        }
         return ResponseEntity.ok(toDto(sourceRepository.save(source)));
     }
 
@@ -100,6 +112,8 @@ public class InternalAdminSourceController {
 
     private SourceDto toDto(Source s) {
         return new SourceDto(s.getId(), s.getProvider(), s.getName(), s.getEndpoint(),
-                s.getStatus(), s.getCreatedAt(), s.getUpdatedAt());
+                s.getStatus(), s.getUrl(), s.getScrapingFrequency(), s.getParserType(),
+                s.getLastScrapedTime(), s.getLastScrapeStatus(), s.getTotalArticlesScraped(),
+                s.getCreatedAt(), s.getUpdatedAt());
     }
 }

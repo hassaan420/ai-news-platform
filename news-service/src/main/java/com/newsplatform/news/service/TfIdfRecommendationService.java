@@ -9,20 +9,26 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import org.springframework.transaction.annotation.Transactional;
+import com.newsplatform.news.dto.NewsSummaryResponse;
+import com.newsplatform.news.mapper.NewsMapper;
 
 @Service
+@Transactional(readOnly = true)
 public class TfIdfRecommendationService {
 
     private final ArticleRepository articleRepository;
     private final ArticleKeywordRepository keywordRepository;
+    private final NewsMapper newsMapper;
 
-    public TfIdfRecommendationService(ArticleRepository articleRepository, ArticleKeywordRepository keywordRepository) {
+    public TfIdfRecommendationService(ArticleRepository articleRepository, ArticleKeywordRepository keywordRepository, NewsMapper newsMapper) {
         this.articleRepository = articleRepository;
         this.keywordRepository = keywordRepository;
+        this.newsMapper = newsMapper;
     }
 
     @Cacheable(value = "related_articles", key = "#p0")
-    public List<Article> getRelatedArticles(Long articleId) {
+    public List<NewsSummaryResponse> getRelatedArticles(Long articleId) {
         if (articleId == null) return Collections.emptyList();
         Article target = articleRepository.findById(articleId).orElse(null);
         if (target == null) return Collections.emptyList();
@@ -32,9 +38,9 @@ public class TfIdfRecommendationService {
             // Fallback to basic category match via repository query (no full table scan)
             if (target.getCategoryId() == null) {
                 return articleRepository.findAllByOrderByTrendingScoreDesc(org.springframework.data.domain.PageRequest.of(0, 5)).getContent()
-                        .stream().filter(a -> !a.getId().equals(articleId)).collect(Collectors.toList());
+                        .stream().filter(a -> !a.getId().equals(articleId)).map(newsMapper::toNewsSummaryResponse).collect(Collectors.toList());
             }
-            return articleRepository.findTop5ByCategoryIdAndIdNot(target.getCategoryId(), articleId);
+            return articleRepository.findTop5ByCategoryIdAndIdNot(target.getCategoryId(), articleId).stream().map(newsMapper::toNewsSummaryResponse).collect(Collectors.toList());
         }
 
         Set<String> targetWords = targetKeywords.stream()
@@ -45,9 +51,10 @@ public class TfIdfRecommendationService {
         // Fetch candidate articles (same category or recent) instead of scanning entire DB
         List<Article> candidates;
         if (target.getCategoryId() != null) {
-            candidates = articleRepository.findTop5ByCategoryIdAndIdNot(target.getCategoryId(), articleId);
+            candidates = articleRepository.findByCategoryIdOrderByPublishedAtDesc(target.getCategoryId(), org.springframework.data.domain.PageRequest.of(0, 50))
+                    .getContent().stream().filter(a -> !a.getId().equals(articleId)).collect(Collectors.toList());
         } else {
-            candidates = articleRepository.findAllByOrderByTrendingScoreDesc(org.springframework.data.domain.PageRequest.of(0, 10))
+            candidates = articleRepository.findAllByOrderByPublishedAtDesc(org.springframework.data.domain.PageRequest.of(0, 50))
                     .getContent().stream().filter(a -> !a.getId().equals(articleId)).collect(Collectors.toList());
         }
 
@@ -64,6 +71,7 @@ public class TfIdfRecommendationService {
                 return union == 0 ? 0.0 : (double) intersection / union;
             }).reversed())
             .limit(5)
+            .map(newsMapper::toNewsSummaryResponse)
             .collect(Collectors.toList());
     }
 }

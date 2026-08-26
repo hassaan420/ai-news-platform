@@ -34,6 +34,24 @@ public class Source implements Serializable {
   @Column(nullable = false, length = 20)
   private String status = "ACTIVE";
 
+  @Column(name = "url", length = 500)
+  private String url;
+
+  @Column(name = "scraping_frequency", nullable = false)
+  private int scrapingFrequency = 60; // minutes
+
+  @Column(name = "parser_type", length = 50)
+  private String parserType = "RSS"; // RSS, API, HTML
+
+  @Column(name = "last_scraped_time")
+  private Instant lastScrapedTime;
+
+  @Column(name = "last_scrape_status", length = 20)
+  private String lastScrapeStatus = "PENDING";
+
+  @Column(name = "total_articles_scraped")
+  private long totalArticlesScraped = 0;
+
   @Column(name = "created_at", nullable = false, updatable = false)
   private Instant createdAt;
 
@@ -48,6 +66,17 @@ public class Source implements Serializable {
     this.apiKey = apiKey;
     this.endpoint = endpoint;
     this.status = status != null ? status : "ACTIVE";
+  }
+
+  public Source(String provider, String name, String apiKey, String endpoint, String status, String url, int scrapingFrequency, String parserType) {
+    this.provider = provider;
+    this.name = name;
+    this.apiKey = apiKey;
+    this.endpoint = endpoint;
+    this.status = status != null ? status : "ACTIVE";
+    this.url = url;
+    this.scrapingFrequency = scrapingFrequency;
+    this.parserType = parserType != null ? parserType : "RSS";
   }
 
   @PrePersist
@@ -83,4 +112,22 @@ public class Source implements Serializable {
 
   public Instant getCreatedAt() { return createdAt; }
   public Instant getUpdatedAt() { return updatedAt; }
+
+  public String getUrl() { return url; }
+  public void setUrl(String url) { this.url = url; }
+
+  public int getScrapingFrequency() { return scrapingFrequency; }
+  public void setScrapingFrequency(int scrapingFrequency) { this.scrapingFrequency = scrapingFrequency; }
+
+  public String getParserType() { return parserType; }
+  public void setParserType(String parserType) { this.parserType = parserType; }
+
+  public Instant getLastScrapedTime() { return lastScrapedTime; }
+  public void setLastScrapedTime(Instant lastScrapedTime) { this.lastScrapedTime = lastScrapedTime; }
+
+  public String getLastScrapeStatus() { return lastScrapeStatus; }
+  public void setLastScrapeStatus(String lastScrapeStatus) { this.lastScrapeStatus = lastScrapeStatus; }
+
+  public long getTotalArticlesScraped() { return totalArticlesScraped; }
+  public void setTotalArticlesScraped(long totalArticlesScraped) { this.totalArticlesScraped = totalArticlesScraped; }
 }

@@ -1,4 +1,5 @@
 {
+  "uid": "infrastructure",
   "title": "Infrastructure Metrics (DBs, Docker, K8s)",
   "timezone": "browser",
   "schemaVersion": 30,

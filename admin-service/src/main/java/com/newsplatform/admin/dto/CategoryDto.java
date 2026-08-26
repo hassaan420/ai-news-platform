@@ -8,6 +8,9 @@ public record CategoryDto(
         String slug,
         String icon,
         boolean active,
+        String keywords,
+        int displayOrder,
+        long articleCount,
         Instant createdAt,
         Instant updatedAt
 ) {}

@@ -6,6 +6,8 @@ import com.newsplatform.auth.model.Role;
 import com.newsplatform.auth.repository.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.newsplatform.auth.dto.response.LoginResponseDto;
+import com.newsplatform.auth.service.AuthService;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,9 +17,16 @@ import java.util.stream.Collectors;
 public class InternalAdminController {
 
     private final UserRepository userRepository;
+    private final AuthService authService;
 
-    public InternalAdminController(UserRepository userRepository) {
+    public InternalAdminController(UserRepository userRepository, AuthService authService) {
         this.userRepository = userRepository;
+        this.authService = authService;
+    }
+
+    @PostMapping("/{id}/impersonate")
+    public ResponseEntity<LoginResponseDto> impersonate(@PathVariable Long id) {
+        return ResponseEntity.ok(authService.impersonate(id));
     }
 
     @GetMapping("/stats")

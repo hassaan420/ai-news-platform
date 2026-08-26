@@ -45,7 +45,7 @@ class IngestionPipelineServiceTest {
         ArticleIngestDto dto = new ArticleIngestDto("Test Title", "Desc", "Content", "image", "http://test.com", "Author", 1L, "tech", java.time.Instant.now());
         
         when(categoryServiceClient.getAllCategories()).thenReturn(List.of(
-            new CategoryDto(1L, "Technology", "tech", "icon", true, java.time.Instant.now(), java.time.Instant.now())
+            new CategoryDto(1L, "technology", "Technology", "Tech news", true, "tech,technology", 1, 0L, java.time.Instant.now(), java.time.Instant.now())
         ));
         
         when(duplicateDetectionService.computeArticleHash(anyString(), anyString())).thenReturn("hash123");

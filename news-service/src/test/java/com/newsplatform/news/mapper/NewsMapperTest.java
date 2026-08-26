@@ -37,14 +37,26 @@ class NewsMapperTest {
     @Test
     void toEntity_SourceDto() {
         SourceDto dto = new SourceDto(
-                1L, "Test Source DTO", "https://testdto.com", "API", null, null, null
+            1L,
+            "TechCrunch",
+            "Technology news",
+            "https://logo.com/tc.png",
+            "ACTIVE",
+            "https://techcrunch.com",
+            30,
+            "RSS",
+            null,
+            null,
+            0L,
+            null,
+            null
         );
 
         Source entity = mapper.toEntity(dto);
 
         assertNotNull(entity);
         assertEquals(1L, entity.getId());
-        assertEquals("Test Source DTO", entity.getName());
+        assertEquals("TechCrunch", entity.getName());
         assertNull(entity.getApiKey());
     }
 

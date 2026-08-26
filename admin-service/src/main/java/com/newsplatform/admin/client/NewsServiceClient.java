@@ -5,7 +5,9 @@ import com.newsplatform.admin.dto.PagedResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
-@FeignClient(name = "news-service", url = "${feign.client.news-service.url:http://news-service:8082}")
+import com.newsplatform.admin.config.FeignConfig;
+
+@FeignClient(name = "news-service", url = "${feign.client.news-service.url:http://news-service:8082}", configuration = FeignConfig.class)
 public interface NewsServiceClient {
     @GetMapping("/internal/admin/articles/count")
     long getArticleCount();

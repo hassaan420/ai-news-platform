@@ -23,5 +23,7 @@ public interface AuthService {
 
   UserResponseDto updateProfile(Long userId, UpdateProfileRequestDto request);
 
+  LoginResponseDto impersonate(Long userId);
+
   void logout(RefreshTokenRequestDto request);
 }

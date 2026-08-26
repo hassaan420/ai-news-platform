@@ -48,7 +48,17 @@ class AdminIntegrationTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void adminRoutes_ShouldAllowAdminUser() throws Exception {
-        CategoryDto mockCategory = new CategoryDto(1L, "Test", "test", "icon", true, Instant.now(), Instant.now());
+        CategoryDto mockCategory = new CategoryDto(
+                1L, 
+                "technology", 
+                "Technology", 
+                "Tech news", 
+                true,
+                "ai",      // mappedTo
+                1,         // priority
+                0L,
+                Instant.now(), 
+                Instant.now());
         when(categoryServiceClient.getAllCategories()).thenReturn(List.of(mockCategory));
 
         mockMvc.perform(get("/api/admin/categories"))

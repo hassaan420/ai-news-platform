@@ -15,8 +15,11 @@ public record SourceRequest(
         String apiKey,
 
         @NotBlank(message = "Endpoint is required")
-        @Size(max = 500)
         String endpoint,
+
+        String url,
+        Integer scrapingFrequency,
+        String parserType,
 
         String status
 ) {}

@@ -94,14 +94,17 @@ module.exports = {
         "surface-tint": "hsl(var(--surface-tint) / <alpha-value>)",
         "on-primary-fixed-variant": "hsl(var(--on-primary-fixed-variant) / <alpha-value>)",
         "inverse-on-surface": "hsl(var(--inverse-on-surface) / <alpha-value>)",
-        "on-tertiary-fixed": "hsl(var(--on-tertiary-fixed) / <alpha-value>)"
+        "on-tertiary-fixed": "hsl(var(--on-tertiary-fixed) / <alpha-value>)",
+        // Clarion ambient accent
+        "clarion-rose": "hsl(var(--glow-rose) / <alpha-value>)",
       },
       borderRadius: {
-        lg: "0.5rem",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
-        xl: "0.75rem",
-        "2xl": "1rem",
+        sm: "0.375rem",
+        md: "0.5rem",
+        lg: "0.75rem",
+        xl: "1rem",
+        "2xl": "1.25rem",
+        "3xl": "1.5rem",
         full: "9999px"
       },
       spacing: {
@@ -129,10 +132,11 @@ module.exports = {
         "metadata": ["14px", { lineHeight: "20px", fontWeight: "500" }],
         "display-lg-mobile": ["32px", { lineHeight: "40px", fontWeight: "700" }],
         "label-sm": ["13px", { lineHeight: "16px", letterSpacing: "0.04em", fontWeight: "600" }],
-        "display-lg": ["48px", { lineHeight: "56px", letterSpacing: "-0.02em", fontWeight: "700" }],
+        "display-lg": ["56px", { lineHeight: "64px", letterSpacing: "-0.025em", fontWeight: "700" }],
         "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }],
-        "headline-md": ["24px", { lineHeight: "32px", fontWeight: "600" }],
-        "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }]
+        "headline-sm": ["20px", { lineHeight: "28px", fontWeight: "600", letterSpacing: "-0.01em" }],
+        "headline-md": ["28px", { lineHeight: "36px", fontWeight: "700", letterSpacing: "-0.015em" }],
+        "body-md": ["16px", { lineHeight: "26px", fontWeight: "400" }]
       },
       boxShadow: {
         'premium': '0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.04)',

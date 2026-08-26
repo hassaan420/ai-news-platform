@@ -1,5 +1,6 @@
 {
-  "title": "JVM & Application Metrics",
+  "uid": "jvm-micrometer",
+  "title": "JVM & Micrometer Metrics",
   "timezone": "browser",
   "schemaVersion": 30,
   "refresh": "10s",

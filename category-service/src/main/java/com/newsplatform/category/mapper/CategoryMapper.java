@@ -6,6 +6,7 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE)
 public interface CategoryMapper {
+    @org.mapstruct.Mapping(target = "articleCount", constant = "0L")
     CategoryDto toDto(Category category);
     
     @org.mapstruct.Mapping(target = "id", ignore = true)

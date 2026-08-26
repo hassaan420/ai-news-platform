@@ -122,6 +122,12 @@ public class CategoryServiceImpl implements CategoryService {
         if (request.active() != null) {
             category.setActive(request.active());
         }
+        if (request.keywords() != null) {
+            category.setKeywords(request.keywords());
+        }
+        if (request.displayOrder() != null) {
+            category.setDisplayOrder(request.displayOrder());
+        }
 
         Category updated = categoryRepository.save(category);
         return categoryMapper.toDto(updated);

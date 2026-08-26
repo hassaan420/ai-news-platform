@@ -17,8 +17,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.transaction.annotation.Transactional;
+
 @RestController
 @RequestMapping("/api/news/ai")
+@Transactional(readOnly = true)
 public class AiNewsController {
 
     private final TfIdfRecommendationService recommendationService;
@@ -27,33 +30,37 @@ public class AiNewsController {
     private final ArticleRepository articleRepository;
     private final com.newsplatform.news.mapper.NewsMapper newsMapper;
     private final GeminiSearchService geminiSearchService;
+    private final com.newsplatform.news.service.ArticleService articleService;
 
     public AiNewsController(TfIdfRecommendationService recommendationService,
                             PersonalizedFeedService personalizedFeedService,
                             ArticleStatsRepository statsRepository,
                             ArticleRepository articleRepository,
                             com.newsplatform.news.mapper.NewsMapper newsMapper,
-                            GeminiSearchService geminiSearchService) {
+                            GeminiSearchService geminiSearchService,
+                            com.newsplatform.news.service.ArticleService articleService) {
         this.recommendationService = recommendationService;
         this.personalizedFeedService = personalizedFeedService;
         this.statsRepository = statsRepository;
         this.articleRepository = articleRepository;
         this.newsMapper = newsMapper;
         this.geminiSearchService = geminiSearchService;
+        this.articleService = articleService;
     }
 
     // Part 5: Related Articles
     @GetMapping("/{articleId}/related")
     public ResponseEntity<List<com.newsplatform.news.dto.NewsSummaryResponse>> getRelatedArticles(@PathVariable("articleId") Long articleId) {
         try {
-            List<Article> related = recommendationService.getRelatedArticles(articleId);
+            List<com.newsplatform.news.dto.NewsSummaryResponse> related = recommendationService.getRelatedArticles(articleId);
             if (related.isEmpty()) {
                 Article article = articleRepository.findById(articleId).orElse(null);
                 if (article != null) {
-                    related = geminiSearchService.searchWebForRelatedArticles(article.getTitle());
+                    List<Article> webRelated = geminiSearchService.searchWebForRelatedArticles(article.getTitle());
+                    related = webRelated.stream().map(newsMapper::toNewsSummaryResponse).collect(Collectors.toList());
                 }
             }
-            return ResponseEntity.ok(related.stream().map(newsMapper::toNewsSummaryResponse).collect(Collectors.toList()));
+            return ResponseEntity.ok(related);
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
@@ -66,10 +73,9 @@ public class AiNewsController {
         Long userId = getCurrentUserIdSafe();
         if (userId == null) {
             // Fall back to trending news if not logged in
-            List<Article> trending = articleRepository.findAllByOrderByTrendingScoreDesc(PageRequest.of(0, 10)).getContent();
-            return ResponseEntity.ok(trending.stream().map(newsMapper::toNewsSummaryResponse).collect(Collectors.toList()));
+            return ResponseEntity.ok(articleService.getTrendingArticles(PageRequest.of(0, 10)).content());
         }
-        return ResponseEntity.ok(personalizedFeedService.getPersonalizedFeed(String.valueOf(userId)).stream().map(newsMapper::toNewsSummaryResponse).collect(Collectors.toList()));
+        return ResponseEntity.ok(personalizedFeedService.getPersonalizedFeed(String.valueOf(userId)));
     }
 
     public Long getCurrentUserIdSafe() {
@@ -87,7 +93,6 @@ public class AiNewsController {
     // Part 7: Trending
     @GetMapping("/trending")
     public ResponseEntity<List<com.newsplatform.news.dto.NewsSummaryResponse>> getTrending() {
-        List<Article> trending = articleRepository.findAllByOrderByTrendingScoreDesc(PageRequest.of(0, 10)).getContent();
-        return ResponseEntity.ok(trending.stream().map(newsMapper::toNewsSummaryResponse).collect(Collectors.toList()));
+        return ResponseEntity.ok(articleService.getTrendingArticles(PageRequest.of(0, 10)).content());
     }
 }

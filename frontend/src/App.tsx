@@ -26,11 +26,17 @@ function App() {
 
   return (
     <BrowserRouter>
-      <div className="relative min-h-screen">
-        <ShaderBackground className="fixed inset-0 -z-50 opacity-20 pointer-events-none" />
-        <AppLoader />
-        <AppRouter />
-        <Toaster />
+      <div className="relative min-h-screen" style={{ background: '#08080f' }}>
+        {/* Shader as foreground visual layer — visible through glass surfaces */}
+        <ShaderBackground className="fixed inset-0 z-0 pointer-events-none opacity-85" />
+        {/* Global Readability Veil */}
+        <div className="fixed inset-0 z-0 pointer-events-none bg-background/40 backdrop-blur-[2px]" />
+        {/* All content sits above the shader */}
+        <div className="relative z-10">
+          <AppLoader />
+          <AppRouter />
+          <Toaster />
+        </div>
       </div>
     </BrowserRouter>
   );

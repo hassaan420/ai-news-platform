@@ -21,7 +21,7 @@ export default function FeaturedCarousel({ articles }: FeaturedCarouselProps) {
   if (!articles || articles.length === 0) return null;
 
   return (
-    <div className="relative w-full overflow-hidden rounded-[24px] group">
+    <div className="relative w-full overflow-hidden rounded-2xl group">
       <AnimatePresence mode="wait">
         <motion.div
           key={currentIndex}
@@ -36,13 +36,13 @@ export default function FeaturedCarousel({ articles }: FeaturedCarouselProps) {
       
       {/* Dots navigation */}
       {articles.length > 1 && (
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 z-10 bg-background/30 backdrop-blur-md px-3 py-1.5 rounded-full border border-border/20">
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 z-10 bg-white/[0.2] backdrop-blur-xl px-3 py-1.5 rounded-full border border-white/[0.2]">
           {articles.map((_, idx) => (
             <button
               key={idx}
               onClick={() => setCurrentIndex(idx)}
               className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                idx === currentIndex ? 'w-6 bg-primary' : 'bg-primary/20 hover:bg-primary/40'
+                idx === currentIndex ? 'w-6 bg-primary' : 'bg-white/20 hover:bg-white/40'
               }`}
             />
           ))}

@@ -24,11 +24,13 @@ public class AdminDashboardController {
     private final AuthServiceClient authServiceClient;
     private final NewsServiceClient newsServiceClient;
     private final AuditLogService auditLogService;
+    private final com.newsplatform.admin.service.PrometheusService prometheusService;
 
-    public AdminDashboardController(AuthServiceClient authServiceClient, NewsServiceClient newsServiceClient, AuditLogService auditLogService) {
+    public AdminDashboardController(AuthServiceClient authServiceClient, NewsServiceClient newsServiceClient, AuditLogService auditLogService, com.newsplatform.admin.service.PrometheusService prometheusService) {
         this.authServiceClient = authServiceClient;
         this.newsServiceClient = newsServiceClient;
         this.auditLogService = auditLogService;
+        this.prometheusService = prometheusService;
     }
 
     @GetMapping("/dashboard/stats")
@@ -52,17 +54,14 @@ public class AdminDashboardController {
                 stats.put("aiStats", new HashMap<>());
             }
             
-            // Provide realistic placeholder data for chart to prevent frontend breaking 
-            // without complex historical tables since we only have raw counts right now.
-            stats.put("chartData", java.util.List.of(
-                Map.of("name", "Mon", "users", 400, "articles", 240),
-                Map.of("name", "Tue", "users", 300, "articles", 139),
-                Map.of("name", "Wed", "users", 200, "articles", 980),
-                Map.of("name", "Thu", "users", 278, "articles", 390),
-                Map.of("name", "Fri", "users", 189, "articles", 480),
-                Map.of("name", "Sat", "users", 239, "articles", 380),
-                Map.of("name", "Sun", "users", 349, "articles", 430)
-            ));
+            // Prometheus metrics integration
+            Map<String, Object> prometheusMetrics = new HashMap<>();
+            prometheusMetrics.put("totalHttpRequests", prometheusService.getTotalHttpRequests());
+            prometheusMetrics.put("jvmMemoryUsedBytes", prometheusService.getJvmMemoryUsed());
+            stats.put("prometheus", prometheusMetrics);
+
+            // Chart data
+            stats.put("chartData", prometheusService.get7DayActivityTrend());
             
             java.util.List<Map<String, String>> activities = auditLogService.getRecentLogs(5).stream().map(log -> {
                 String timeStr = log.getTimestamp() != null 

@@ -21,5 +21,11 @@ public record SourceRequest(
         @Size(max = 500, message = "Endpoint must not exceed 500 characters")
         String endpoint,
 
+        String url,
+
+        Integer scrapingFrequency,
+
+        String parserType,
+
         String status
 ) {}

@@ -9,6 +9,12 @@ public record SourceDto(
     String name,
     String endpoint,
     String status,
+    String url,
+    int scrapingFrequency,
+    String parserType,
+    Instant lastScrapedTime,
+    String lastScrapeStatus,
+    long totalArticlesScraped,
     Instant createdAt,
     Instant updatedAt
 ) implements java.io.Serializable {}

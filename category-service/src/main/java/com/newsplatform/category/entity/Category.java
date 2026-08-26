@@ -33,6 +33,12 @@ public class Category {
   @Column(nullable = false)
   private boolean active = true;
 
+  @Column(name = "keywords", length = 500)
+  private String keywords;
+
+  @Column(name = "display_order", nullable = false)
+  private int displayOrder = 0;
+
   @Column(name = "created_at", nullable = false, updatable = false)
   private Instant createdAt;
 
@@ -46,6 +52,15 @@ public class Category {
     this.slug = slug;
     this.icon = icon;
     this.active = active;
+  }
+
+  public Category(String title, String slug, String icon, boolean active, String keywords, int displayOrder) {
+    this.title = title;
+    this.slug = slug;
+    this.icon = icon;
+    this.active = active;
+    this.keywords = keywords;
+    this.displayOrder = displayOrder;
   }
 
   @PrePersist
@@ -107,5 +122,21 @@ public class Category {
 
   public Instant getUpdatedAt() {
     return updatedAt;
+  }
+
+  public String getKeywords() {
+    return keywords;
+  }
+
+  public void setKeywords(String keywords) {
+    this.keywords = keywords;
+  }
+
+  public int getDisplayOrder() {
+    return displayOrder;
+  }
+
+  public void setDisplayOrder(int displayOrder) {
+    this.displayOrder = displayOrder;
   }
 }

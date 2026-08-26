@@ -39,9 +39,8 @@ export default function AppLoader() {
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, scale: 1.05, filter: 'blur(10px)' }}
           transition={{ duration: 0.8, ease: "easeInOut" }}
-          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#F9F8F6] overflow-hidden"
+          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-background overflow-hidden"
         >
-           {/* Complex constellation effect built with SVG lines and framer motion */}
            <div className="absolute inset-0 flex items-center justify-center opacity-30 pointer-events-none">
              <svg width="100%" height="100%" className="absolute inset-0">
                 {/* Connecting lines that draw themselves */}

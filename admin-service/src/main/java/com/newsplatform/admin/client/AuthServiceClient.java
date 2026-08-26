@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
-@FeignClient(name = "auth-service", url = "${feign.client.auth-service.url:http://auth-service:8081}")
+import com.newsplatform.admin.config.FeignConfig;
+
+@FeignClient(name = "auth-service", url = "${feign.client.auth-service.url:http://auth-service:8081}", configuration = FeignConfig.class)
 public interface AuthServiceClient {
 
     @GetMapping("/internal/users/stats")
@@ -24,4 +26,7 @@ public interface AuthServiceClient {
 
     @DeleteMapping("/internal/users/{id}")
     AdminUserDto deleteUser(@PathVariable("id") Long id);
+
+    @PostMapping("/internal/users/{id}/impersonate")
+    Map<String, Object> impersonateUser(@PathVariable("id") Long id);
 }

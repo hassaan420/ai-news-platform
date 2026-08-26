@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Article } from '@/types/news';
 import { motion } from 'framer-motion';
 import { newsApi } from '@/api/newsApi';
+import { BookmarkPlus, BookmarkCheck } from 'lucide-react';
 
 interface ArticleCardProps {
   article: Article;
@@ -47,11 +48,11 @@ export default function ArticleCard({ article, index = 0 }: ArticleCardProps) {
     switch(sentiment?.toLowerCase()) {
       case 'positive':
       case 'bullish':
-      case 'optimistic': return 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400';
+      case 'optimistic': return 'bg-emerald-500/10 text-emerald-400/90 border border-emerald-500/15';
       case 'negative':
       case 'bearish':
-      case 'skeptical': return 'bg-rose-500/10 text-rose-700 dark:text-rose-400';
-      default: return 'bg-muted text-muted-foreground';
+      case 'skeptical': return 'bg-rose-500/10 text-rose-400/90 border border-rose-500/15';
+      default: return 'bg-white/[0.12] text-white/90 border border-white/[0.07]';
     }
   };
 
@@ -60,14 +61,15 @@ export default function ArticleCard({ article, index = 0 }: ArticleCardProps) {
   return (
     <motion.article 
       layout
-      initial={{ opacity: 0, y: 16 }}
+      initial={{ opacity: 0, y: 12 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-40px" }}
-      transition={{ type: "spring", stiffness: 400, damping: 25, delay: index * 0.06 }}
+      viewport={{ once: true, margin: "-20px" }}
+      transition={{ type: "spring", stiffness: 400, damping: 30, delay: index * 0.05 }}
       whileHover={{ y: -4 }}
       whileTap={{ scale: 0.98 }}
-      className="bg-card border border-border rounded-[20px] overflow-hidden flex flex-col group shadow-subtle hover:shadow-premium transition-all duration-300"
+      className="glass-2 rounded-2xl shadow-premium hover:shadow-premium-hover hover:bg-white/[0.05] overflow-hidden flex flex-col group transition-all duration-300"
     >
+      {/* Image */}
       <Link to={`/news/${article.id}`} className="block relative h-48 overflow-hidden">
         {article.image ? (
           <img
@@ -79,61 +81,62 @@ export default function ArticleCard({ article, index = 0 }: ArticleCardProps) {
             onError={(e) => { e.currentTarget.src = '/placeholder.png'; e.currentTarget.onerror = null; }}
           />
         ) : (
-          <div className="w-full h-full bg-muted" />
+          <div className="w-full h-full bg-white/[0.1]" />
         )}
-        <div className="absolute top-4 left-4">
-          <span className="bg-foreground/[0.1] backdrop-blur-md text-white border border-white/[0.1] font-sans text-[10px] px-3 py-1.5 rounded-full uppercase tracking-widest font-semibold shadow-subtle">
-            {article.category}
-          </span>
-        </div>
       </Link>
       
-      <div className="p-6 flex flex-col flex-1 relative">
-        <div className="flex justify-between items-start mb-4">
-          <div className="flex items-center gap-2">
-            {article.sentiment ? (
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: index * 0.05 + 0.1, duration: 0.3 }}
-                className={`flex items-center text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-widest ${getSentimentStyle(article.sentiment)}`}
-              >
-                {article.sentiment}
-              </motion.div>
-            ) : null}
-            <div className="flex items-center text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-widest bg-foreground/[0.04] text-muted-foreground border border-border">
-              <span className="material-symbols-outlined text-[12px] mr-1">psychology</span> AI
-            </div>
+      {/* Card body */}
+      <div className="p-5 flex flex-col flex-1">
+        {/* Category / Source */}
+        <div className="flex items-center gap-2 mb-3">
+          <span className="text-[12px] font-bold text-primary tracking-wider uppercase">{article.category}</span>
+          <span className="text-[12px] text-muted-theme/40">•</span>
+          <div className="flex items-center gap-1.5">
+            <img
+              src={`https://www.google.com/s2/favicons?domain=${article.url ? new URL(article.url).hostname : 'news.google.com'}&sz=16`}
+              alt=""
+              className="w-3.5 h-3.5 object-contain rounded-sm opacity-70"
+              onError={(e) => e.currentTarget.style.display = 'none'}
+            />
+            <span className="font-sans text-[12px] font-medium text-secondary-theme">{article.source?.name}</span>
           </div>
-          
-          <motion.button 
-            whileTap={{ scale: 0.9 }}
-            animate={isSaved ? { scale: [1, 1.3, 1] } : {}}
-            transition={{ duration: 0.3 }}
-            className={`transition-colors ${isSaved ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}`} 
-            onClick={handleSave} 
-            aria-label={isSaved ? "Unsave article" : "Save article"}
-          >
-            <span className="material-symbols-outlined text-[20px] block">{isSaved ? 'bookmark_added' : 'bookmark_add'}</span>
-          </motion.button>
         </div>
-        
-        <Link to={`/news/${article.id}`} className="block mb-3">
-          <h3 className="font-serif text-[20px] leading-snug text-foreground group-hover:text-primary transition-colors line-clamp-2 font-semibold tracking-tight">
+
+        {/* Title */}
+        <Link to={`/news/${article.id}`} className="block mb-2.5">
+          <h3 className="font-serif text-[20px] leading-[1.3] text-heading-theme group-hover:text-primary transition-colors line-clamp-2 font-bold tracking-tight">
             {article.title}
           </h3>
         </Link>
-        
-        <p className="font-sans text-[14px] leading-relaxed text-muted-foreground mb-6 line-clamp-2">
+
+        {/* Description */}
+        <p className="font-sans text-[14px] leading-relaxed text-secondary-theme mb-5 line-clamp-2">
           {article.summary || article.description}
         </p>
-        
-        <div className="mt-auto pt-4 border-t border-border flex items-center justify-between text-muted-foreground">
-          <div className="flex items-center gap-2">
-            <img src={`https://www.google.com/s2/favicons?domain=${article.url ? new URL(article.url).hostname : 'news.google.com'}&sz=16`} alt="" className="w-4 h-4 object-contain rounded-full bg-white/[0.05]" onError={(e) => e.currentTarget.style.display = 'none'} />
-            <span className="font-sans text-[12px] font-medium text-foreground tracking-wide uppercase">{article.source.name}</span>
+
+        {/* Footer: Date + Metadata + Action */}
+        <div className="mt-auto pt-4 border-t border-border/50 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <time className="font-sans text-[12px] font-medium text-muted-theme" dateTime={article.publishedAt}>
+              {formattedDate}
+            </time>
+            {article.sentiment && (
+              <span className={`text-[11px] font-medium px-2 py-0.5 rounded-md ${getSentimentStyle(article.sentiment)}`}>
+                {article.sentiment}
+              </span>
+            )}
           </div>
-          <span className="font-sans text-[12px]">{formattedDate}</span>
+          
+          <motion.button 
+            whileTap={{ scale: 0.88 }}
+            animate={isSaved ? { scale: [1, 1.25, 1] } : {}}
+            transition={{ duration: 0.25 }}
+            className={`transition-colors p-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/5 ${isSaved ? 'text-primary' : 'text-muted-theme hover:text-primary-theme'}`}
+            onClick={handleSave} 
+            aria-label={isSaved ? "Unsave article" : "Save article"}
+          >
+            {isSaved ? <BookmarkCheck className="w-4.5 h-4.5 block" /> : <BookmarkPlus className="w-4.5 h-4.5 block" />}
+          </motion.button>
         </div>
       </div>
     </motion.article>
