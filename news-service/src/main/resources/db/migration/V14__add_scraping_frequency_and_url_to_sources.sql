@@ -1,0 +1,3 @@
+ALTER TABLE sources
+ADD COLUMN url VARCHAR(500),
+ADD COLUMN scraping_frequency INT NOT NULL DEFAULT 60;
